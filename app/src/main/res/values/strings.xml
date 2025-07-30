@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">BaseProyect</string>
+
+
+
+    <string name="token_expired">Token has expired</string>
+    <string name="title_error">Ha ocurrido un problema</string>
+    <string name="unexpected_error">Ocurrió un error inesperado</string>
+    <string name="unreachable_network">No es posible acceder a internet, verifica tu conexión.</string>
+    <string name="network_settings">Ir a configuración de red</string>
+    <string name="timeout">Tiempo de espera agotado</string>
+    <string name="unknown_host_exception">No es posible conectarse al servidor</string>
+    <string name="certificate_error_message">No es posible acceder, certificados inválidos.</string>
+    <string name="certificate_error">Error de certificados.</string>
+    <string name="error_reservation_title">Reservación no posible</string>
+</resources>
