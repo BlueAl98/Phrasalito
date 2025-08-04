@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.nayibit.phrasalito"
-        minSdk = 24
+        minSdk = 29
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -63,6 +63,8 @@ android {
 
 
 dependencies {
+
+    implementation(project(":phrasalito:phrasalito_presentation"))
 
 
     //Navegacion screens

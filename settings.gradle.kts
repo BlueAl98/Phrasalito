@@ -21,4 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "Phrasalito"
 include(":app")
- 
+include(":phrasalito:phrasalito_data")
+include(":phrasalito:phrasalito_domain")
+include(":phrasalito:phrasalito_presentation")
