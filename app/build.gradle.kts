@@ -65,6 +65,7 @@ android {
 dependencies {
 
     implementation(project(":phrasalito:phrasalito_presentation"))
+    implementation(project(":phrasalito:phrasalito_data"))
 
 
     //Navegacion screens

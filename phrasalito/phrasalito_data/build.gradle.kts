@@ -36,10 +36,15 @@ android {
 }
 
 dependencies {
+    implementation(project(":phrasalito:phrasalito_domain"))
+
 
     //dagger
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.android)
+
+    //Data Store
+    implementation (libs.androidx.datastore.preferences) // Asegúrate de usar la versión adecuada
 
 
     implementation(libs.androidx.core.ktx)
