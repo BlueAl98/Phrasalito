@@ -47,6 +47,10 @@ dependencies {
 
     implementation(project(":phrasalito:phrasalito_domain"))
 
+    //HILT VIEWMODEL JETCOMPOSE
+    implementation (libs.androidx.hilt.navigation.compose)
+    implementation (libs.androidx.lifecycle.runtime.compose)
+
 
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
