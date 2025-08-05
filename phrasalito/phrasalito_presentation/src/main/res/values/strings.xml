@@ -43,4 +43,6 @@
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="app_name">Phrasalito</string>
+
 </resources>

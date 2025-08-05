@@ -4,8 +4,10 @@ import com.nayibit.phrasalito_data.dao.PhraseDao
 import com.nayibit.phrasalito_data.entities.PhraseEntity
 import com.nayibit.phrasalito_domain.model.Phrase
 import com.nayibit.phrasalito_domain.repository.PhraseRepository
+import com.nayibit.phrasalito_domain.utils.Resource
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class PhraseRepositoryImpl @Inject
@@ -20,16 +22,17 @@ class PhraseRepositoryImpl @Inject
         phraseDao.insert(phraseEntity)
     }
 
-    override suspend fun getAll(): Flow<List<Phrase>> {
-        return phraseDao.getAll().map {
-            it.map { phraseEntity ->
-                Phrase(
-                    id = phraseEntity.id,
-                    targetLanguage = phraseEntity.targetLanguage,
-                    translation = phraseEntity.translation
-                )
-            }
-        }
-    }
+    override suspend fun getAll(): Flow<Resource<List<Phrase>>> = flow {
+        emit(Resource.Loading)
+        delay(2000)
+        try {
+            phraseDao.getAll()
+                .collect { entities ->
+                    val phrases = entities.map { it.toDomain() }
+                    emit(Resource.Success(phrases))
+                }
 
-}
+        }catch (e: Exception){
+            emit(Resource.Error(e.localizedMessage ?: "Unknown error"))}
+    }
+ }
