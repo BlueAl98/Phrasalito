@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.nayibit.phrasalito_data.entities.PhraseEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PhraseDao {
@@ -27,5 +28,5 @@ interface PhraseDao {
      suspend fun getById(id: Int): PhraseEntity?
 
     @Query("SELECT * FROM phrases")
-     suspend fun getAll(): List<PhraseEntity>
+      fun getAll(): Flow<List<PhraseEntity>>
 }

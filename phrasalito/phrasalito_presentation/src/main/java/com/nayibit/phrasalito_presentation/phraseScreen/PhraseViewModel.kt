@@ -16,7 +16,11 @@ class PhraseViewModel
 
      init {
         viewModelScope.launch {
-            println(useCase())
+            useCase().collect {
+                it.forEach {
+                    println(it.targetLanguage)
+                }
+            }
         }
      }
 
