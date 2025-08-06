@@ -6,7 +6,7 @@ import com.nayibit.phrasalito_domain.utils.Resource
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class getAllPhrasesUseCase @Inject constructor(
+class GetAllPhrasesUseCase @Inject constructor(
     private val repository: PhraseRepository
 ) {
     suspend operator fun invoke(): Flow<Resource<List<Phrase>>>  {

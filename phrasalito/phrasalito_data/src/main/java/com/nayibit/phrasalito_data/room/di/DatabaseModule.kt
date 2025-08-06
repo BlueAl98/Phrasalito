@@ -2,6 +2,7 @@ package com.nayibit.phrasalito_data.room.di
 
 import android.content.Context
 import androidx.room.Room
+import com.nayibit.phrasalito_data.dao.DeckDao
 import com.nayibit.phrasalito_data.dao.PhraseDao
 import com.nayibit.phrasalito_data.room.AppDatabase
 import com.nayibit.phrasalito_data.utils.Constants
@@ -31,6 +32,11 @@ object DatabaseModule {
     @Provides
     fun providePhraseDao(appDatabase: AppDatabase): PhraseDao {
         return appDatabase.phraseDao()
+    }
+
+    @Provides
+    fun provideDeckDao(appDatabase: AppDatabase): DeckDao {
+        return appDatabase.deckDao()
     }
 
 }

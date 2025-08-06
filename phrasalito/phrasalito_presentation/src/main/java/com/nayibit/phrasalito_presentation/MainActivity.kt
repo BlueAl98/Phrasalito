@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
+import com.nayibit.phrasalito_presentation.deckScreen.DeckScreen
 import com.nayibit.phrasalito_presentation.phraseScreen.PhraseScreen
 import com.nayibit.phrasalito_presentation.ui.theme.PhrasalitoTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,7 +24,7 @@ class MainActivity : ComponentActivity() {
             PhrasalitoTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                   Column(modifier = Modifier.padding(innerPadding)) {
-                     PhraseScreen()
+                    DeckScreen()
                   }
                 }
             }
