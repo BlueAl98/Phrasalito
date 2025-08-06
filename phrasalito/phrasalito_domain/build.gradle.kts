@@ -42,6 +42,18 @@ dependencies {
     implementation(libs.hilt.android)
 
 
+
+
+    // Unit testing
+    testImplementation (libs.junit)
+    testImplementation (libs.mockito.core)
+    testImplementation (libs.kotlinx.coroutines.test)
+    testImplementation (libs.mockito.kotlin)
+    testImplementation (libs.turbine) // for testing Flow
+// Optional for lifecycle & ViewModel
+    testImplementation (libs.androidx.core.testing)
+
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
