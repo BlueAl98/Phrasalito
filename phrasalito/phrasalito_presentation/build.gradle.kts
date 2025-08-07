@@ -73,6 +73,18 @@ dependencies {
    // implementation(libs.androidx.constraintlayout)
    // implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+
+
+    // Unit testing
+    testImplementation (libs.junit)
+    testImplementation (libs.mockito.core)
+    testImplementation (libs.kotlinx.coroutines.test)
+    testImplementation (libs.mockito.kotlin)
+    testImplementation (libs.turbine) // for testing Flow
+// Optional for lifecycle & ViewModel
+    testImplementation (libs.androidx.core.testing)
+
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
