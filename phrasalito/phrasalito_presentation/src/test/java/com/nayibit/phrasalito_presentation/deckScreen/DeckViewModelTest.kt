@@ -9,6 +9,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import app.cash.turbine.test
+import com.nayibit.phrasalito_domain.useCases.decks.GetAllDecksUseCase
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.ShowToast
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckViewModel
 import kotlinx.coroutines.Dispatchers
@@ -27,13 +28,15 @@ class DeckViewModelTest {
 
     private val mockInsertDeckUseCase : InsertDeckUseCase = mock()
 
+    private val mockGetAllDecksUseCase : GetAllDecksUseCase = mock()
+
     private val testDispatcher = StandardTestDispatcher()
 
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher) // Required for testing ViewModelScope
-        viewModel = DeckViewModel(mockInsertDeckUseCase)
+        viewModel = DeckViewModel(mockInsertDeckUseCase, mockGetAllDecksUseCase)
     }
 
     @After
