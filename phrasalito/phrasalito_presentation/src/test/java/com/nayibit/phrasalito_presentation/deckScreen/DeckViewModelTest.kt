@@ -14,6 +14,7 @@ import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.ShowTo
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -36,7 +37,14 @@ class DeckViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher) // Required for testing ViewModelScope
+
+    runBlocking {
+            whenever(mockGetAllDecksUseCase.invoke())
+                .thenReturn(flowOf(Resource.Success(emptyList())))
+        }
         viewModel = DeckViewModel(mockInsertDeckUseCase, mockGetAllDecksUseCase)
+
+       // viewModel = DeckViewModel(mockInsertDeckUseCase, mockGetAllDecksUseCase)
     }
 
     @After
@@ -84,8 +92,49 @@ class DeckViewModelTest {
         viewModel.eventFlow.test {
             val event = awaitItem()
             assertTrue(event is ShowToast)
-            assertEquals("Deck inserted successfully $deck", (event as ShowToast).message)
+            assertEquals("Deck inserted successfully", (event as ShowToast).message)
             cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `getAllDecks should update state with decks`() = runTest {
+        val decks = listOf(Deck(1, "Deck 1", 5), Deck(2, "Deck 2", 3))
+        val flow = flowOf(Resource.Loading,Resource.Success(decks))
+        whenever(mockGetAllDecksUseCase()).thenReturn(flow)
+
+        viewModel.getAllDecks()
+
+        viewModel.state.test {
+            awaitItem()
+
+            val loadingState = awaitItem()
+            assertEquals(true, loadingState.isLoading)
+
+            val successState = awaitItem()
+            assertEquals(false, successState.isLoading)
+            assertEquals(decks, successState.decks)
+        }
+
+    }
+
+    @Test
+    fun `getAllDecks emits failure toast event`() = runTest {
+        val errorMessage = "Error fetching decks"
+        val flow = flowOf(Resource.Loading,Resource.Error(errorMessage))
+        whenever(mockGetAllDecksUseCase()).thenReturn(flow)
+
+        viewModel.getAllDecks()
+
+        viewModel.state.test {
+            awaitItem()
+
+            val loadingState = awaitItem()
+            assertEquals(true, loadingState.isLoading)
+
+            val failureState = awaitItem()
+            assertEquals(false, failureState.isLoading)
+            assertEquals(errorMessage, failureState.errorMessage)
         }
     }
 

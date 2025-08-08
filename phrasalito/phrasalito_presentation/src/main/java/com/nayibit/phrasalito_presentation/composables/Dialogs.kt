@@ -1,0 +1,72 @@
+package com.nayibit.phrasalito_presentation.composables
+
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun BaseDialog(
+    shape: RoundedCornerShape = RoundedCornerShape(10.dp),
+    showDialog: Boolean,
+    offsideDismiss: Boolean = true,
+    onDismissRequest: () -> Unit = {},
+    content: @Composable () -> Unit,
+) {
+        AnimatedVisibility(
+            visible = showDialog,
+            enter = fadeIn(tween(250)) + scaleIn(tween(250)),
+            exit = fadeOut(tween(250)) + scaleOut(tween(250))
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f))  // Fondo oscuro semitransparente
+                    .pointerInput(Unit) {  // Bloquear eventos táctiles en el fondo
+                        if (offsideDismiss) {
+                            detectTapGestures { onDismissRequest() }
+                        }
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Surface(
+                    shape = shape,
+                    color = MaterialTheme.colorScheme.surface,
+                    modifier = Modifier
+                        .widthIn(max = 400.dp)
+                        .padding(20.dp),
+                    shadowElevation = 8.dp  // Sombra para efecto de elevación
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        content()
+                    }
+                }
+            }
+
+            BackHandler(enabled = true) {
+                onDismissRequest()
+            }
+        }
+}

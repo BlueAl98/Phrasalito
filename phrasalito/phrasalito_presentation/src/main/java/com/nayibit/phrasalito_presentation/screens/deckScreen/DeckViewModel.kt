@@ -10,9 +10,12 @@ import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,13 +28,41 @@ class DeckViewModel @Inject
     private val _state = MutableStateFlow(DeckStateUi()) // Initial default state
     val state: StateFlow<DeckStateUi> = _state.asStateFlow()
 
+
     private val _eventFlow = MutableSharedFlow<DeckUiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
 
-    init {
+   init {
         getAllDecks()
     }
+
+
+    fun onEvent(event: DeckUiEvent) {
+        when (event) {
+            is ShowModal -> {
+                _state.value = _state.value.copy(
+                    showModal = true
+                )
+            }
+            is DismissModal -> {
+                _state.value = _state.value.copy(
+                    showModal = false
+                )
+            }
+            is TriggerModal -> {
+                viewModelScope.launch {
+                    _eventFlow.emit(ShowModal)
+                }
+            }
+            is  ShowToast -> {
+                viewModelScope.launch {
+                    _eventFlow.emit(event)
+                }
+            }
+        }
+    }
+
 
 
     fun insertDeck(deck: Deck) {
@@ -93,6 +124,8 @@ class DeckViewModel @Inject
         }
 
     }
+
+
 
 }
 

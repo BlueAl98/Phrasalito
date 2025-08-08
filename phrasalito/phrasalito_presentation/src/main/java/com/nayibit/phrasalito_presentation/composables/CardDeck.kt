@@ -30,12 +30,12 @@ fun CardDeck(
     modifier: Modifier = Modifier,
     icon: ImageVector = Icons.Default.ArrowForward,
     onClick: () -> Unit = {},
-    backgroundColor: Color = MaterialTheme.colorScheme.surface,
+    backgroundColor: Color = MaterialTheme.colorScheme.primaryContainer,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
     borderColor: Color = MaterialTheme.colorScheme.outline,
     cornerRadius: Dp = 16.dp,
     elevation: Dp = 4.dp,
-    iconTint: Color = MaterialTheme.colorScheme.primary
+    iconTint: Color = MaterialTheme.colorScheme.tertiary
 ) {
     Card(
         onClick = onClick,

@@ -12,33 +12,44 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.nayibit.phrasalito_domain.model.Deck
+import com.nayibit.phrasalito_presentation.composables.BaseDialog
 import com.nayibit.phrasalito_presentation.composables.CardDeck
 import com.nayibit.phrasalito_presentation.composables.LoadingScreen
+import kotlinx.coroutines.flow.Flow
 
 
 @Composable
 fun DeckScreen(
     modifier: Modifier = Modifier,
-    viewModel: DeckViewModel = hiltViewModel()
+    state: DeckStateUi,
+    eventFlow: Flow<DeckUiEvent>,
+    onEvent: (DeckUiEvent) -> Unit
     ) {
 
-    val state by viewModel.state.collectAsStateWithLifecycle()
+   // val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
 
+
     LaunchedEffect(Unit) {
-        viewModel.eventFlow.collect { event ->
+        eventFlow.collect { event ->
             when (event) {
                 is DeckUiEvent.ShowToast -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
+                is DeckUiEvent.ShowModal -> {
+                     onEvent(DeckUiEvent.ShowModal)
+                }
+                is DeckUiEvent.DismissModal -> {
+                    onEvent(DeckUiEvent.DismissModal)
+                }
+                is DeckUiEvent.TriggerModal -> {
+                    onEvent(DeckUiEvent.TriggerModal)
                 }
             }
         }
@@ -65,11 +76,20 @@ fun DeckScreen(
                     }
 
                 }
+
+                BaseDialog(
+                    showDialog = state.showModal,
+                    onDismissRequest = { onEvent(DeckUiEvent.DismissModal) }
+                ) {
+                    Text(text = "Add Deck")
+                }
+
+
             }
 
         }, floatingActionButton = {
             FloatingActionButton(onClick = {
-                viewModel.insertDeck(Deck(name = "Test", maxCards = 10))
+                onEvent(DeckUiEvent.TriggerModal)
             }) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
