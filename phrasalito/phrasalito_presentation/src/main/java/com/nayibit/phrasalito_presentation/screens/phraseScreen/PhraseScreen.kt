@@ -1,4 +1,4 @@
-package com.nayibit.phrasalito_presentation.phraseScreen
+package com.nayibit.phrasalito_presentation.screens.phraseScreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row

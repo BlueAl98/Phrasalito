@@ -20,7 +20,5 @@ fun Navigation() {
         navController = navController,
         startDestination = HomeScreen
     ) {
-
-
     }
 }
