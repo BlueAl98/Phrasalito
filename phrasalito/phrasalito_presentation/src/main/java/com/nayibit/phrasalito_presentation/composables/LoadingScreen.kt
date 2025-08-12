@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -25,6 +26,7 @@ fun LoadingScreen(
             .fillMaxSize()
             .background(backgroundColor)
             .wrapContentSize(Alignment.Center)
+            .testTag("loading_indicator")
     ) {
         CircularProgressIndicator(
             color = indicatorColor,

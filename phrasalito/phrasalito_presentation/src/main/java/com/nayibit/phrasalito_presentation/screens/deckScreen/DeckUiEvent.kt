@@ -5,4 +5,5 @@ sealed class DeckUiEvent {
     object ShowModal: DeckUiEvent()
     object DismissModal : DeckUiEvent()
     object TriggerModal : DeckUiEvent()
+    data class UpdateTextFirstPhrase(val text: String) : DeckUiEvent()
 }

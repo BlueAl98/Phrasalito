@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -45,7 +46,9 @@ fun BaseDialog(
                         if (offsideDismiss) {
                             detectTapGestures { onDismissRequest() }
                         }
-                    },
+                    }
+
+                ,
                 contentAlignment = Alignment.Center
             ) {
                 Surface(

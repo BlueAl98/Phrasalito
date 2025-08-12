@@ -60,6 +60,11 @@ class DeckViewModel @Inject
                     _eventFlow.emit(event)
                 }
             }
+            is UpdateTextFirstPhrase -> {
+                _state.value = _state.value.copy(
+                    textFirstPhrase = event.text
+                )
+            }
         }
     }
 

@@ -7,5 +7,6 @@ data class DeckStateUi (
     val successInsertedDeck: Deck? = null,
     val decks: List<Deck> = emptyList(),
     val errorMessage: String? = null,
-    val showModal: Boolean = false
+    val showModal: Boolean = false,
+    val textFirstPhrase: String = ""
 )

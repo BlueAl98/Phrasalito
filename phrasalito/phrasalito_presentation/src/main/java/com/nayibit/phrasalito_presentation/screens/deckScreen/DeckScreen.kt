@@ -17,9 +17,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.BaseDialog
 import com.nayibit.phrasalito_presentation.composables.CardDeck
 import com.nayibit.phrasalito_presentation.composables.LoadingScreen
+import com.nayibit.phrasalito_presentation.composables.TextFieldBase
 import kotlinx.coroutines.flow.Flow
 
 
@@ -31,9 +35,7 @@ fun DeckScreen(
     onEvent: (DeckUiEvent) -> Unit
     ) {
 
-   // val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
-
 
 
     LaunchedEffect(Unit) {
@@ -51,6 +53,10 @@ fun DeckScreen(
                 is DeckUiEvent.TriggerModal -> {
                     onEvent(DeckUiEvent.TriggerModal)
                 }
+                is DeckUiEvent.UpdateTextFirstPhrase -> {
+                    onEvent(DeckUiEvent.UpdateTextFirstPhrase(event.text))
+                }
+
             }
         }
     }
@@ -63,10 +69,11 @@ fun DeckScreen(
                         LoadingScreen()
                     }
                     state.decks.isNotEmpty() -> {
-                        LazyColumn(modifier = modifier.fillMaxSize()) {
+                        LazyColumn(modifier = modifier.fillMaxSize().testTag("deck_list")) {
                             items(state.decks, key = { it.id }) { phrase ->
                                 Row {
                                     CardDeck(
+                                        modifier = modifier.testTag("deck_item_${phrase.id}"),
                                         title = phrase.name
                                     )
                                 }
@@ -77,15 +84,20 @@ fun DeckScreen(
 
                 }
 
-                BaseDialog(
-                    showDialog = state.showModal,
-                    onDismissRequest = { onEvent(DeckUiEvent.DismissModal) }
-                ) {
-                    Text(text = "Add Deck")
+
+                    BaseDialog(
+                        showDialog = state.showModal,
+                        onDismissRequest = { onEvent(DeckUiEvent.DismissModal) }
+                    ) {
+                        TextFieldBase(
+                            value = state.textFirstPhrase,
+                            onValueChange = { onEvent(DeckUiEvent.UpdateTextFirstPhrase(it))},
+                            label  = stringResource(R.string.label_first_phrase)
+                        )
+                    }
+
                 }
 
-
-            }
 
         }, floatingActionButton = {
             FloatingActionButton(onClick = {
