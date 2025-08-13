@@ -1,6 +1,8 @@
 package com.nayibit.phrasalito_presentation.screens.deckScreen
 
+import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +34,8 @@ fun DeckScreen(
     modifier: Modifier = Modifier,
     state: DeckStateUi,
     eventFlow: Flow<DeckUiEvent>,
-    onEvent: (DeckUiEvent) -> Unit
+    onEvent: (DeckUiEvent) -> Unit,
+    navigation: (id: Int) -> Unit
     ) {
 
     val context = LocalContext.current
@@ -43,6 +46,9 @@ fun DeckScreen(
             when (event) {
                 is DeckUiEvent.ShowToast -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
+                is DeckUiEvent.Navigation -> {
+                     navigation(event.id)
                 }
                 else -> {}
             }
@@ -62,16 +68,15 @@ fun DeckScreen(
                                 Row {
                                     CardDeck(
                                         modifier = modifier.testTag("deck_item_${phrase.id}"),
-                                        title = phrase.name
+                                        title = phrase.name,
+                                        onClick = { onEvent(DeckUiEvent.Navigation(phrase.id))}
                                     )
                                 }
 
                             }
                         }
                     }
-
                 }
-
 
                     BaseDialog(
                         showDialog = state.showModal,
@@ -81,11 +86,6 @@ fun DeckScreen(
                            value = state.nameDeck,
                            onValueChange = { onEvent(DeckUiEvent.UpdateTextFirstPhrase(it))},
                            label  = stringResource(R.string.label_learn_phrase))
-
-                     /*   TextFieldBase(
-                            value = state.textSecondPhrase,
-                            onValueChange = { onEvent(DeckUiEvent.UpdateTextSecondPhrase(it))},
-                            label  = stringResource(R.string.label_traduction_phrase))*/
 
                         ButtonBase(
                             text = stringResource(id = R.string.btn_save),

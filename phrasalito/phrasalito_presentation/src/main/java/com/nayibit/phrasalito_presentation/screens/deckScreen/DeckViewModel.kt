@@ -44,7 +44,9 @@ class DeckViewModel @Inject
             }
             is DismissModal -> {
                 _state.value = _state.value.copy(
-                    showModal = false
+                    showModal = false,
+                    isLoadingButton = false,
+                    nameDeck = ""
                 )
             }
             is  ShowToast -> {
@@ -57,12 +59,6 @@ class DeckViewModel @Inject
                     nameDeck = event.text
                 )
             }
-            is UpdateTextSecondPhrase -> {
-                _state.value = _state.value.copy(
-                    textSecondPhrase = event.text
-                )
-            }
-
             is InsertDeck -> {
                 val deck = Deck(
                     name = _state.value.nameDeck,
@@ -70,6 +66,12 @@ class DeckViewModel @Inject
                 )
                 insertDeck(deck)
             }
+            is Navigation -> {
+                viewModelScope.launch {
+                _eventFlow.emit(Navigation(event.id))
+              }
+            }
+
         }
     }
 
@@ -93,7 +95,9 @@ class DeckViewModel @Inject
                                 isLoading = false,
                                 successInsertedDeck = result.data,
                                 errorMessage = null,
-                                showModal = false
+                                showModal = false,
+                                isLoadingButton = false,
+                                nameDeck = ""
                             )
                            _eventFlow.emit(ShowToast("Deck inserted successfully"))
                         }
@@ -101,7 +105,9 @@ class DeckViewModel @Inject
                             _state.value = _state.value.copy(
                                 isLoading = false,
                                 errorMessage = result.message,
-                                showModal = false
+                                showModal = false,
+                                isLoadingButton = false,
+                                nameDeck = ""
                             )
                             _eventFlow.emit(ShowToast("Error: ${result.message}"))
                         }

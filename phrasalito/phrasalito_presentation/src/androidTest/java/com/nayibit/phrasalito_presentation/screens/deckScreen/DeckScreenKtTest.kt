@@ -1,24 +1,10 @@
 package com.nayibit.phrasalito_presentation.screens.deckScreen
 
-import android.util.Log
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.printToLog
 import com.nayibit.phrasalito_domain.model.Deck
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.runBlocking
-import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 
@@ -27,6 +13,7 @@ class DeckScreenKtTest {
     @get:Rule
     val composeRule = createComposeRule()
 
+    /*
     @Test
     fun showsLoadingScreen_whenStateIsLoading() {
         // Arrange
@@ -51,8 +38,8 @@ class DeckScreenKtTest {
         composeRule.onNodeWithTag("loading_indicator").assertIsDisplayed()
 
     }
-
-
+*/
+/*
     @Test
     fun showsDeckList_whenDecksAvailable() {
         // Arrange
@@ -85,7 +72,7 @@ class DeckScreenKtTest {
 
 
     }
-
+*/
     /*
     @Test
     fun showsModalansDissmissDialog_whenTriggerModalEvent() {

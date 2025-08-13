@@ -1,5 +1,6 @@
 package com.nayibit.phrasalito_presentation.screens.phraseScreen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -16,11 +18,16 @@ import androidx.compose.ui.Alignment
 
 @Composable
 fun PhraseScreen(
+    idDeck: Int,
     modifier: Modifier = Modifier,
     viewModel: PhraseViewModel = hiltViewModel()
     ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+
+    LaunchedEffect(Unit) {
+        Log.d("PhraseScreen", "$idDeck")
+    }
 
     when{
         state.isLoading -> {

@@ -28,7 +28,6 @@ class PhraseViewModel
 
     private fun getAllPhrases() {
         viewModelScope.launch {
-
             getAllPhrasesUseCase()
                 .collect { result ->
                     when (result) {

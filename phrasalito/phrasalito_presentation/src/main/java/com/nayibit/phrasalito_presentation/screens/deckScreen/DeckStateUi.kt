@@ -9,6 +9,6 @@ data class DeckStateUi (
     val errorMessage: String? = null,
     val showModal: Boolean = false,
     val nameDeck: String = "",
-    val textSecondPhrase: String = "",
+    val maxDeck: String = "",
     val isLoadingButton: Boolean = false
 )
