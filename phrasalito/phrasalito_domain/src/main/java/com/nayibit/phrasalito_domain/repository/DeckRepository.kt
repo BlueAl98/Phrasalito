@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface DeckRepository {
    suspend fun insert(deck: Deck): Flow<Resource<Deck>>
+   suspend fun getAllDecks(): Flow<Resource<List<Deck>>>
 }

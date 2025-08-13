@@ -1,4 +1,4 @@
-package com.nayibit.phrasalito_presentation.phraseScreen
+package com.nayibit.phrasalito_presentation.screens.phraseScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,7 +28,6 @@ class PhraseViewModel
 
     private fun getAllPhrases() {
         viewModelScope.launch {
-
             getAllPhrasesUseCase()
                 .collect { result ->
                     when (result) {

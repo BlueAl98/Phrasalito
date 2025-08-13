@@ -4,20 +4,18 @@ import com.nayibit.phrasalito_domain.model.Deck
 import com.nayibit.phrasalito_domain.useCases.decks.InsertDeckUseCase
 import com.nayibit.phrasalito_domain.utils.Resource
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.`when`
 import org.mockito.kotlin.mock
 import app.cash.turbine.test
-import com.nayibit.phrasalito_presentation.deckScreen.DeckUiEvent.ShowToast
+import com.nayibit.phrasalito_domain.useCases.decks.GetAllDecksUseCase
+import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.ShowToast
+import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -31,13 +29,22 @@ class DeckViewModelTest {
 
     private val mockInsertDeckUseCase : InsertDeckUseCase = mock()
 
+    private val mockGetAllDecksUseCase : GetAllDecksUseCase = mock()
+
     private val testDispatcher = StandardTestDispatcher()
 
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher) // Required for testing ViewModelScope
-        viewModel = DeckViewModel(mockInsertDeckUseCase)
+
+    runBlocking {
+            whenever(mockGetAllDecksUseCase.invoke())
+                .thenReturn(flowOf(Resource.Success(emptyList())))
+        }
+        viewModel = DeckViewModel(mockInsertDeckUseCase, mockGetAllDecksUseCase)
+
+       // viewModel = DeckViewModel(mockInsertDeckUseCase, mockGetAllDecksUseCase)
     }
 
     @After
@@ -57,15 +64,15 @@ class DeckViewModelTest {
 
         viewModel.state.test {
             val initial = awaitItem()
-            assertEquals(false, initial.isLoading)
+            assertEquals(false, initial.isLoadingButton)
 
             val loadingState = awaitItem()
             println("Loading state: $loadingState")
-            assertEquals(true, loadingState.isLoading)
+            assertEquals(true, loadingState.isLoadingButton)
 
             val successState = awaitItem()
             println("Success state: $successState")
-            assertEquals(false, successState.isLoading)
+            assertEquals(false, successState.isLoadingButton)
             assertEquals(deck, successState.successInsertedDeck)
             assertNull(successState.errorMessage)
 
@@ -85,8 +92,49 @@ class DeckViewModelTest {
         viewModel.eventFlow.test {
             val event = awaitItem()
             assertTrue(event is ShowToast)
-            assertEquals("Deck inserted successfully $deck", (event as ShowToast).message)
+            assertEquals("Deck inserted successfully", (event as ShowToast).message)
             cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `getAllDecks should update state with decks`() = runTest {
+        val decks = listOf(Deck(1, "Deck 1", 5), Deck(2, "Deck 2", 3))
+        val flow = flowOf(Resource.Loading,Resource.Success(decks))
+        whenever(mockGetAllDecksUseCase()).thenReturn(flow)
+
+        viewModel.getAllDecks()
+
+        viewModel.state.test {
+            awaitItem()
+
+            val loadingState = awaitItem()
+            assertEquals(true, loadingState.isLoading)
+
+            val successState = awaitItem()
+            assertEquals(false, successState.isLoading)
+            assertEquals(decks, successState.decks)
+        }
+
+    }
+
+    @Test
+    fun `getAllDecks emits failure toast event`() = runTest {
+        val errorMessage = "Error fetching decks"
+        val flow = flowOf(Resource.Loading,Resource.Error(errorMessage))
+        whenever(mockGetAllDecksUseCase()).thenReturn(flow)
+
+        viewModel.getAllDecks()
+
+        viewModel.state.test {
+            awaitItem()
+
+            val loadingState = awaitItem()
+            assertEquals(true, loadingState.isLoading)
+
+            val failureState = awaitItem()
+            assertEquals(false, failureState.isLoading)
+            assertEquals(errorMessage, failureState.errorMessage)
         }
     }
 
