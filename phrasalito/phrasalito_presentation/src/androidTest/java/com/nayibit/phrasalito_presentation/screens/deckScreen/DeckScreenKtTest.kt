@@ -9,10 +9,10 @@ import org.junit.Rule
 import org.junit.Test
 
 class DeckScreenKtTest {
-
+/*
     @get:Rule
     val composeRule = createComposeRule()
-
+*/
     /*
     @Test
     fun showsLoadingScreen_whenStateIsLoading() {

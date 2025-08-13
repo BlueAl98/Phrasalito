@@ -64,15 +64,15 @@ class DeckViewModelTest {
 
         viewModel.state.test {
             val initial = awaitItem()
-            assertEquals(false, initial.isLoading)
+            assertEquals(false, initial.isLoadingButton)
 
             val loadingState = awaitItem()
             println("Loading state: $loadingState")
-            assertEquals(true, loadingState.isLoading)
+            assertEquals(true, loadingState.isLoadingButton)
 
             val successState = awaitItem()
             println("Success state: $successState")
-            assertEquals(false, successState.isLoading)
+            assertEquals(false, successState.isLoadingButton)
             assertEquals(deck, successState.successInsertedDeck)
             assertNull(successState.errorMessage)
 
