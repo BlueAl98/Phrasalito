@@ -8,5 +8,7 @@ data class DeckStateUi (
     val decks: List<Deck> = emptyList(),
     val errorMessage: String? = null,
     val showModal: Boolean = false,
-    val textFirstPhrase: String = ""
+    val nameDeck: String = "",
+    val textSecondPhrase: String = "",
+    val isLoadingButton: Boolean = false
 )

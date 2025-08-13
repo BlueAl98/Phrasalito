@@ -4,6 +4,7 @@ sealed class DeckUiEvent {
     data class ShowToast(val message: String) : DeckUiEvent()
     object ShowModal: DeckUiEvent()
     object DismissModal : DeckUiEvent()
-    object TriggerModal : DeckUiEvent()
+    object InsertDeck : DeckUiEvent()
     data class UpdateTextFirstPhrase(val text: String) : DeckUiEvent()
+    data class UpdateTextSecondPhrase(val text: String) : DeckUiEvent()
 }

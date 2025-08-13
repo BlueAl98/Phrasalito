@@ -10,7 +10,10 @@
     <string name="app_name">Phrasalito</string>
 
     <!-- DeckScreen Strings -->
-    <string name="label_first_phrase">Ingrese Primera Frase</string>
+    <string name="label_learn_phrase">Nombre del Deck</string>
+    <string name="label_traduction_phrase">Ingrese traducción de la Frase</string>
+    <string name="btn_save">Guardar</string>
+    <string name="btn_cancel">Cancelar</string>
 
 
 </resources>

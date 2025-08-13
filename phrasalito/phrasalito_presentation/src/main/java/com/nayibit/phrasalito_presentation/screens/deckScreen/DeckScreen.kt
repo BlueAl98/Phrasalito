@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -21,6 +20,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.BaseDialog
+import com.nayibit.phrasalito_presentation.composables.ButtonBase
 import com.nayibit.phrasalito_presentation.composables.CardDeck
 import com.nayibit.phrasalito_presentation.composables.LoadingScreen
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
@@ -44,19 +44,7 @@ fun DeckScreen(
                 is DeckUiEvent.ShowToast -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
                 }
-                is DeckUiEvent.ShowModal -> {
-                     onEvent(DeckUiEvent.ShowModal)
-                }
-                is DeckUiEvent.DismissModal -> {
-                    onEvent(DeckUiEvent.DismissModal)
-                }
-                is DeckUiEvent.TriggerModal -> {
-                    onEvent(DeckUiEvent.TriggerModal)
-                }
-                is DeckUiEvent.UpdateTextFirstPhrase -> {
-                    onEvent(DeckUiEvent.UpdateTextFirstPhrase(event.text))
-                }
-
+                else -> {}
             }
         }
     }
@@ -87,13 +75,30 @@ fun DeckScreen(
 
                     BaseDialog(
                         showDialog = state.showModal,
-                        onDismissRequest = { onEvent(DeckUiEvent.DismissModal) }
+                        offsideDismiss = false
                     ) {
-                        TextFieldBase(
-                            value = state.textFirstPhrase,
-                            onValueChange = { onEvent(DeckUiEvent.UpdateTextFirstPhrase(it))},
-                            label  = stringResource(R.string.label_first_phrase)
+                         TextFieldBase(
+                           value = state.nameDeck,
+                           onValueChange = { onEvent(DeckUiEvent.UpdateTextFirstPhrase(it))},
+                           label  = stringResource(R.string.label_learn_phrase))
+
+                     /*   TextFieldBase(
+                            value = state.textSecondPhrase,
+                            onValueChange = { onEvent(DeckUiEvent.UpdateTextSecondPhrase(it))},
+                            label  = stringResource(R.string.label_traduction_phrase))*/
+
+                        ButtonBase(
+                            text = stringResource(id = R.string.btn_save),
+                            onClick = { if (state.nameDeck.isNotEmpty()) onEvent(DeckUiEvent.InsertDeck) else onEvent(DeckUiEvent.ShowToast("Campo vacio")) },
+                            loading = state.isLoadingButton
                         )
+                        ButtonBase(
+                            text = stringResource(id = R.string.btn_cancel),
+                            onClick = { onEvent(DeckUiEvent.DismissModal) },
+                            enabled = !state.isLoadingButton
+                        )
+
+
                     }
 
                 }
@@ -101,7 +106,7 @@ fun DeckScreen(
 
         }, floatingActionButton = {
             FloatingActionButton(onClick = {
-                onEvent(DeckUiEvent.TriggerModal)
+                onEvent(DeckUiEvent.ShowModal)
             }) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
