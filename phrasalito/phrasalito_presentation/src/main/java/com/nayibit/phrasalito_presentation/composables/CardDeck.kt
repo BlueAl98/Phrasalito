@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun CardDeck(
     title: String,
+    maxCards: Int = 0,
     modifier: Modifier = Modifier,
     icon: ImageVector = Icons.Default.ArrowForward,
     onClick: () -> Unit = {},
@@ -58,7 +59,7 @@ fun CardDeck(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = title,
+                text = "$title - Num Frases: $maxCards" ,
                 style = MaterialTheme.typography.titleMedium
             )
 

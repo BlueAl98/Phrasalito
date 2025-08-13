@@ -34,12 +34,11 @@ class DeckRepositoryImpl
       emit(Resource.Loading)
         delay(1000)
         try {
-            deckDao.getAll()
+            deckDao.getDecksWithPhrases()
                 .collect { entities ->
                     val decks = entities.map { it.toDomain() }
                     emit(Resource.Success(decks))
                 }
-
         }catch (e: Exception){
             emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
         }

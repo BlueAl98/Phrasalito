@@ -17,7 +17,8 @@ class PhraseRepositoryImpl @Inject
         val phraseEntity = PhraseEntity(
             id = item.id,
             targetLanguage = item.targetLanguage,
-            translation = item.translation
+            translation = item.translation,
+            deckId = 1
         )
         phraseDao.insert(phraseEntity)
     }

@@ -4,7 +4,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.nayibit.phrasalito_data.entities.DeckEntity
+import com.nayibit.phrasalito_data.model.DeckWithPhrases
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -16,5 +18,8 @@ interface DeckDao {
     @Query("SELECT * FROM decks")
      fun getAll(): Flow<List<DeckEntity>>
 
+     @Transaction
+     @Query("SELECT * FROM decks")
+      fun getDecksWithPhrases(): Flow<List<DeckWithPhrases>>
 
 }

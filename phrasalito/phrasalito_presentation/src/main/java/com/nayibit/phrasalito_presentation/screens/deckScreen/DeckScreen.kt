@@ -69,6 +69,7 @@ fun DeckScreen(
                                     CardDeck(
                                         modifier = modifier.testTag("deck_item_${phrase.id}"),
                                         title = phrase.name,
+                                        maxCards = phrase.maxCards,
                                         onClick = { onEvent(DeckUiEvent.Navigation(phrase.id))}
                                     )
                                 }
