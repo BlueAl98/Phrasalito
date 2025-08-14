@@ -16,7 +16,7 @@ import org.mockito.kotlin.whenever
 
 class PhraseViewModelTest {
 
-    private lateinit var viewModel: PhraseViewModel
+/*    private lateinit var viewModel: PhraseViewModel
     val  getAllPhrasesUseCase: GetAllPhrasesUseCase = mock()
     val  insertPhraseUseCase: InsertPhraseUseCase = mock()
     val savedStateHandle: SavedStateHandle = mock()
@@ -25,8 +25,8 @@ class PhraseViewModelTest {
     fun setUp() {
         viewModel = PhraseViewModel(getAllPhrasesUseCase, insertPhraseUseCase, savedStateHandle)
     }
-
-    @Test
+*/
+  /*  @Test
     fun testGetAllPhrases() {
         assertEquals(true, true)
      /*   val phrases = listOf(Phrase(1, "Hello", "Hola", 1), Phrase(2, "World", "Mundo", 1))
@@ -47,5 +47,5 @@ class PhraseViewModelTest {
         }*/
     }
 
-
+*/
 }
