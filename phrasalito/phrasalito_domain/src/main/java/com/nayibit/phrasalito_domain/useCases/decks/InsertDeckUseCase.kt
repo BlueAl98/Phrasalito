@@ -9,9 +9,7 @@ import javax.inject.Inject
 class InsertDeckUseCase  @Inject constructor(
     private val repository: DeckRepository
 ) {
-
     suspend operator fun invoke(deck: Deck):Flow<Resource<Deck>> {
-       return repository.insert(deck)
+        return repository.insert(deck)
     }
-
 }
