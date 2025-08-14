@@ -11,9 +11,11 @@
 
     <!-- DeckScreen Strings -->
     <string name="label_learn_phrase">Nombre del Deck</string>
-    <string name="label_traduction_phrase">Ingrese traducción de la Frase</string>
     <string name="btn_save">Guardar</string>
     <string name="btn_cancel">Cancelar</string>
 
+    <!-- PhraseScreen Strings -->
+    <string name="label_phrase">Frase</string>
+    <string name="label_traduction_phrase">Traducción</string>
 
 </resources>

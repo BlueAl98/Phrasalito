@@ -8,4 +8,8 @@ data class PhraseStateUi(
     val phrases: List<Phrase> = emptyList(),
     val isLoadingButton: Boolean = false,
     val showModal: Boolean = false,
-    val successInsertedPhrase: Deck? = null)
+    val successInsertedPhrase: Deck? = null,
+    val firstPhrase: String = "",
+    val translation: String = ""
+
+)

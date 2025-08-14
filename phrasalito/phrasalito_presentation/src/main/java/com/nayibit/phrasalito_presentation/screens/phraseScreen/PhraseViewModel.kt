@@ -42,13 +42,15 @@ class PhraseViewModel
             PhraseUiEvent.DismissModal -> {
                 _state.value = _state.value.copy(
                     showModal = false,
-                    isLoadingButton = false
+                    isLoadingButton = false,
+                    firstPhrase = "",
+                    translation = ""
                 )
             }
-            PhraseUiEvent.InsertDeck -> {
+            PhraseUiEvent.InsertPhrase -> {
                 val phrase = Phrase(
-                    targetLanguage = "hello",
-                    translation = "hola",
+                    targetLanguage = _state.value.firstPhrase,
+                    translation = _state.value.translation,
                     deckId = idDeck ?: -1
                 )
                 insertPhrase(phrase)
@@ -62,6 +64,13 @@ class PhraseViewModel
                     _eventFlow.emit(event)
                 }
             }
+
+            is PhraseUiEvent.UpdateTextFirstPhrase -> {
+                _state.update { it.copy(firstPhrase = event.text) }
+            }
+            is PhraseUiEvent.UpdateTextTraslation -> {
+                _state.update { it.copy(translation = event.text) }
+            }
         }
     }
 
@@ -70,14 +79,21 @@ class PhraseViewModel
         insertPhraseUseCase(phrase).collect { result ->
             when (result) {
                 is Resource.Error -> {
-                    _state.update { it.copy(isLoadingButton = false) }
+                    _state.update {
+                        it.copy(isLoadingButton = false, showModal = false,
+                            firstPhrase = "", translation = "")
+                    }
                     _eventFlow.emit(PhraseUiEvent.ShowToast(result.message))
                 }
                 Resource.Loading -> {
                     _state.update { it.copy(isLoadingButton = true) }
                 }
                 is Resource.Success<*> -> {
-                    _state.update { it.copy(isLoadingButton = false) }
+                    _state.update {
+                        it.copy(isLoadingButton = false, showModal = false,
+                            firstPhrase = "", translation = "")
+
+                    }
                     _eventFlow.emit(PhraseUiEvent.ShowToast("Phrase inserted successfully"))
                 }
             }
