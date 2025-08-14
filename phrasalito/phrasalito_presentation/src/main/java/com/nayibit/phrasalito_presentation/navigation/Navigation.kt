@@ -11,6 +11,7 @@ import androidx.navigation.toRoute
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckScreen
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckViewModel
 import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseScreen
+import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseViewModel
 import kotlinx.serialization.Serializable
 
 
@@ -39,14 +40,22 @@ fun Navigation() {
              state = state,
              eventFlow = viewModel.eventFlow,
              onEvent = viewModel::onEvent
-         ){
-            navController.navigate(PhraseScreenNav(1))
+         ){ idDeck ->
+            navController.navigate(PhraseScreenNav(idDeck))
          }
      }
 
      composable<PhraseScreenNav> {
-         val args = it.toRoute<PhraseScreenNav>()
-         PhraseScreen(args.idDeck)
+
+        val  viewModel: PhraseViewModel = hiltViewModel()
+        val state by viewModel.state.collectAsStateWithLifecycle()
+
+         PhraseScreen(
+             state = state,
+             eventFlow = viewModel.eventFlow,
+             onEvent = viewModel::onEvent,
+             navigation = {}
+         )
      }
 
     }

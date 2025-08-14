@@ -13,21 +13,28 @@ import javax.inject.Inject
 class PhraseRepositoryImpl @Inject
   constructor( private val phraseDao: PhraseDao): PhraseRepository {
 
-    override suspend fun insert(item: Phrase) {
-        val phraseEntity = PhraseEntity(
-            id = item.id,
-            targetLanguage = item.targetLanguage,
-            translation = item.translation,
-            deckId = 1
-        )
-        phraseDao.insert(phraseEntity)
+    override suspend fun insert(item: Phrase): Flow<Resource<Boolean>> = flow {
+       try {
+           emit(Resource.Loading)
+           delay(2000)
+           val phraseEntity = PhraseEntity(
+               id = item.id,
+               targetLanguage = item.targetLanguage,
+               translation = item.translation,
+               deckId = item.deckId)
+           phraseDao.insert(phraseEntity)
+           emit(Resource.Success(true))
+
+       }catch (e: Exception){
+           emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
+       }
     }
 
-    override suspend fun getAll(): Flow<Resource<List<Phrase>>> = flow {
+    override suspend fun getAllPhrasesByDeckId(idDeck: Int): Flow<Resource<List<Phrase>>> = flow {
         emit(Resource.Loading)
         delay(2000)
         try {
-            phraseDao.getAll()
+            phraseDao.getAllByDeckId(idDeck)
                 .collect { entities ->
                     val phrases = entities.map { it.toDomain() }
                     emit(Resource.Success(phrases))

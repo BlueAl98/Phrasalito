@@ -21,10 +21,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PhrasalitoTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Navigation()
                 }
-            }
         }
     }
 }

@@ -29,7 +29,8 @@ data class PhraseEntity (
         return Phrase(
             id = id,
             targetLanguage = targetLanguage,
-            translation = translation
+            translation = translation,
+            deckId = deckId
         )
     }
 }

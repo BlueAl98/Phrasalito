@@ -1,12 +1,17 @@
 package com.nayibit.phrasalito_presentation.screens.phraseScreen
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nayibit.phrasalito_domain.model.Phrase
 import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesUseCase
+import com.nayibit.phrasalito_domain.useCases.phrases.InsertPhraseUseCase
 import com.nayibit.phrasalito_domain.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -15,20 +20,92 @@ import javax.inject.Inject
 @HiltViewModel
 class PhraseViewModel
     @Inject constructor(
-        private val getAllPhrasesUseCase: GetAllPhrasesUseCase)
-    : ViewModel()  {
+        private val getAllPhrasesUseCase: GetAllPhrasesUseCase,
+        private val insertPhraseUseCase: InsertPhraseUseCase,
+        savedStateHandle: SavedStateHandle
+    ) : ViewModel()  {
 
-    private val _state = MutableStateFlow(PhraseState())
-    val state: StateFlow<PhraseState> = _state.asStateFlow()
+    val idDeck = savedStateHandle.get<Int>("idDeck")
 
+    private val _state = MutableStateFlow(PhraseStateUi())
+    val state: StateFlow<PhraseStateUi> = _state.asStateFlow()
 
-     init {
-        getAllPhrases()
+    private val _eventFlow = MutableSharedFlow< PhraseUiEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
+
+    init {
+         getAllPhrases(idDeck ?: -1)
      }
 
-    private fun getAllPhrases() {
+    fun onEvent(event: PhraseUiEvent) {
+        when (event) {
+            PhraseUiEvent.DismissModal -> {
+                _state.value = _state.value.copy(
+                    showModal = false,
+                    isLoadingButton = false,
+                    firstPhrase = "",
+                    translation = ""
+                )
+            }
+            PhraseUiEvent.InsertPhrase -> {
+                val phrase = Phrase(
+                    targetLanguage = _state.value.firstPhrase,
+                    translation = _state.value.translation,
+                    deckId = idDeck ?: -1
+                )
+                insertPhrase(phrase)
+
+            }
+            PhraseUiEvent.ShowModal -> {
+                _state.update { it.copy(showModal = true) }
+            }
+            is PhraseUiEvent.ShowToast -> {
+                viewModelScope.launch {
+                    _eventFlow.emit(event)
+                }
+            }
+
+            is PhraseUiEvent.UpdateTextFirstPhrase -> {
+                _state.update { it.copy(firstPhrase = event.text) }
+            }
+            is PhraseUiEvent.UpdateTextTraslation -> {
+                _state.update { it.copy(translation = event.text) }
+            }
+        }
+    }
+
+    fun insertPhrase(phrase: Phrase){
         viewModelScope.launch {
-            getAllPhrasesUseCase()
+        insertPhraseUseCase(phrase).collect { result ->
+            when (result) {
+                is Resource.Error -> {
+                    _state.update {
+                        it.copy(isLoadingButton = false, showModal = false,
+                            firstPhrase = "", translation = "")
+                    }
+                    _eventFlow.emit(PhraseUiEvent.ShowToast(result.message))
+                }
+                Resource.Loading -> {
+                    _state.update { it.copy(isLoadingButton = true) }
+                }
+                is Resource.Success<*> -> {
+                    _state.update {
+                        it.copy(isLoadingButton = false, showModal = false,
+                            firstPhrase = "", translation = "")
+
+                    }
+                    _eventFlow.emit(PhraseUiEvent.ShowToast("Phrase inserted successfully"))
+                }
+            }
+
+        }
+        }
+    }
+
+
+     fun getAllPhrases(idDeck: Int) {
+        viewModelScope.launch {
+            getAllPhrasesUseCase(idDeck)
                 .collect { result ->
                     when (result) {
                         is Resource.Loading -> _state.update { it.copy(isLoading = true) }
@@ -40,7 +117,7 @@ class PhraseViewModel
                         }
                         is Resource.Error -> {
                             _state.update { it.copy(isLoading = false) }
-                            //   _event.send(UiEvent.ShowError(result.message))
+                            _eventFlow.emit(PhraseUiEvent.ShowToast(result.message))
                         }
                     }
                 }
