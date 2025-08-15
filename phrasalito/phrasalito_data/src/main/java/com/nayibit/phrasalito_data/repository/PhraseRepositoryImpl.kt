@@ -43,4 +43,8 @@ class PhraseRepositoryImpl @Inject
         }catch (e: Exception){
             emit(Resource.Error(e.localizedMessage ?: "Unknown error"))}
     }
- }
+
+    override suspend fun getRandomPhrase(): Phrase? {
+        return phraseDao.getAll().map { it.toDomain() }.randomOrNull()
+    }
+}

@@ -28,7 +28,7 @@ interface PhraseDao {
      suspend fun getById(id: Int): PhraseEntity?
 
     @Query("SELECT * FROM phrases")
-    fun getAll(): Flow<List<PhraseEntity>>
+    fun getAll():   List<PhraseEntity>
 
     @Query("SELECT * FROM phrases WHERE deckId = :idDeck")
     fun getAllByDeckId(idDeck: Int): Flow<List<PhraseEntity>>
