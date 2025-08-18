@@ -9,5 +9,7 @@ sealed class PhraseUiEvent {
     object InsertPhrase : PhraseUiEvent()
     data class UpdateTextFirstPhrase(val text: String) : PhraseUiEvent()
     data class UpdateTextTraslation(val text: String) : PhraseUiEvent()
+    data class ExpandItem(val id: Int) : PhraseUiEvent()
+    data class CollapsedItem(val id: Int) : PhraseUiEvent()
 
 }

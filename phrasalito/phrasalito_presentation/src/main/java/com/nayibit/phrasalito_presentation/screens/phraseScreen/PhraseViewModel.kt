@@ -71,6 +71,28 @@ class PhraseViewModel
             is PhraseUiEvent.UpdateTextTraslation -> {
                 _state.update { it.copy(translation = event.text) }
             }
+            is PhraseUiEvent.ExpandItem -> {
+                _state.update { state ->
+                    state.copy(
+                        phrases = state.phrases.map { phrase ->
+                            if (phrase.id == event.id) {
+                                phrase.copy(isOptionsRevealed = true)
+                            } else phrase
+                        }
+                    )
+                }
+             }
+            is PhraseUiEvent.CollapsedItem -> {
+                _state.update { state ->
+                    state.copy(
+                        phrases = state.phrases.map { phrase ->
+                            if (phrase.id == event.id) {
+                                phrase.copy(isOptionsRevealed = false)
+                                } else phrase
+                        }
+                    )
+                }
+            }
         }
     }
 
@@ -112,7 +134,13 @@ class PhraseViewModel
                         is Resource.Success -> _state.update {
                             it.copy(
                                 isLoading = false,
-                                phrases = result.data
+                                phrases = result.data.map { phrase ->
+                                    PhraseUi(
+                                        id = phrase.id,
+                                        targetLanguage = phrase.targetLanguage,
+                                        translation = phrase.translation,
+                                        isOptionsRevealed = false)
+                                }
                             )
                         }
                         is Resource.Error -> {

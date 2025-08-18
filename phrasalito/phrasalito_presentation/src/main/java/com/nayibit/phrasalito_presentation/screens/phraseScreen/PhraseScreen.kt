@@ -2,14 +2,14 @@ package com.nayibit.phrasalito_presentation.screens.phraseScreen
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -19,12 +19,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.nayibit.phrasalito_presentation.R
+import com.nayibit.phrasalito_presentation.composables.ActionIcon
 import com.nayibit.phrasalito_presentation.composables.BaseDialog
 import com.nayibit.phrasalito_presentation.composables.ButtonBase
 import com.nayibit.phrasalito_presentation.composables.FlipCard
+import com.nayibit.phrasalito_presentation.composables.SwipeDirection
+import com.nayibit.phrasalito_presentation.composables.SwipeableItemWithActions
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
 import kotlinx.coroutines.flow.Flow
 
@@ -76,15 +80,33 @@ fun PhraseScreen(
                     state.phrases.isNotEmpty() -> {
                         LazyColumn(modifier = modifier.fillMaxSize()) {
                             items(state.phrases, key = { it.id }) { phrase ->
-                                FlipCard(
-                                   // modifier = modifier.fillMaxWidth(),
-                                    phrase = phrase.targetLanguage,
-                                    translation = phrase.translation,
-                                )
+                                SwipeableItemWithActions(
+                                    direction = SwipeDirection.EndToStart,
+                                    isRevealed = phrase.isOptionsRevealed,
+                                    onExpanded = { onEvent(PhraseUiEvent.ExpandItem(phrase.id))},
+                                    onCollapsed = { onEvent(PhraseUiEvent.CollapsedItem(phrase.id))},
+                                    actions = {
+                                        ActionIcon(
+                                            modifier = modifier.fillMaxHeight(),
+                                            onClick = {
+                                                onEvent(PhraseUiEvent.ShowToast("Delete: ${phrase.id} - ${phrase.targetLanguage}"))
+                                                onEvent(PhraseUiEvent.CollapsedItem(phrase.id))
+                                                      },
+                                            backgroundColor = Color.Transparent,
+                                            icon = Icons.Default.Delete)
+
+                                    }
+                                ){
+                                    FlipCard(
+                                        phrase = phrase.targetLanguage,
+                                        translation = phrase.translation,
+                                    )
+                                }
+
                             }
                         }
                     }
-                    else -> Text(text = "No phrases found")
+                    else -> Text(text = "No hay frases agregadas", modifier.align(Alignment.Center))
                 }
 
                 BaseDialog(
