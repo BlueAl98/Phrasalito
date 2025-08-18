@@ -89,8 +89,9 @@ fun PhraseScreen(
                                         ActionIcon(
                                             modifier = modifier.fillMaxHeight(),
                                             onClick = {
-                                                onEvent(PhraseUiEvent.ShowToast("Delete: ${phrase.id} - ${phrase.targetLanguage}"))
-                                                onEvent(PhraseUiEvent.CollapsedItem(phrase.id))
+                                                onEvent(PhraseUiEvent.DeletePhrase(phrase.id))
+                                             //   onEvent(PhraseUiEvent.ShowToast("Delete: ${phrase.id} - ${phrase.targetLanguage}"))
+                                              //  onEvent(PhraseUiEvent.CollapsedItem(phrase.id))
                                                       },
                                             backgroundColor = Color.Transparent,
                                             icon = Icons.Default.Delete)

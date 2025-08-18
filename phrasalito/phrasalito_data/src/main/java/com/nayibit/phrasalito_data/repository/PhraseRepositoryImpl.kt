@@ -30,6 +30,28 @@ class PhraseRepositoryImpl @Inject
        }
     }
 
+    override suspend fun delete(item: Phrase) = flow {
+        emit(Resource.Loading)
+        delay(1000)
+        try {
+            val phraseEntity = PhraseEntity(
+                id = item.id,
+                targetLanguage = item.targetLanguage,
+                translation = item.translation,
+                deckId = item.deckId)
+
+            phraseDao.delete(phraseEntity)
+            emit(Resource.Success(true))
+        }catch (e: Exception) {
+            emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
+        }
+
+    }
+
+    override suspend fun getById(id: Int): Phrase? {
+        return phraseDao.getById(id)?.toDomain()
+    }
+
     override suspend fun getAllPhrasesByDeckId(idDeck: Int): Flow<Resource<List<Phrase>>> = flow {
         emit(Resource.Loading)
         delay(2000)

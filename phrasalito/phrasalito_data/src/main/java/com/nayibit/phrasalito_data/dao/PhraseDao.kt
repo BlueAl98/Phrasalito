@@ -18,7 +18,7 @@ interface PhraseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(items: List<PhraseEntity>)
 
-    @Delete
+     @Delete
      suspend fun delete(item: PhraseEntity)
 
     @Update

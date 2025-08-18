@@ -11,5 +11,5 @@ sealed class PhraseUiEvent {
     data class UpdateTextTraslation(val text: String) : PhraseUiEvent()
     data class ExpandItem(val id: Int) : PhraseUiEvent()
     data class CollapsedItem(val id: Int) : PhraseUiEvent()
-
+    data class DeletePhrase(val id: Int) : PhraseUiEvent()
 }
