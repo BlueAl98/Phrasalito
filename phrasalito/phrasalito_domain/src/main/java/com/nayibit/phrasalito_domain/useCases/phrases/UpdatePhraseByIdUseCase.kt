@@ -1,6 +1,5 @@
 package com.nayibit.phrasalito_domain.useCases.phrases
 
-import android.util.Log
 import com.nayibit.phrasalito_domain.model.Phrase
 import com.nayibit.phrasalito_domain.repository.PhraseRepository
 import com.nayibit.phrasalito_domain.utils.Resource
@@ -17,7 +16,7 @@ class UpdatePhraseByIdUseCase @Inject
          return if (phraseById != null ) {
              repository.update( phraseById.copy(targetLanguage = phrase.targetLanguage, translation = phrase.translation))
          }else{
-             flowOf(Resource.Error("No se encontro la frase"))
+             flowOf(Resource.Error("Phrase not found"))
          }
 
      }

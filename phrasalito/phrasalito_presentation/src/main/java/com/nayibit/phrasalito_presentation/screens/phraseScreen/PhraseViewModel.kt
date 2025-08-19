@@ -3,12 +3,14 @@ package com.nayibit.phrasalito_presentation.screens.phraseScreen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nayibit.common.util.UiText
 import com.nayibit.phrasalito_domain.model.Phrase
 import com.nayibit.phrasalito_domain.useCases.phrases.DeletebyIdPhraseUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.InsertPhraseUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.UpdatePhraseByIdUseCase
 import com.nayibit.phrasalito_domain.utils.Resource
+import com.nayibit.phrasalito_presentation.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -131,7 +133,7 @@ class PhraseViewModel
                         it.copy(isLoadingButton = false, showModal = false,
                             firstPhrase = "", translation = "")
                     }
-                    _eventFlow.emit(PhraseUiEvent.ShowToast(result.message))
+                    _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.DynamicString(result.message)))
                 }
                 Resource.Loading -> {
                     _state.update { it.copy(isLoadingButton = true) }
@@ -142,7 +144,7 @@ class PhraseViewModel
                             firstPhrase = "", translation = "")
 
                     }
-                    _eventFlow.emit(PhraseUiEvent.ShowToast("Phrase inserted successfully"))
+                    _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.StringResource(R.string.label_phrase_inserted_success)))
                 }
             }
 
@@ -159,13 +161,11 @@ class PhraseViewModel
                    }
                    is Resource.Error -> {
                        _state.update { it.copy(isLoadingButton = false, showModal = false, phraseToUpdate = null) }
-                   //    _eventFlow.emit(PhraseUiEvent.DismissModal)
-                       _eventFlow.emit(PhraseUiEvent.ShowToast(result.message))
+                       _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.DynamicString(result.message)))
                    }
                    is Resource.Success<*> -> {
                        _state.update { it.copy(isLoadingButton = false,  showModal = false, phraseToUpdate = null) }
-                    //  _eventFlow.emit(PhraseUiEvent.DismissModal)
-                       _eventFlow.emit(PhraseUiEvent.ShowToast("Phrase updated successfully"))
+                       _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.StringResource(R.string.label_phrase_updated_success)))
                    }
                }
            }
@@ -194,7 +194,7 @@ class PhraseViewModel
                         }
                         is Resource.Error -> {
                             _state.update { it.copy(isLoading = false) }
-                            _eventFlow.emit(PhraseUiEvent.ShowToast(result.message))
+                            _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.DynamicString(result.message)))
                         }
                     }
                 }
@@ -207,14 +207,14 @@ class PhraseViewModel
                 when (it) {
                     is Resource.Error -> {
                         _state.update { it.copy(isLoadingButton = false, showModal = false, phraseToUpdate = null) }
-                        _eventFlow.emit(PhraseUiEvent.ShowToast(it.message))
+                        _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.DynamicString(it.message)))
                     }
                     Resource.Loading -> {
                       _state.update { it.copy(isLoadingButton = true) }
                     }
                     is Resource.Success<*> -> {
                         _state.update { it.copy(isLoadingButton = false, showModal = false, phraseToUpdate = null) }
-                        _eventFlow.emit(PhraseUiEvent.ShowToast("Frase eliminada"))
+                        _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.StringResource(R.string.phrase_deleted_successfully)))
                     }
               }
          }

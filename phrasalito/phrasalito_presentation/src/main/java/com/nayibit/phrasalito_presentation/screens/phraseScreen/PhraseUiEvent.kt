@@ -1,7 +1,9 @@
 package com.nayibit.phrasalito_presentation.screens.phraseScreen
 
+import com.nayibit.common.util.UiText
+
 sealed class PhraseUiEvent {
-    data class ShowToast(val message: String) : PhraseUiEvent()
+    data class ShowToast(val message: UiText) : PhraseUiEvent()
     data class ShowModal(val type: BodyModalEnum, val phraseUi: PhraseUi? = null): PhraseUiEvent()
     object DismissModal : PhraseUiEvent()
     object InsertPhrase : PhraseUiEvent()

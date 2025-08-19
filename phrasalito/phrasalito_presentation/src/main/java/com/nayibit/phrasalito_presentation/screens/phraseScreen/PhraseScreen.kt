@@ -22,6 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.nayibit.common.util.UiText
+import com.nayibit.common.util.asString
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.ActionIcon
 import com.nayibit.phrasalito_presentation.composables.BaseDialog
@@ -48,7 +50,8 @@ fun PhraseScreen(
         eventFlow.collect { event ->
             when (event) {
                 is PhraseUiEvent.ShowToast -> {
-                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                    val message = event.message.asString(context)
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 }
                 else -> {}
             }
@@ -146,7 +149,8 @@ fun BodyModalInsertPhrase(
 
     ButtonBase(
         text = stringResource(id = R.string.btn_save),
-        onClick = { if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(PhraseUiEvent.InsertPhrase) else onEvent(PhraseUiEvent.ShowToast("Campo vacio")) },
+        onClick = { if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(PhraseUiEvent.InsertPhrase) else onEvent(PhraseUiEvent.ShowToast(
+            UiText.StringResource(R.string.label_emty_fields))) },
         loading = state.isLoadingButton
     )
     ButtonBase(
@@ -174,7 +178,9 @@ fun BodyModalUpdatePhrase(
 
     ButtonBase(
         text = stringResource(id = R.string.btn_update),
-        onClick = { if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(PhraseUiEvent.UpdatePhrase(state.phraseToUpdate!!)) else onEvent(PhraseUiEvent.ShowToast("Campo vacio")) },
+        onClick = { if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(PhraseUiEvent.UpdatePhrase(state.phraseToUpdate!!)) else onEvent(PhraseUiEvent.ShowToast(
+            UiText.StringResource(R.string.label_emty_fields)
+        )) },
         loading = state.isLoadingButton
     )
     ButtonBase(
