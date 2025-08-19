@@ -59,6 +59,14 @@ dependencies {
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.android)
 
+    //WorkManager
+    implementation (libs.androidx.work.runtime.ktx)
+
+    // Hilt with WorkManager
+    implementation (libs.androidx.hilt.work)
+    ksp (libs.androidx.hilt.compiler)
+
+
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))

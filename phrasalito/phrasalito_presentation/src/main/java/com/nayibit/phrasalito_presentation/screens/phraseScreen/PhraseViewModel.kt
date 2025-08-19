@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.phrasalito_domain.model.Phrase
+import com.nayibit.phrasalito_domain.useCases.phrases.DeletebyIdPhraseUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.InsertPhraseUseCase
 import com.nayibit.phrasalito_domain.utils.Resource
@@ -22,6 +23,7 @@ class PhraseViewModel
     @Inject constructor(
         private val getAllPhrasesUseCase: GetAllPhrasesUseCase,
         private val insertPhraseUseCase: InsertPhraseUseCase,
+        private val deletePhraseUseCase: DeletebyIdPhraseUseCase,
         savedStateHandle: SavedStateHandle
     ) : ViewModel()  {
 
@@ -71,6 +73,32 @@ class PhraseViewModel
             is PhraseUiEvent.UpdateTextTraslation -> {
                 _state.update { it.copy(translation = event.text) }
             }
+            is PhraseUiEvent.ExpandItem -> {
+                _state.update { state ->
+                    state.copy(
+                        phrases = state.phrases.map { phrase ->
+                            if (phrase.id == event.id) {
+                                phrase.copy(isOptionsRevealed = true)
+                            } else phrase
+                        }
+                    )
+                }
+             }
+            is PhraseUiEvent.CollapsedItem -> {
+                _state.update { state ->
+                    state.copy(
+                        phrases = state.phrases.map { phrase ->
+                            if (phrase.id == event.id) {
+                                phrase.copy(isOptionsRevealed = false)
+                                } else phrase
+                        }
+                    )
+                }
+            }
+
+            is PhraseUiEvent.DeletePhrase -> {
+                deletePhrase(event.id)
+            }
         }
     }
 
@@ -112,7 +140,13 @@ class PhraseViewModel
                         is Resource.Success -> _state.update {
                             it.copy(
                                 isLoading = false,
-                                phrases = result.data
+                                phrases = result.data.map { phrase ->
+                                    PhraseUi(
+                                        id = phrase.id,
+                                        targetLanguage = phrase.targetLanguage,
+                                        translation = phrase.translation,
+                                        isOptionsRevealed = false)
+                                }
                             )
                         }
                         is Resource.Error -> {
@@ -122,6 +156,27 @@ class PhraseViewModel
                     }
                 }
         }
+    }
+
+    fun deletePhrase(id: Int) {
+        viewModelScope.launch {
+            deletePhraseUseCase(id).collect {
+                when (it) {
+                    is Resource.Error -> {
+                        _state.update { it.copy(isLoading = false) }
+                        _eventFlow.emit(PhraseUiEvent.ShowToast(it.message))
+                    }
+                    Resource.Loading -> {
+                      _state.update { it.copy(isLoading = true) }
+                    }
+                    is Resource.Success<*> -> {
+                        _state.update { it.copy(isLoading = false) }
+                        _eventFlow.emit(PhraseUiEvent.ShowToast("Frase eliminada"))
+                    }
+              }
+         }
+
+      }
     }
 
 
