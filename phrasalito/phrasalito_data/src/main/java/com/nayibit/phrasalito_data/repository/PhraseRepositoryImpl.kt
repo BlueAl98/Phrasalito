@@ -48,6 +48,22 @@ class PhraseRepositoryImpl @Inject
 
     }
 
+    override suspend fun update(item: Phrase): Flow<Resource<Boolean>> = flow {
+        try {
+            emit(Resource.Loading)
+            val phraseEntity = PhraseEntity(
+                id = item.id,
+                targetLanguage = item.targetLanguage,
+                translation = item.translation,
+                deckId = item.deckId)
+
+            phraseDao.update(phraseEntity)
+            emit(Resource.Success(true))
+        }catch (e: Exception) {
+            emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
+        }
+    }
+
     override suspend fun getById(id: Int): Phrase? {
         return phraseDao.getById(id)?.toDomain()
     }

@@ -12,8 +12,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PhraseDao {
 
-     @Insert(onConflict = OnConflictStrategy.REPLACE)
-     suspend fun insert(item: PhraseEntity)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(item: PhraseEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(items: List<PhraseEntity>)

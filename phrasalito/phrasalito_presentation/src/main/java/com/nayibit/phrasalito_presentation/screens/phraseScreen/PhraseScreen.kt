@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -19,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.nayibit.phrasalito_presentation.R
@@ -59,17 +59,19 @@ fun PhraseScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    onEvent(PhraseUiEvent.ShowModal)
+                    onEvent(PhraseUiEvent.ShowModal(BodyModalEnum.BODY_INSERT_PHRASE))
                 }
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add"
+                    contentDescription = null
                 )
             }
         },
         content = { padding ->
-            Box(modifier.fillMaxSize().padding(padding)) {
+            Box(modifier
+                .fillMaxSize()
+                .padding(padding)) {
                 when {
                     state.isLoading -> {
                         Box(modifier.fillMaxSize()) {
@@ -88,14 +90,13 @@ fun PhraseScreen(
                                     actions = {
                                         ActionIcon(
                                             modifier = modifier.fillMaxHeight(),
-                                            onClick = {
-                                                onEvent(PhraseUiEvent.DeletePhrase(phrase.id))
-                                             //   onEvent(PhraseUiEvent.ShowToast("Delete: ${phrase.id} - ${phrase.targetLanguage}"))
-                                              //  onEvent(PhraseUiEvent.CollapsedItem(phrase.id))
-                                                      },
-                                            backgroundColor = Color.Transparent,
+                                            onClick = { onEvent(PhraseUiEvent.ShowModal(BodyModalEnum.BODY_DELETE_PHRASE,phrase)) },
                                             icon = Icons.Default.Delete)
-
+                                        ActionIcon(
+                                            modifier = modifier.fillMaxHeight(),
+                                            onClick = { onEvent(PhraseUiEvent.ShowModal(BodyModalEnum.BODY_UPDATE_PHRASE,phrase))},
+                                            icon = Icons.Default.Edit
+                                            )
                                     }
                                 ){
                                     FlipCard(
@@ -107,39 +108,97 @@ fun PhraseScreen(
                             }
                         }
                     }
-                    else -> Text(text = "No hay frases agregadas", modifier.align(Alignment.Center))
+                    else -> Text(text = stringResource(R.string.label_dont_have_phrases), modifier.align(Alignment.Center))
                 }
 
                 BaseDialog(
                     showDialog = state.showModal,
                     offsideDismiss = false
                 ) {
-                    TextFieldBase(
-                        value = state.firstPhrase,
-                        onValueChange = { onEvent(PhraseUiEvent.UpdateTextFirstPhrase(it))},
-                        label  = stringResource(R.string.label_phrase))
-
-                    TextFieldBase(
-                        value = state.translation,
-                        onValueChange = { onEvent(PhraseUiEvent.UpdateTextTraslation(it))},
-                        label  = stringResource(R.string.label_traduction_phrase))
-
-                    ButtonBase(
-                        text = stringResource(id = R.string.btn_save),
-                        onClick = { if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(PhraseUiEvent.InsertPhrase) else onEvent(PhraseUiEvent.ShowToast("Campo vacio")) },
-                        loading = state.isLoadingButton
-                    )
-                    ButtonBase(
-                        text = stringResource(id = R.string.btn_cancel),
-                        onClick = { onEvent(PhraseUiEvent.DismissModal) },
-                        enabled = !state.isLoadingButton
-                    )
-
+                    when (state.bodyModal) {
+                        BodyModalEnum.BODY_INSERT_PHRASE -> BodyModalInsertPhrase(state, onEvent)
+                        BodyModalEnum.BODY_UPDATE_PHRASE -> BodyModalUpdatePhrase(state, onEvent)
+                        BodyModalEnum.BODY_DELETE_PHRASE -> BodyModalDeletePhrase(state, onEvent)
+                    }
 
                 }
 
-
-
             }
         })
+}
+
+
+
+@Composable
+fun BodyModalInsertPhrase(
+    state: PhraseStateUi,
+    onEvent: (PhraseUiEvent) -> Unit
+){
+    TextFieldBase(
+        value = state.firstPhrase,
+        onValueChange = { onEvent(PhraseUiEvent.UpdateTextFirstPhrase(it))},
+        label  = stringResource(R.string.label_phrase))
+
+    TextFieldBase(
+        value = state.translation,
+        onValueChange = { onEvent(PhraseUiEvent.UpdateTextTraslation(it))},
+        label  = stringResource(R.string.label_traduction_phrase))
+
+    ButtonBase(
+        text = stringResource(id = R.string.btn_save),
+        onClick = { if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(PhraseUiEvent.InsertPhrase) else onEvent(PhraseUiEvent.ShowToast("Campo vacio")) },
+        loading = state.isLoadingButton
+    )
+    ButtonBase(
+        text = stringResource(id = R.string.btn_cancel),
+        onClick = { onEvent(PhraseUiEvent.DismissModal) },
+        enabled = !state.isLoadingButton
+    )
+}
+
+
+@Composable
+fun BodyModalUpdatePhrase(
+    state: PhraseStateUi,
+    onEvent: (PhraseUiEvent) -> Unit
+){
+    TextFieldBase(
+        value = state.firstPhrase,
+        onValueChange = { onEvent(PhraseUiEvent.UpdateTextFirstPhrase(it))},
+        label  = stringResource(R.string.label_phrase))
+
+    TextFieldBase(
+        value = state.translation,
+        onValueChange = { onEvent(PhraseUiEvent.UpdateTextTraslation(it))},
+        label  = stringResource(R.string.label_traduction_phrase))
+
+    ButtonBase(
+        text = stringResource(id = R.string.btn_update),
+        onClick = { if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(PhraseUiEvent.UpdatePhrase(state.phraseToUpdate!!)) else onEvent(PhraseUiEvent.ShowToast("Campo vacio")) },
+        loading = state.isLoadingButton
+    )
+    ButtonBase(
+        text = stringResource(id = R.string.btn_cancel),
+        onClick = { onEvent(PhraseUiEvent.DismissModal) },
+        enabled = !state.isLoadingButton
+    )
+}
+
+@Composable
+fun BodyModalDeletePhrase(
+    state: PhraseStateUi,
+    onEvent: (PhraseUiEvent) -> Unit
+){
+    Text(text = stringResource(R.string.title_delete_phrase))
+
+    ButtonBase(
+        text = stringResource(R.string.btn_delete),
+        onClick = { onEvent(PhraseUiEvent.DeletePhrase(state.phraseToUpdate!!.id)) },
+        loading = state.isLoadingButton
+    )
+    ButtonBase(
+        text = stringResource(R.string.btn_cancel),
+        onClick = { onEvent(PhraseUiEvent.DismissModal) },
+        enabled = !state.isLoadingButton
+    )
 }

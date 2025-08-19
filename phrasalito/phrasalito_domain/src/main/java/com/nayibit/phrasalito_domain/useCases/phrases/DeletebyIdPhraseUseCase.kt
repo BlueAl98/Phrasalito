@@ -9,7 +9,6 @@ import javax.inject.Inject
 class DeletebyIdPhraseUseCase @Inject
 constructor(private val repository: PhraseRepository)
 {
-
     suspend operator fun invoke(id: Int):Flow<Resource<Boolean>> {
         val phrase = repository.getById(id)
         return if (phrase != null) {

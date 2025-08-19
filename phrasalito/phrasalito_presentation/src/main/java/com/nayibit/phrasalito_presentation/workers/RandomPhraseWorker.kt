@@ -1,7 +1,6 @@
 package com.nayibit.phrasalito_presentation.workers
 
 import android.content.Context
-import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -21,7 +20,6 @@ class RandomPhraseWorker  @AssistedInject constructor(
         val randomPhrase = useCaseRandomPhrase()
 
         if (randomPhrase != null) {
-            Log.d("RandomPhraseWorker", "Random Phrase: $randomPhrase")
             NotificationBuilder.showNotification(applicationContext, randomPhrase.targetLanguage, randomPhrase.translation)
         }
 
