@@ -1,9 +1,10 @@
 package com.nayibit.phrasalito_data.repository
 
 import app.cash.turbine.test
+import com.nayibit.common.util.Resource
 import com.nayibit.phrasalito_data.dao.DeckDao
 import com.nayibit.phrasalito_data.entities.DeckEntity
-import com.nayibit.phrasalito_domain.utils.Resource
+import com.nayibit.phrasalito_data.mapper.toDomain
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Before

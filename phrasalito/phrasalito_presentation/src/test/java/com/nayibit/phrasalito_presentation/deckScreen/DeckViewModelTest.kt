@@ -2,13 +2,13 @@ package com.nayibit.phrasalito_presentation.deckScreen
 
 import com.nayibit.phrasalito_domain.model.Deck
 import com.nayibit.phrasalito_domain.useCases.decks.InsertDeckUseCase
-import com.nayibit.phrasalito_domain.utils.Resource
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import app.cash.turbine.test
+import com.nayibit.common.util.Resource
 import com.nayibit.phrasalito_domain.useCases.decks.GetAllDecksUseCase
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.ShowToast
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckViewModel

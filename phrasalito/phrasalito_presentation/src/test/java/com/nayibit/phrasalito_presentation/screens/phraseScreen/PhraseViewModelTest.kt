@@ -6,7 +6,6 @@ import com.nayibit.phrasalito_domain.model.Deck
 import com.nayibit.phrasalito_domain.model.Phrase
 import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.InsertPhraseUseCase
-import com.nayibit.phrasalito_domain.utils.Resource
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.*
 import org.junit.Before
