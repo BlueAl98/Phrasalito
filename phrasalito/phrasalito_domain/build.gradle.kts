@@ -41,7 +41,7 @@ dependencies {
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.android)
 
-
+    implementation(project(":phrasalito:common"))
 
     // Unit testing
     testImplementation (libs.junit)

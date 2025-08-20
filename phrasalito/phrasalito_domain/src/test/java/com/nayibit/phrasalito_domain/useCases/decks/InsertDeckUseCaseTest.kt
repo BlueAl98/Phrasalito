@@ -1,9 +1,9 @@
 package com.nayibit.phrasalito_domain.useCases.decks
 
 import app.cash.turbine.test
+import com.nayibit.common.util.Resource
 import com.nayibit.phrasalito_domain.model.Deck
 import com.nayibit.phrasalito_domain.repository.DeckRepository
-import com.nayibit.phrasalito_domain.utils.Resource
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*

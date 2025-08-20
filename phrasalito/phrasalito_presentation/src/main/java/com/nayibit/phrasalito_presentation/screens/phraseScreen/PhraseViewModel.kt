@@ -3,11 +3,14 @@ package com.nayibit.phrasalito_presentation.screens.phraseScreen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nayibit.common.util.Resource
+import com.nayibit.common.util.UiText
 import com.nayibit.phrasalito_domain.model.Phrase
 import com.nayibit.phrasalito_domain.useCases.phrases.DeletebyIdPhraseUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.InsertPhraseUseCase
-import com.nayibit.phrasalito_domain.utils.Resource
+import com.nayibit.phrasalito_domain.useCases.phrases.UpdatePhraseByIdUseCase
+import com.nayibit.phrasalito_presentation.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +27,7 @@ class PhraseViewModel
         private val getAllPhrasesUseCase: GetAllPhrasesUseCase,
         private val insertPhraseUseCase: InsertPhraseUseCase,
         private val deletePhraseUseCase: DeletebyIdPhraseUseCase,
+        private val updatePhraseByIdUseCase: UpdatePhraseByIdUseCase,
         savedStateHandle: SavedStateHandle
     ) : ViewModel()  {
 
@@ -46,10 +50,12 @@ class PhraseViewModel
                     showModal = false,
                     isLoadingButton = false,
                     firstPhrase = "",
-                    translation = ""
+                    translation = "",
+                    phraseToUpdate = null
                 )
             }
             PhraseUiEvent.InsertPhrase -> {
+                _state.update { it.copy(bodyModal = BodyModalEnum.BODY_INSERT_PHRASE) }
                 val phrase = Phrase(
                     targetLanguage = _state.value.firstPhrase,
                     translation = _state.value.translation,
@@ -57,9 +63,6 @@ class PhraseViewModel
                 )
                 insertPhrase(phrase)
 
-            }
-            PhraseUiEvent.ShowModal -> {
-                _state.update { it.copy(showModal = true) }
             }
             is PhraseUiEvent.ShowToast -> {
                 viewModelScope.launch {
@@ -99,6 +102,25 @@ class PhraseViewModel
             is PhraseUiEvent.DeletePhrase -> {
                 deletePhrase(event.id)
             }
+
+            is PhraseUiEvent.UpdatePhrase -> {
+                val phrase = Phrase(
+                    id = event.phraseUi.id,
+                    targetLanguage = _state.value.firstPhrase,
+                    translation = _state.value.translation,
+                    deckId = idDeck ?: -1
+                )
+                updatePhrase(phrase)
+            }
+
+            is PhraseUiEvent.ShowModal -> {
+                _state.update { it.copy(showModal = true,
+                    bodyModal = event.type,
+                    firstPhrase = event.phraseUi?.targetLanguage ?: "",
+                    translation = event.phraseUi?.translation ?: "",
+                    phraseToUpdate = event.phraseUi
+                ) }
+            }
         }
     }
 
@@ -111,7 +133,7 @@ class PhraseViewModel
                         it.copy(isLoadingButton = false, showModal = false,
                             firstPhrase = "", translation = "")
                     }
-                    _eventFlow.emit(PhraseUiEvent.ShowToast(result.message))
+                    _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.DynamicString(result.message)))
                 }
                 Resource.Loading -> {
                     _state.update { it.copy(isLoadingButton = true) }
@@ -122,12 +144,33 @@ class PhraseViewModel
                             firstPhrase = "", translation = "")
 
                     }
-                    _eventFlow.emit(PhraseUiEvent.ShowToast("Phrase inserted successfully"))
+                    _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.StringResource(R.string.label_phrase_inserted_success)))
                 }
             }
 
         }
         }
+    }
+
+    fun updatePhrase(phrase: Phrase){
+        viewModelScope.launch {
+           updatePhraseByIdUseCase(phrase).collect { result ->
+               when (result) {
+                   is Resource.Loading -> {
+                       _state.update { it.copy(isLoadingButton = true) }
+                   }
+                   is Resource.Error -> {
+                       _state.update { it.copy(isLoadingButton = false, showModal = false, phraseToUpdate = null) }
+                       _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.DynamicString(result.message)))
+                   }
+                   is Resource.Success<*> -> {
+                       _state.update { it.copy(isLoadingButton = false,  showModal = false, phraseToUpdate = null) }
+                       _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.StringResource(R.string.label_phrase_updated_success)))
+                   }
+               }
+           }
+        }
+
     }
 
 
@@ -151,7 +194,7 @@ class PhraseViewModel
                         }
                         is Resource.Error -> {
                             _state.update { it.copy(isLoading = false) }
-                            _eventFlow.emit(PhraseUiEvent.ShowToast(result.message))
+                            _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.DynamicString(result.message)))
                         }
                     }
                 }
@@ -163,15 +206,15 @@ class PhraseViewModel
             deletePhraseUseCase(id).collect {
                 when (it) {
                     is Resource.Error -> {
-                        _state.update { it.copy(isLoading = false) }
-                        _eventFlow.emit(PhraseUiEvent.ShowToast(it.message))
+                        _state.update { it.copy(isLoadingButton = false, showModal = false, phraseToUpdate = null) }
+                        _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.DynamicString(it.message)))
                     }
                     Resource.Loading -> {
-                      _state.update { it.copy(isLoading = true) }
+                      _state.update { it.copy(isLoadingButton = true) }
                     }
                     is Resource.Success<*> -> {
-                        _state.update { it.copy(isLoading = false) }
-                        _eventFlow.emit(PhraseUiEvent.ShowToast("Frase eliminada"))
+                        _state.update { it.copy(isLoadingButton = false, showModal = false, phraseToUpdate = null) }
+                        _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.StringResource(R.string.phrase_deleted_successfully)))
                     }
               }
          }

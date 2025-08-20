@@ -2,10 +2,10 @@ package com.nayibit.phrasalito_presentation.screens.deckScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nayibit.common.util.Resource
 import com.nayibit.phrasalito_domain.model.Deck
 import com.nayibit.phrasalito_domain.useCases.decks.GetAllDecksUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.InsertDeckUseCase
-import com.nayibit.phrasalito_domain.utils.Resource
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow

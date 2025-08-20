@@ -11,11 +11,22 @@
 
     <!-- DeckScreen Strings -->
     <string name="label_learn_phrase">Nombre del Deck</string>
-    <string name="btn_save">Guardar</string>
-    <string name="btn_cancel">Cancelar</string>
+    <string name="phrase_deleted_successfully">Frase eliminada con éxito</string>
 
     <!-- PhraseScreen Strings -->
     <string name="label_phrase">Frase</string>
     <string name="label_traduction_phrase">Traducción</string>
+    <string name="label_dont_have_phrases">No tienes frases agregadas</string>
+    <string name="title_delete_phrase">Estas seguro de eliminar esta frase?</string>
+    <string name="label_phrase_inserted_success">Frase insertada con éxito</string>
+    <string name="label_phrase_updated_success">Frase insertada con éxito</string>
+
+    <!-- GLOBAL Strings -->
+    <string name="btn_save">Guardar</string>
+    <string name="btn_cancel">Cancelar</string>
+    <string name="btn_update">Actualizar</string>
+    <string name="btn_delete">Eliminar</string>
+    <string name="label_emty_fields">Campos vacios</string>
+
 
 </resources>

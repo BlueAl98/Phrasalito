@@ -1,4 +1,4 @@
-package com.nayibit.phrasalito_domain.utils
+package com.nayibit.common.util
 
 sealed class Resource<out T> {
     object Loading : Resource<Nothing>()
