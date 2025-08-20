@@ -1,10 +1,11 @@
 package com.nayibit.phrasalito_data.repository
 
+import com.nayibit.common.util.Resource
 import com.nayibit.phrasalito_data.dao.PhraseDao
-import com.nayibit.phrasalito_data.entities.PhraseEntity
+import com.nayibit.phrasalito_data.mapper.toDomain
+import com.nayibit.phrasalito_data.mapper.toEntity
 import com.nayibit.phrasalito_domain.model.Phrase
 import com.nayibit.phrasalito_domain.repository.PhraseRepository
-import com.nayibit.phrasalito_domain.utils.Resource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -17,12 +18,7 @@ class PhraseRepositoryImpl @Inject
        try {
            emit(Resource.Loading)
            delay(2000)
-           val phraseEntity = PhraseEntity(
-               id = item.id,
-               targetLanguage = item.targetLanguage,
-               translation = item.translation,
-               deckId = item.deckId)
-           phraseDao.insert(phraseEntity)
+           phraseDao.insert(item.toEntity())
            emit(Resource.Success(true))
 
        }catch (e: Exception){
@@ -34,13 +30,8 @@ class PhraseRepositoryImpl @Inject
         emit(Resource.Loading)
         delay(1000)
         try {
-            val phraseEntity = PhraseEntity(
-                id = item.id,
-                targetLanguage = item.targetLanguage,
-                translation = item.translation,
-                deckId = item.deckId)
 
-            phraseDao.delete(phraseEntity)
+            phraseDao.delete(item.toEntity())
             emit(Resource.Success(true))
         }catch (e: Exception) {
             emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
@@ -51,13 +42,7 @@ class PhraseRepositoryImpl @Inject
     override suspend fun update(item: Phrase): Flow<Resource<Boolean>> = flow {
         try {
             emit(Resource.Loading)
-            val phraseEntity = PhraseEntity(
-                id = item.id,
-                targetLanguage = item.targetLanguage,
-                translation = item.translation,
-                deckId = item.deckId)
-
-            phraseDao.update(phraseEntity)
+            phraseDao.update(item.toEntity())
             emit(Resource.Success(true))
         }catch (e: Exception) {
             emit(Resource.Error(e.localizedMessage ?: "Unknown error"))

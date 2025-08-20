@@ -24,13 +24,4 @@ data class PhraseEntity (
     val targetLanguage: String,
     val translation: String,
     val deckId: Int
-){
-    fun toDomain(): Phrase {
-        return Phrase(
-            id = id,
-            targetLanguage = targetLanguage,
-            translation = translation,
-            deckId = deckId
-        )
-    }
-}
+)

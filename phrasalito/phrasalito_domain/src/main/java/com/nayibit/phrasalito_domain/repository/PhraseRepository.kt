@@ -1,7 +1,7 @@
 package com.nayibit.phrasalito_domain.repository
 
+import com.nayibit.common.util.Resource
 import com.nayibit.phrasalito_domain.model.Phrase
-import com.nayibit.phrasalito_domain.utils.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface PhraseRepository {

@@ -13,11 +13,4 @@ data class DeckWithPhrases(
         entityColumn = "deckId"
     )
     val phrases: List<PhraseEntity>
-){
-    fun toDomain(): Deck {
-        return Deck(
-            id = deck.id,
-            name = deck.name,
-            maxCards = phrases.size)
-    }
-}
+)
