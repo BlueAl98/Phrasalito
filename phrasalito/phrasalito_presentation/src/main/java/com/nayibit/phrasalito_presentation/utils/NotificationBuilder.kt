@@ -13,7 +13,8 @@ import androidx.core.content.ContextCompat
 object NotificationBuilder {
 
     fun showNotification(context: Context, title: String, message: String) {
-        val notificationId = 1
+        val notificationId = System.currentTimeMillis().toInt()
+
         val channelId = "worker_channel"
 
         // On Android 13+ check POST_NOTIFICATIONS permission

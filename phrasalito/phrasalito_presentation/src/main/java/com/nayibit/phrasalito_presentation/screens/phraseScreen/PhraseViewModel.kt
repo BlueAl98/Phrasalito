@@ -7,7 +7,7 @@ import com.nayibit.common.util.Resource
 import com.nayibit.common.util.UiText
 import com.nayibit.phrasalito_domain.model.Phrase
 import com.nayibit.phrasalito_domain.useCases.phrases.DeletebyIdPhraseUseCase
-import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesUseCase
+import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesByDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.InsertPhraseUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.UpdatePhraseByIdUseCase
 import com.nayibit.phrasalito_presentation.R
@@ -24,7 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PhraseViewModel
     @Inject constructor(
-        private val getAllPhrasesUseCase: GetAllPhrasesUseCase,
+        private val getAllPhrasesUseCase: GetAllPhrasesByDeckUseCase,
         private val insertPhraseUseCase: InsertPhraseUseCase,
         private val deletePhraseUseCase: DeletebyIdPhraseUseCase,
         private val updatePhraseByIdUseCase: UpdatePhraseByIdUseCase,
