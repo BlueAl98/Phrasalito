@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -33,6 +35,23 @@ android {
 }
 
 dependencies {
+
+
+    //Dagger hilt
+    ksp(libs.hilt.android.compiler)
+    implementation(libs.hilt.android)
+
+    implementation(project(":phrasalito:common"))
+
+    // Unit testing
+    testImplementation (libs.junit)
+    testImplementation (libs.mockito.core)
+    testImplementation (libs.kotlinx.coroutines.test)
+    testImplementation (libs.mockito.kotlin)
+    testImplementation (libs.turbine) // for testing Flow
+// Optional for lifecycle & ViewModel
+    testImplementation (libs.androidx.core.testing)
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

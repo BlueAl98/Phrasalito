@@ -1,0 +1,7 @@
+package com.nayibit.phrasalito_domain.model
+
+data class Deck(
+    val id: Int = 0,
+    val name: String,
+    val maxCards: Int
+)

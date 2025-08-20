@@ -108,6 +108,12 @@ dependencies {
     implementation (libs.androidx.material.icons.extended)
 
 
+    //WorkManager
+    implementation (libs.androidx.work.runtime.ktx)
+
+    // Hilt with WorkManager
+    implementation (libs.androidx.hilt.work)
+    ksp (libs.androidx.hilt.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -37,7 +37,7 @@ android {
 
 dependencies {
     implementation(project(":phrasalito:phrasalito_domain"))
-
+    implementation(project(":phrasalito:common"))
 
     //dagger
     ksp(libs.hilt.android.compiler)
@@ -45,6 +45,23 @@ dependencies {
 
     //Data Store
     implementation (libs.androidx.datastore.preferences) // Asegúrate de usar la versión adecuada
+
+
+    //ROOM DataBase
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
+
+    // Unit testing
+    testImplementation (libs.junit)
+    testImplementation (libs.mockito.core)
+    testImplementation (libs.kotlinx.coroutines.test)
+    testImplementation (libs.mockito.kotlin)
+    testImplementation (libs.turbine) // for testing Flow
+// Optional for lifecycle & ViewModel
+    testImplementation (libs.androidx.core.testing)
+
 
 
     implementation(libs.androidx.core.ktx)
