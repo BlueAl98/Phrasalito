@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.RandomPhraseUseCase
 import com.nayibit.phrasalito_presentation.utils.NotificationBuilder
 import dagger.assisted.Assisted

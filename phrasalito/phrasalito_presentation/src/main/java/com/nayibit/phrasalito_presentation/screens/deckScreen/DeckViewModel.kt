@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.net.URLEncoder
 import javax.inject.Inject
 
 @HiltViewModel
@@ -72,9 +73,30 @@ class DeckViewModel @Inject
               }
             }
 
+            is OpenPrompt -> {
+                val phrases = listOf("Hello", "How are you?", "Goodbye")
+                val prompt = buildPrompt(phrases)
+                val encoded = URLEncoder.encode(prompt, "UTF-8")
+                val url = "https://chat.openai.com/?q=$encoded"
+
+                viewModelScope.launch {
+                    _eventFlow.emit(OpenPrompt(url, prompt))
+                }
+            }
+
+
         }
     }
 
+
+    private fun buildPrompt(phrases: List<String>): String {
+        return buildString {
+            append("Translate these phrases into casual English:\n")
+            phrases.forEachIndexed { i, phrase ->
+                append("${i+1}. $phrase\n")
+            }
+        }
+    }
 
 
     fun insertDeck(deck: Deck) {

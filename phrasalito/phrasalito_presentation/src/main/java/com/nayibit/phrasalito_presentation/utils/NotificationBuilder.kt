@@ -13,7 +13,7 @@ import androidx.core.content.ContextCompat
 object NotificationBuilder {
 
     fun showNotification(context: Context, title: String, message: String) {
-        val notificationId = System.currentTimeMillis().toInt()
+        val notificationId = 1
 
         val channelId = "worker_channel"
 
