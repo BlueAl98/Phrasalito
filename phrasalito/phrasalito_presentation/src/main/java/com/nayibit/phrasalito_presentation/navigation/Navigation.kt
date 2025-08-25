@@ -34,7 +34,7 @@ fun Navigation() {
 
     NavHost(
         navController = navController,
-        startDestination = StartScreen
+        startDestination = DeckScreen
     ) {
 
       composable<StartScreen> {
