@@ -1,16 +1,11 @@
 package com.nayibit.phrasalito_presentation.screens.deckScreen
 
-import android.R.attr.prompt
-import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.core.net.toUri
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.BaseDialog
 import com.nayibit.phrasalito_presentation.composables.ButtonBase
@@ -35,10 +31,8 @@ import com.nayibit.phrasalito_presentation.composables.CardDeck
 import com.nayibit.phrasalito_presentation.composables.LoadingScreen
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
 import kotlinx.coroutines.flow.Flow
-import androidx.core.net.toUri
 
 
-@SuppressLint("ServiceCast")
 @Composable
 fun DeckScreen(
     modifier: Modifier = Modifier,
@@ -67,11 +61,10 @@ fun DeckScreen(
 
                     Toast.makeText(context, "Prompt copied! Paste it in ChatGPT", Toast.LENGTH_SHORT).show()
 
-                    Log.d("OpenPrompt", "URL: ${event.url}")
                     val intent = Intent(Intent.ACTION_VIEW, event.url.toUri())
                     try {
                         context.startActivity(intent)
-                    } catch (e: ActivityNotFoundException) {
+                    } catch (_: ActivityNotFoundException) {
                         Toast.makeText(context, "No browser found", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -96,8 +89,7 @@ fun DeckScreen(
                                         title = phrase.name,
                                         maxCards = phrase.maxCards,
                                         onClick = {
-                                            onEvent(DeckUiEvent.Navigation(phrase.id))
-                                         //   onEvent(DeckUiEvent.OpenPrompt())
+                                           onEvent(DeckUiEvent.Navigation(phrase.id))
                                         }
                                     )
                                 }
