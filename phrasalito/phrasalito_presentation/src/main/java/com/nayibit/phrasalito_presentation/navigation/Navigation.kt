@@ -12,6 +12,7 @@ import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckViewModel
 import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseScreen
 import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseViewModel
 import com.nayibit.phrasalito_presentation.screens.startScreen.StartScreen
+import com.nayibit.phrasalito_presentation.screens.startScreen.StartViewModel
 import kotlinx.serialization.Serializable
 
 
@@ -37,7 +38,20 @@ fun Navigation() {
     ) {
 
       composable<StartScreen> {
-          StartScreen()
+          val viewModel: StartViewModel = hiltViewModel()
+          val state by viewModel.state.collectAsStateWithLifecycle()
+
+          StartScreen(
+              state = state,
+              eventFlow = viewModel.eventFlow,
+              onEvent = viewModel::onEvent
+          ){
+              navController.navigate(DeckScreen){
+                  popUpTo(StartScreen) {
+                      inclusive = true
+                  }
+              }
+          }
       }
 
 

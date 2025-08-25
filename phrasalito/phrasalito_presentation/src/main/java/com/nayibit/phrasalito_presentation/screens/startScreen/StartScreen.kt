@@ -1,10 +1,12 @@
 package com.nayibit.phrasalito_presentation.screens.startScreen
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -27,34 +29,70 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
+import kotlinx.coroutines.flow.Flow
 
 @Composable
-@Preview(showBackground = true)
-fun StartScreen(modifier: Modifier = Modifier) {
+fun StartScreen(
+    modifier: Modifier = Modifier,
+    state: StartStateUi,
+    eventFlow: Flow<StartUiEvent>,
+    onEvent: (StartUiEvent) -> Unit,
+    navigation: () -> Unit
+    ) {
 
     val context = LocalContext.current
 
+
+    LaunchedEffect(Unit) {
+        eventFlow.collect { event ->
+            when (event) {
+                is StartUiEvent.Navigate -> {
+                    navigation()
+                }
+                is StartUiEvent.ShowToast -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
+
+                else -> {}
+            }
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        if (!state.hasPermission){
+            CheckPermisions(context, hasPermission = { hasPermission ->
+                onEvent(StartUiEvent.SetHasPermission(hasPermission)) })
+        }
+
+    }
+}
+
+
+@Composable
+fun CheckPermisions(
+    context: Context,
+    state: StartStateUi = StartStateUi(),
+    hasPermission: (Boolean) -> Unit
+){
     // States to track permission status
-    var hasPermission by remember { mutableStateOf(false) }
+   // var hasPermission by remember { mutableStateOf(false) }
     var showSettingsDialog by remember { mutableStateOf(false) }
 
 
-  /* LaunchedEffect(key1 = true) {
-       hasPermission = ActivityCompat.checkSelfPermission(
-           context,
-           Manifest.permission.POST_NOTIFICATIONS
-       ) == android.content.pm.PackageManager.PERMISSION_GRANTED
-   }*/
-
-    // Step 1: Create a permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            hasPermission = true
+            hasPermission(true)
         } else {
             // Check if we should show rationale or if permission is permanently denied
             val activity = context as androidx.activity.ComponentActivity
@@ -62,17 +100,12 @@ fun StartScreen(modifier: Modifier = Modifier) {
                 activity,
                 Manifest.permission.POST_NOTIFICATIONS
             )
-
-            // If shouldShowRationale is false, it means:
-            // 1. First time asking (before Android shows dialog), OR
-            // 2. User selected "Don't ask again" (permanently denied)
             if (!shouldShowRationale) {
                 showSettingsDialog = true
             }
         }
     }
 
-    // Settings Dialog
     if (showSettingsDialog) {
         AlertDialog(
             onDismissRequest = { showSettingsDialog = false },
@@ -102,41 +135,35 @@ fun StartScreen(modifier: Modifier = Modifier) {
         )
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
+    if (state.hasPermission) {
+        // Show this when permission is granted
+        Text(
+            text = "✅ Notification permission granted!",
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.primary
+        )
+    } else {
+        // Show this when permission is not granted
+        Text(
+            text = "We need notification permission",
+            style = MaterialTheme.typography.headlineSmall
+        )
 
-        if (hasPermission) {
-            // Show this when permission is granted
-            Text(
-                text = "✅ Notification permission granted!",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.primary
-            )
-        } else {
-            // Show this when permission is not granted
-            Text(
-                text = "We need notification permission",
-                style = MaterialTheme.typography.headlineSmall
-            )
+        Spacer(modifier = Modifier.height(16.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Step 2: Button to trigger permission request
-            Button(
-                onClick = {
-                    // Step 3: Launch the permission request
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                    }
-                }
-            ) {
-                Text("Request Permission")
+        // Step 2: Button to trigger permission request
+        Button(
+            onClick = {
+               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }else{
+                    hasPermission(true)
+               }
             }
+        ) {
+            Text("Request Permission")
         }
     }
+
+
 }
