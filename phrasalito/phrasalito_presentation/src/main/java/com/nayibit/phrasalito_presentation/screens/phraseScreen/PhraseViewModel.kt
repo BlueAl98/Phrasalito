@@ -11,6 +11,8 @@ import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesByDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.InsertPhraseUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.UpdatePhraseByIdUseCase
 import com.nayibit.phrasalito_presentation.R
+import com.nayibit.phrasalito_presentation.mappers.toPhrase
+import com.nayibit.phrasalito_presentation.mappers.toPhraseUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,15 +53,17 @@ class PhraseViewModel
                     isLoadingButton = false,
                     firstPhrase = "",
                     translation = "",
-                    phraseToUpdate = null
+                    phraseToUpdate = null,
+                    example = ""
                 )
             }
             PhraseUiEvent.InsertPhrase -> {
                 _state.update { it.copy(bodyModal = BodyModalEnum.BODY_INSERT_PHRASE) }
-                val phrase = Phrase(
+               val phrase = Phrase(
                     targetLanguage = _state.value.firstPhrase,
                     translation = _state.value.translation,
-                    deckId = idDeck ?: -1
+                    deckId = idDeck ?: -1,
+                    example = _state.value.example
                 )
                 insertPhrase(phrase)
 
@@ -76,6 +80,11 @@ class PhraseViewModel
             is PhraseUiEvent.UpdateTextTraslation -> {
                 _state.update { it.copy(translation = event.text) }
             }
+
+            is PhraseUiEvent.UpdateTextExample -> {
+                _state.update { it.copy(example = event.text) }
+            }
+
             is PhraseUiEvent.ExpandItem -> {
                 _state.update { state ->
                     state.copy(
@@ -104,13 +113,13 @@ class PhraseViewModel
             }
 
             is PhraseUiEvent.UpdatePhrase -> {
-                val phrase = Phrase(
-                    id = event.phraseUi.id,
-                    targetLanguage = _state.value.firstPhrase,
-                    translation = _state.value.translation,
-                    deckId = idDeck ?: -1
-                )
-                updatePhrase(phrase)
+                updatePhrase(event.phraseUi.toPhrase()
+                    .copy(
+                        targetLanguage = _state.value.firstPhrase,
+                        translation = _state.value.translation,
+                        example = _state.value.example,
+                        deckId = idDeck ?: -1
+                    ))
             }
 
             is PhraseUiEvent.ShowModal -> {
@@ -118,9 +127,12 @@ class PhraseViewModel
                     bodyModal = event.type,
                     firstPhrase = event.phraseUi?.targetLanguage ?: "",
                     translation = event.phraseUi?.translation ?: "",
-                    phraseToUpdate = event.phraseUi
+                    phraseToUpdate = event.phraseUi,
+                    example = event.phraseUi?.example ?: ""
                 ) }
             }
+
+
         }
     }
 
@@ -184,11 +196,7 @@ class PhraseViewModel
                             it.copy(
                                 isLoading = false,
                                 phrases = result.data.map { phrase ->
-                                    PhraseUi(
-                                        id = phrase.id,
-                                        targetLanguage = phrase.targetLanguage,
-                                        translation = phrase.translation,
-                                        isOptionsRevealed = false)
+                                    phrase.toPhraseUi()
                                 }
                             )
                         }

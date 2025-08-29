@@ -13,7 +13,7 @@ class UpdatePhraseByIdUseCase @Inject
      suspend operator fun invoke(phrase: Phrase?): Flow<Resource<Boolean>> {
          val phraseById = phrase?.let { repository.getById(it.id) }
          return if (phraseById != null ) {
-             repository.update(phraseById.copy(targetLanguage = phrase.targetLanguage, translation = phrase.translation))
+             repository.update(phraseById.copy(targetLanguage = phrase.targetLanguage, translation = phrase.translation, example = phrase.example))
          }else{
              flowOf(Resource.Error("Phrase not found"))
          }

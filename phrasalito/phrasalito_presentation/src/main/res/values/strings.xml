@@ -20,6 +20,8 @@
     <string name="title_delete_phrase">Estas seguro de eliminar esta frase?</string>
     <string name="label_phrase_inserted_success">Frase insertada con éxito</string>
     <string name="label_phrase_updated_success">Frase insertada con éxito</string>
+    <string name="label_example_phrase">Ejemplo</string>
+
 
     <!-- GLOBAL Strings -->
     <string name="btn_save">Guardar</string>
