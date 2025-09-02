@@ -1,7 +1,6 @@
 package com.nayibit.phrasalito_presentation.screens.exerciseScreen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,9 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,7 +16,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -32,8 +27,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.nayibit.phrasalito_presentation.R
+import com.nayibit.phrasalito_presentation.composables.ButtonBase
 import com.nayibit.phrasalito_presentation.composables.ProgressBar
+import com.nayibit.phrasalito_presentation.composables.TextFieldBase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
@@ -72,41 +71,17 @@ fun ExerciseScreen(
         ) {
 
             ProgressBar(
-                    current = state.currentIndex,
-                    total = state.totalItems,
-                    modifier = Modifier.weight(0.1f)
-                 )
+                current = state.currentIndex +1,
+                total = state.totalItems,
+                modifier = Modifier.weight(0.1f)
+            )
 
             ExercisePager(
                 modifier = Modifier.weight(0.7f),
-                items = state.phrases,
-                currentIndex = state.currentIndex,
-                onNext = { onEvent(ExerciseUiEvent.OnNextClicked) }
+                onEvent = onEvent,
+                state = state
             )
 
-
-            Column ( modifier = Modifier.weight(0.3f)) {
-
-                OutlinedTextField(
-                    value = state.userInput,
-                    onValueChange = { onEvent(ExerciseUiEvent.OnInputChanged(it)) },
-                    label = { Text("Your Answer") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(
-                    onClick = { onEvent(ExerciseUiEvent.OnCheckClicked) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text("Check Answer")
-                }
-
-            }
         }
     }
 }
@@ -116,15 +91,14 @@ fun ExerciseScreen(
 @Composable
 fun ExercisePager(
     modifier: Modifier = Modifier,
-    items: List<String>,
-    currentIndex: Int,
-    onNext: () -> Unit
+    onEvent: (ExerciseUiEvent) -> Unit,
+    state: ExerciseUiState
 ) {
     val scope = rememberCoroutineScope()
 
     val pagerState = rememberPagerState(
-        initialPage = currentIndex,
-        pageCount = { items.size }
+        initialPage = state.currentIndex,
+        pageCount = { state.phrases.size }
     )
 
     Column(
@@ -137,7 +111,7 @@ fun ExercisePager(
             userScrollEnabled = false,
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.80f)
+                .weight(0.70f)
         ) { page ->
             Card(
                 modifier = modifier
@@ -153,37 +127,39 @@ fun ExercisePager(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = items[page],
+                        text = state.phrases[page].example,
                         style = MaterialTheme.typography.headlineSmall
                     )
                 }
             }
         }
 
+        Column ( modifier = Modifier.weight(0.3f).padding(horizontal = 8.dp).background(Color.Blue),
+            verticalArrangement = Arrangement.Center,
+            ) {
+            TextFieldBase(
+                value = state.inputAnswer,
+                onValueChange = { onEvent(ExerciseUiEvent.OnInputChanged(it)) },
+                label = stringResource(R.string.label_answer_phrase)
+            )
 
-        Box(modifier =
-            Modifier.weight(0.20f)
-                .background(Color.Green),
-            contentAlignment = Alignment.Center
-        ){
-            Button(
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+           ButtonBase(
                 onClick = {
                     val nextPage = pagerState.currentPage + 1
-                    if (nextPage < items.size) {
-                        // animate scroll to next page
+                     if (nextPage < state.phrases.size)
                         scope.launch {
-                            pagerState.animateScrollToPage(nextPage)
+                            if (state.phrases[state.currentIndex].targetLanguage == state.inputAnswer){
+                              pagerState.animateScrollToPage(nextPage)
+                              onEvent(ExerciseUiEvent.OnCheckClicked(nextPage))
                         }
-                        onNext()
-                    }
-                    onNext
-                  },
-                modifier = modifier
-                    .fillMaxWidth().padding(5.dp),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text("Next")
-            }
+                     }
+
+                },
+                text = stringResource(R.string.btn_check_answer))
+
         }
     }
 }

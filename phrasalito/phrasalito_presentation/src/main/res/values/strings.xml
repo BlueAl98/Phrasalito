@@ -23,6 +23,11 @@
     <string name="label_example_phrase">Ejemplo</string>
 
 
+    <!-- ExerciseScreen Strings -->
+    <string name="label_answer_phrase">Ingrese su respuesta</string>
+        <string name="btn_check_answer">Revisar respuesta</string>
+
+
     <!-- GLOBAL Strings -->
     <string name="btn_save">Guardar</string>
     <string name="btn_cancel">Cancelar</string>
