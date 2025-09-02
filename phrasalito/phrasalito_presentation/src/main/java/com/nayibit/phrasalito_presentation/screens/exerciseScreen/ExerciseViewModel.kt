@@ -1,8 +1,10 @@
 package com.nayibit.phrasalito_presentation.screens.exerciseScreen
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nayibit.phrasalito_presentation.utils.exercisePhrase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -28,7 +30,13 @@ class ExerciseViewModel @Inject constructor(
 
 
     init {
-        println("id deck here: $idDeck")
+        viewModelScope.launch {
+            val exam = exercisePhrase("world", "hello world how are you" )
+           _state.value = _state.value.copy(
+                title = exam
+            )
+            Log.d("ExerciseViewModel", _state.value.title)
+        }
     }
 
     fun onEvent(event: ExerciseUiEvent) {

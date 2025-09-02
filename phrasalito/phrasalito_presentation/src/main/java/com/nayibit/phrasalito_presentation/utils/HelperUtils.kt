@@ -1,6 +1,5 @@
 package com.nayibit.phrasalito_presentation.utils
 
-import android.util.Log
 import com.nayibit.common.util.normalizeSpaces
 
 
@@ -27,16 +26,13 @@ fun validateExample(phrase: String, example: String = ""): ValidateExampleResult
     return ValidateExampleResult.IS_VALID
 }
 
-fun exercisePhrase() {
-    val example = "dont slag me off"
+fun exercisePhrase(targetPhrase: String, example: String): String {
 
-    val phrase = listOf("slag", "off")
+    val convertString = example.split(" ").map { word ->
+        if (targetPhrase.contains(word)) "_".repeat(word.length) else word
+    }
 
-    var convertString = example.split(" ").toMutableList()
-
-    convertString.removeIf { phrase.contains(it)}
-
-
+    return convertString.joinToString(" ")
 }
 
   enum class ValidateExampleResult {
