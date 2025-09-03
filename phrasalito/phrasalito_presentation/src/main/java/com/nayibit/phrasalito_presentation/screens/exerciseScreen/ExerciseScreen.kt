@@ -10,11 +10,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -31,10 +35,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.ButtonBase
+import com.nayibit.phrasalito_presentation.composables.HighlightedText
+import com.nayibit.phrasalito_presentation.composables.IconPopover
 import com.nayibit.phrasalito_presentation.composables.ProgressBar
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
+import com.nayibit.phrasalito_presentation.utils.textWithoutSpecialCharacters
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 
 @Composable
 fun ExerciseScreen(
@@ -44,6 +50,12 @@ fun ExerciseScreen(
     navigation: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val pagerState = rememberPagerState(
+        initialPage = state.currentIndex,
+        pageCount = { state.phrases.size }
+    )
+
 
     // Collect events lifecycle-aware
     LaunchedEffect(Unit) {
@@ -55,6 +67,10 @@ fun ExerciseScreen(
                 is ExerciseUiEvent.NavigateNext -> {
                     navigation()
                 }
+                is ExerciseUiEvent.OnStartClicked -> {
+
+                }
+
                 else -> Unit
             }
         }
@@ -79,7 +95,8 @@ fun ExerciseScreen(
             ExercisePager(
                 modifier = Modifier.weight(0.7f),
                 onEvent = onEvent,
-                state = state
+                state = state,
+                pagerState = pagerState
             )
 
         }
@@ -92,17 +109,16 @@ fun ExerciseScreen(
 fun ExercisePager(
     modifier: Modifier = Modifier,
     onEvent: (ExerciseUiEvent) -> Unit,
-    state: ExerciseUiState
+    state: ExerciseUiState,
+    pagerState: PagerState
 ) {
-    val scope = rememberCoroutineScope()
 
-    val pagerState = rememberPagerState(
-        initialPage = state.currentIndex,
-        pageCount = { state.phrases.size }
-    )
+    LaunchedEffect(state.currentIndex) {
+        pagerState.animateScrollToPage(state.currentIndex)
+    }
 
     Column(
-        modifier = modifier.fillMaxSize().background(Color.Red),
+        modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         // Pager
@@ -120,21 +136,40 @@ fun ExercisePager(
                 shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.cardElevation(8.dp)
             ) {
+
+                Box(contentAlignment = Alignment.TopStart) {
+                    IconPopover(
+                        icon = Icons.Default.Info,
+                        expandedState = state.popOverState,
+                        updateExpandedState = { onEvent(ExerciseUiEvent.UpdateExpandedState(it)) }
+                    ) {
+                        Text(
+                            state.phrases[pagerState.currentPage].translation, // ✅ use pagerState, not state.currentIndex
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                    }
+                }
+
+
                 Box(
                     modifier = modifier
                         .fillMaxSize()
                         .padding(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = state.phrases[page].example,
+                  /*  Text(
+                        text = state.phrases[pagerState.currentPage].example,
                         style = MaterialTheme.typography.headlineSmall
+                    )*/
+                    HighlightedText(
+                        fullText = state.phrases[pagerState.currentPage].example,
+                        highlightWords = state.phrases[pagerState.currentPage].targetLanguage.split(" ")
                     )
                 }
             }
         }
 
-        Column ( modifier = Modifier.weight(0.3f).padding(horizontal = 8.dp).background(Color.Blue),
+        Column ( modifier = Modifier.weight(0.3f).padding(horizontal = 8.dp),
             verticalArrangement = Arrangement.Center,
             ) {
             TextFieldBase(
@@ -147,16 +182,12 @@ fun ExercisePager(
 
 
            ButtonBase(
+                enabled = state.inputAnswer.isNotEmpty(),
                 onClick = {
-                    val nextPage = pagerState.currentPage + 1
-                     if (nextPage < state.phrases.size)
-                        scope.launch {
-                            if (state.phrases[state.currentIndex].targetLanguage == state.inputAnswer){
-                              pagerState.animateScrollToPage(nextPage)
-                              onEvent(ExerciseUiEvent.OnCheckClicked(nextPage))
-                        }
-                     }
+                    if (state.phrases[pagerState.currentPage].targetLanguage.textWithoutSpecialCharacters() == state.inputAnswer) {
 
+                  onEvent(ExerciseUiEvent.OnCheckClicked(pagerState.currentPage))
+                    }
                 },
                 text = stringResource(R.string.btn_check_answer))
 

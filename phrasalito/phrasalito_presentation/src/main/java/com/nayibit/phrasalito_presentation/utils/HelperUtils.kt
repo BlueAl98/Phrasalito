@@ -26,17 +26,41 @@ fun validateExample(phrase: String, example: String = ""): ValidateExampleResult
     return ValidateExampleResult.IS_VALID
 }
 
+
 fun exercisePhrase(targetPhrase: String, example: String): String {
+    val targetWords = targetPhrase.lowercase().split(" ").textWithoutSpecialCharacters()
 
     val convertString = example.split(" ").map { word ->
-        if (targetPhrase.contains(word)) "_".repeat(word.length) else word
+        // Remove punctuation like commas, periods, etc.
+        val cleanWord = word.filter { it.isLetterOrDigit() }
+
+        if (targetWords.contains(cleanWord.lowercase())) {
+            "_".repeat(cleanWord.length) + word.takeLastWhile { !it.isLetterOrDigit() }
+        } else {
+            word
+        }
     }
 
     return convertString.joinToString(" ")
 }
+
 
   enum class ValidateExampleResult {
       IS_VALID,
       EXAMPLE_NOT_CONTAINS_PHRASE,
       EXAMPLE_IS_NOT_LONGER_THAN_PHRASE
   }
+
+fun List<String>.textWithoutSpecialCharacters(): String  {
+    return this.joinToString(" ") {
+        it.filter { it.isLetterOrDigit() }
+    }
+}
+
+// Extension for a single String → returns a cleaned String
+fun String.textWithoutSpecialCharacters(): String {
+    return this.split(" ").joinToString(" ") {
+        it.filter { it.isLetterOrDigit() }
+    }
+}
+

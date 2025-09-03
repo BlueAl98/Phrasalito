@@ -7,12 +7,14 @@ data class ExerciseUiState (
     val phrases: List<ExercisePhrases> = emptyList(),
     val currentIndex: Int = 0,
     val totalItems: Int = 10,
-    val inputAnswer : String = ""
+    val inputAnswer : String = "",
+    val popOverState: Boolean = false
 )
 
 data class ExercisePhrases(
     val id: Int,
     val targetLanguage: String,
     val translation: String,
-    val example: String = ""
+    val example: String = "",
+    val correctAnswer: String = ""
 )

@@ -9,6 +9,7 @@ import com.nayibit.phrasalito_presentation.mappers.toExerciseUI
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.OnCheckClicked
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.OnInputChanged
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.OnStartClicked
+import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.UpdateExpandedState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -42,7 +43,9 @@ class ExerciseViewModel @Inject constructor(
     fun onEvent(event: ExerciseUiEvent) {
         when (event) {
 
-
+            is UpdateExpandedState -> {
+                _state.update { it.copy(popOverState = event.expanded) }
+            }
             is OnInputChanged -> {
                 _state.update { it.copy(inputAnswer = event.input) }
             }
@@ -53,10 +56,21 @@ class ExerciseViewModel @Inject constructor(
             }
             is OnCheckClicked -> {
                 viewModelScope.launch {
-                    _state.value = _state.value.copy(
+
+                    _state.update { currentState ->
+                        currentState.copy(
+                           // currentIndex = event.currentIndex + 1,
+                            phrases = currentState.phrases.mapIndexed { index, phrase ->
+                                if (index == event.currentIndex) phrase.copy(example = phrase.correctAnswer)
+                                else phrase
+                            }
+                        )
+                    }
+
+                 /*   _state.value = _state.value.copy(
                         currentIndex = event.currentIndex,
                         inputAnswer = ""
-                    )
+                    )*/
                 }
             }
             else -> Unit
