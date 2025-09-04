@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.common.util.Resource
 import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesByDeckUseCase
+import com.nayibit.phrasalito_domain.useCases.tts.ShutDownTtsUseCase
+import com.nayibit.phrasalito_domain.useCases.tts.SpeakTextUseCase
 import com.nayibit.phrasalito_presentation.mappers.toExerciseUI
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.OnCheckClicked
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.OnInputChanged
@@ -24,6 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ExerciseViewModel @Inject constructor(
     private val getAllPhrasesByDeckUseCase: GetAllPhrasesByDeckUseCase,
+    private val speakTextUseCase: SpeakTextUseCase,
+    private val shutDownTtsUseCase: ShutDownTtsUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -39,6 +43,12 @@ class ExerciseViewModel @Inject constructor(
     init {
         getAllPhrases(idDeck ?: -1)
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        shutDownTtsUseCase()
+    }
+
 
     fun onEvent(event: ExerciseUiEvent) {
         when (event) {
@@ -56,8 +66,8 @@ class ExerciseViewModel @Inject constructor(
             }
             is OnCheckClicked -> {
                 viewModelScope.launch {
-
-                    _state.update { currentState ->
+                    speakTextUseCase("dont talk with me")
+                 /*   _state.update { currentState ->
                         currentState.copy(
                            // currentIndex = event.currentIndex + 1,
                             phrases = currentState.phrases.mapIndexed { index, phrase ->
@@ -65,7 +75,7 @@ class ExerciseViewModel @Inject constructor(
                                 else phrase
                             }
                         )
-                    }
+                    }*/
 
                  /*   _state.value = _state.value.copy(
                         currentIndex = event.currentIndex,

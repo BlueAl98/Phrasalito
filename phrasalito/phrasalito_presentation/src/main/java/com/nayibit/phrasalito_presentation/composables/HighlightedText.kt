@@ -19,7 +19,7 @@ fun HighlightedText(fullText: String, highlightWords: List<String>) {
         words.forEachIndexed { index, word ->
             if (highlightWords.contains(word.textWithoutSpecialCharacters())) {
                 withStyle(
-                    style = SpanStyle(color = Color.Red, fontWeight = FontWeight.Bold)
+                    style = SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                 ) {
                     append(word)
                 }
