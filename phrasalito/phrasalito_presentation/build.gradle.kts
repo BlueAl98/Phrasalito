@@ -53,6 +53,8 @@ dependencies {
 
     implementation(libs.androidx.foundation)
 
+    implementation( libs.material.icons.extended)
+
 
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
