@@ -9,6 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckScreen
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckViewModel
+import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseScreen
+import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseViewModel
 import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseScreen
 import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseViewModel
 import com.nayibit.phrasalito_presentation.screens.startScreen.StartScreen
@@ -25,6 +27,9 @@ object DeckScreen
 data class PhraseScreenNav(val idDeck: Int)
 
 @Serializable
+data class ExerciseScreenNav(val idDeck: Int)
+
+@Serializable
 object StartScreen
 
 @Composable
@@ -34,7 +39,7 @@ fun Navigation() {
 
     NavHost(
         navController = navController,
-        startDestination = DeckScreen
+        startDestination = /*DeckScreen*/ ExerciseScreenNav(1)
     ) {
 
       composable<StartScreen> {
@@ -80,6 +85,18 @@ fun Navigation() {
              navigation = {}
          )
      }
+
+     composable <ExerciseScreenNav>{
+         val viewModel: ExerciseViewModel = hiltViewModel()
+         val state by viewModel.state.collectAsStateWithLifecycle()
+
+         ExerciseScreen(
+             state = state,
+             eventFlow = viewModel.eventFlow,
+             onEvent = viewModel::onEvent,
+             navigation = {})
+     }
+
 
     }
 }

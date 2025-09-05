@@ -4,7 +4,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.nayibit.phrasalito_domain.model.Phrase
 
 @Entity(
     tableName = "phrases",
@@ -24,5 +23,6 @@ data class PhraseEntity (
     val targetLanguage: String,
     val translation: String,
     val deckId: Int,
-    val isNotified : Int = 0
+    val isNotified : Int = 0,
+    val example : String? = null,
 )

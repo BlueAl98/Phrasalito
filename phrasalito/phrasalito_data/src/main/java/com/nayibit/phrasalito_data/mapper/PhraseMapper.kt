@@ -8,7 +8,9 @@ fun PhraseEntity.toDomain() : Phrase{
         id = id,
         targetLanguage = targetLanguage,
         translation = translation,
-        deckId = deckId)
+        deckId = deckId,
+        example = example
+        )
 }
 
 fun Phrase.toEntity() : PhraseEntity{
@@ -16,5 +18,7 @@ fun Phrase.toEntity() : PhraseEntity{
         id = id,
         targetLanguage = targetLanguage,
         translation = translation,
-        deckId = deckId)
+        deckId = deckId,
+        example = example
+        )
 }

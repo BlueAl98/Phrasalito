@@ -11,6 +11,11 @@ import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesByDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.InsertPhraseUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.UpdatePhraseByIdUseCase
 import com.nayibit.phrasalito_presentation.R
+import com.nayibit.phrasalito_presentation.mappers.toPhrase
+import com.nayibit.phrasalito_presentation.mappers.toPhraseUi
+import com.nayibit.phrasalito_presentation.utils.ValidateExampleResult
+import com.nayibit.common.util.normalizeSpaces
+import com.nayibit.phrasalito_presentation.utils.validateExample
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,17 +56,41 @@ class PhraseViewModel
                     isLoadingButton = false,
                     firstPhrase = "",
                     translation = "",
-                    phraseToUpdate = null
+                    phraseToUpdate = null,
+                    example = ""
                 )
             }
-            PhraseUiEvent.InsertPhrase -> {
+
+            PhraseUiEvent.InsertPhrase -> { viewModelScope.launch {
                 _state.update { it.copy(bodyModal = BodyModalEnum.BODY_INSERT_PHRASE) }
-                val phrase = Phrase(
-                    targetLanguage = _state.value.firstPhrase,
-                    translation = _state.value.translation,
-                    deckId = idDeck ?: -1
-                )
-                insertPhrase(phrase)
+
+                val result = validateExample(_state.value.firstPhrase, _state.value.example)
+
+                when (result) {
+                    ValidateExampleResult.IS_VALID -> {
+                        insertPhrase(Phrase(
+                            targetLanguage = _state.value.firstPhrase.normalizeSpaces(),
+                            translation = _state.value.translation.normalizeSpaces(),
+                            deckId = idDeck ?: -1,
+                            example = _state.value.example.normalizeSpaces()
+                        ))
+                    }
+
+                    ValidateExampleResult.EXAMPLE_NOT_CONTAINS_PHRASE -> {
+                        _eventFlow.emit(
+                            PhraseUiEvent.ShowToast(UiText.StringResource(R.string.error_example_not_contains_phrase))
+                        )
+
+                    }
+
+                    ValidateExampleResult.EXAMPLE_IS_NOT_LONGER_THAN_PHRASE -> {
+                        _eventFlow.emit(
+                            PhraseUiEvent.ShowToast(UiText.StringResource(R.string.error_example_is_not_longer_than_phrase))
+                        )
+                    }
+                }
+            }
+
 
             }
             is PhraseUiEvent.ShowToast -> {
@@ -76,6 +105,11 @@ class PhraseViewModel
             is PhraseUiEvent.UpdateTextTraslation -> {
                 _state.update { it.copy(translation = event.text) }
             }
+
+            is PhraseUiEvent.UpdateTextExample -> {
+                _state.update { it.copy(example = event.text) }
+            }
+
             is PhraseUiEvent.ExpandItem -> {
                 _state.update { state ->
                     state.copy(
@@ -103,14 +137,34 @@ class PhraseViewModel
                 deletePhrase(event.id)
             }
 
-            is PhraseUiEvent.UpdatePhrase -> {
-                val phrase = Phrase(
-                    id = event.phraseUi.id,
-                    targetLanguage = _state.value.firstPhrase,
-                    translation = _state.value.translation,
-                    deckId = idDeck ?: -1
-                )
-                updatePhrase(phrase)
+            is PhraseUiEvent.UpdatePhrase -> { viewModelScope.launch {
+
+                val result = validateExample(_state.value.firstPhrase, _state.value.example)
+
+                when (result) {
+                    ValidateExampleResult.IS_VALID -> {
+                        updatePhrase(event.phraseUi.toPhrase()
+                            .copy(
+                                targetLanguage = _state.value.firstPhrase.normalizeSpaces(),
+                                translation = _state.value.translation.normalizeSpaces(),
+                                example = _state.value.example.normalizeSpaces(),
+                                deckId = idDeck ?: -1
+                            ))
+                    }
+                    ValidateExampleResult.EXAMPLE_NOT_CONTAINS_PHRASE -> {
+                            _eventFlow.emit(
+                                PhraseUiEvent.ShowToast(UiText.StringResource(R.string.error_example_not_contains_phrase))
+                            )
+
+                    }
+                    ValidateExampleResult.EXAMPLE_IS_NOT_LONGER_THAN_PHRASE -> {
+                            _eventFlow.emit(
+                                PhraseUiEvent.ShowToast(UiText.StringResource(R.string.error_example_is_not_longer_than_phrase))
+                            )
+                        }
+                    }
+                }
+
             }
 
             is PhraseUiEvent.ShowModal -> {
@@ -118,9 +172,12 @@ class PhraseViewModel
                     bodyModal = event.type,
                     firstPhrase = event.phraseUi?.targetLanguage ?: "",
                     translation = event.phraseUi?.translation ?: "",
-                    phraseToUpdate = event.phraseUi
+                    phraseToUpdate = event.phraseUi,
+                    example = event.phraseUi?.example ?: ""
                 ) }
             }
+
+
         }
     }
 
@@ -184,11 +241,7 @@ class PhraseViewModel
                             it.copy(
                                 isLoading = false,
                                 phrases = result.data.map { phrase ->
-                                    PhraseUi(
-                                        id = phrase.id,
-                                        targetLanguage = phrase.targetLanguage,
-                                        translation = phrase.translation,
-                                        isOptionsRevealed = false)
+                                    phrase.toPhraseUi()
                                 }
                             )
                         }
