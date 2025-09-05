@@ -147,6 +147,11 @@ fun BodyModalInsertPhrase(
         onValueChange = { onEvent(PhraseUiEvent.UpdateTextTraslation(it))},
         label  = stringResource(R.string.label_traduction_phrase))
 
+    TextFieldBase(
+        value = state.example,
+        onValueChange = { onEvent(PhraseUiEvent.UpdateTextExample(it))},
+        label  = stringResource(R.string.label_example_phrase))
+
     ButtonBase(
         text = stringResource(id = R.string.btn_save),
         onClick = { if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(PhraseUiEvent.InsertPhrase) else onEvent(PhraseUiEvent.ShowToast(
@@ -175,6 +180,13 @@ fun BodyModalUpdatePhrase(
         value = state.translation,
         onValueChange = { onEvent(PhraseUiEvent.UpdateTextTraslation(it))},
         label  = stringResource(R.string.label_traduction_phrase))
+
+
+    TextFieldBase(
+        value = state.example,
+        onValueChange = { onEvent(PhraseUiEvent.UpdateTextExample(it))},
+        label  = stringResource(R.string.label_example_phrase))
+
 
     ButtonBase(
         text = stringResource(id = R.string.btn_update),

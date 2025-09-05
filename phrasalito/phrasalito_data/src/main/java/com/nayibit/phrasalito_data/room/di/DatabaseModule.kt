@@ -2,10 +2,10 @@ package com.nayibit.phrasalito_data.room.di
 
 import android.content.Context
 import androidx.room.Room
+import com.nayibit.common.util.Constants
 import com.nayibit.phrasalito_data.dao.DeckDao
 import com.nayibit.phrasalito_data.dao.PhraseDao
 import com.nayibit.phrasalito_data.room.AppDatabase
-import com.nayibit.phrasalito_data.utils.Constants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

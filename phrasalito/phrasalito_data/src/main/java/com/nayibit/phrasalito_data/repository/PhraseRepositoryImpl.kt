@@ -70,4 +70,22 @@ class PhraseRepositoryImpl @Inject
     override suspend fun getRandomPhrase(): Phrase? {
         return phraseDao.getAll().map { it.toDomain() }.randomOrNull()
     }
+
+    override suspend fun getPhrasesToNotify(): List<Phrase> {
+        return phraseDao.getPhrasesToNotify().map { it.toDomain() }
+    }
+
+    override suspend fun updateIsNotifiedById(id: Int) {
+        phraseDao.updateIsNotifiedById(id)
+    }
+
+    override suspend fun getAllPhrases(): List<Phrase> {
+        return phraseDao.getAll().map { it.toDomain() }
+    }
+
+    override suspend fun resetAllPhrasesToNotify() {
+        phraseDao.updateAllPhrasesToNofity()
+    }
+
+
 }

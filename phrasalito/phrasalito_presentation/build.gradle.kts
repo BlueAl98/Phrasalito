@@ -51,6 +51,8 @@ dependencies {
     implementation (libs.androidx.hilt.navigation.compose)
     implementation (libs.androidx.lifecycle.runtime.compose)
 
+    implementation(libs.androidx.foundation)
+
 
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)

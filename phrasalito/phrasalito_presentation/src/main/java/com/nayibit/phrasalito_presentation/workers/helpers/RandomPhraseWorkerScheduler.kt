@@ -13,7 +13,7 @@ object RandomPhraseWorkerScheduler {
     fun start(context: Context) {
 
      val request = PeriodicWorkRequestBuilder<RandomPhraseWorker>(
-            30, TimeUnit.MINUTES // interval
+            20, TimeUnit.MINUTES // interval
      )
             .setConstraints(
                 Constraints.Builder()

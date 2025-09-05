@@ -1,8 +1,11 @@
 package com.nayibit.phrasalito_presentation.screens.deckScreen
 
-import android.util.Log
+import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
 import android.widget.Toast
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.core.net.toUri
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.BaseDialog
 import com.nayibit.phrasalito_presentation.composables.ButtonBase
@@ -50,6 +54,20 @@ fun DeckScreen(
                 is DeckUiEvent.Navigation -> {
                      navigation(event.id)
                 }
+                is DeckUiEvent.OpenPrompt -> {
+                    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clip = ClipData.newPlainText("Prompt", event.prompt)
+                    clipboard.setPrimaryClip(clip)
+
+                    Toast.makeText(context, "Prompt copied! Paste it in ChatGPT", Toast.LENGTH_SHORT).show()
+
+                    val intent = Intent(Intent.ACTION_VIEW, event.url.toUri())
+                    try {
+                        context.startActivity(intent)
+                    } catch (_: ActivityNotFoundException) {
+                        Toast.makeText(context, "No browser found", Toast.LENGTH_SHORT).show()
+                    }
+                }
                 else -> {}
             }
         }
@@ -70,7 +88,9 @@ fun DeckScreen(
                                         modifier = modifier.testTag("deck_item_${phrase.id}"),
                                         title = phrase.name,
                                         maxCards = phrase.maxCards,
-                                        onClick = { onEvent(DeckUiEvent.Navigation(phrase.id))}
+                                        onClick = {
+                                           onEvent(DeckUiEvent.Navigation(phrase.id))
+                                        }
                                     )
                                 }
 

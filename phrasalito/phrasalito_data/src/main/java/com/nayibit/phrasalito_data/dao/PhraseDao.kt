@@ -33,4 +33,15 @@ interface PhraseDao {
     @Query("SELECT * FROM phrases WHERE deckId = :idDeck")
     fun getAllByDeckId(idDeck: Int): Flow<List<PhraseEntity>>
 
+    @Query("SELECT * FROM phrases WHERE isNotified = 0")
+    suspend fun getPhrasesToNotify(): List<PhraseEntity>
+
+    // Update only rows that match a condition
+    @Query("UPDATE phrases SET isNotified = 1 WHERE id = :id")
+    suspend fun updateIsNotifiedById(id: Int)
+
+    @Query("UPDATE phrases SET isNotified = 0")
+    suspend fun updateAllPhrasesToNofity()
+
+
 }

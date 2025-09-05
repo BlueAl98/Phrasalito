@@ -10,6 +10,7 @@ data class PhraseStateUi(
     val successInsertedPhrase: Deck? = null,
     val firstPhrase: String = "",
     val translation: String = "",
+    val example: String = "",
     val bodyModal: BodyModalEnum = BodyModalEnum.BODY_INSERT_PHRASE,
     val phraseToUpdate: PhraseUi? = null
     )
@@ -18,7 +19,8 @@ data class PhraseUi(
     val id: Int,
     val targetLanguage: String,
     val translation: String,
-    val isOptionsRevealed: Boolean = false
+    val isOptionsRevealed: Boolean = false,
+    val example: String = ""
 )
 
 enum class BodyModalEnum() {

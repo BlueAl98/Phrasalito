@@ -7,11 +7,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckScreen
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckViewModel
+import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseScreen
+import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseViewModel
 import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseScreen
 import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseViewModel
+import com.nayibit.phrasalito_presentation.screens.startScreen.StartScreen
+import com.nayibit.phrasalito_presentation.screens.startScreen.StartViewModel
 import kotlinx.serialization.Serializable
 
 
@@ -23,6 +26,12 @@ object DeckScreen
 @Serializable
 data class PhraseScreenNav(val idDeck: Int)
 
+@Serializable
+data class ExerciseScreenNav(val idDeck: Int)
+
+@Serializable
+object StartScreen
+
 @Composable
 fun Navigation() {
 
@@ -30,8 +39,27 @@ fun Navigation() {
 
     NavHost(
         navController = navController,
-        startDestination = DeckScreen
+        startDestination = /*DeckScreen*/ ExerciseScreenNav(1)
     ) {
+
+      composable<StartScreen> {
+          val viewModel: StartViewModel = hiltViewModel()
+          val state by viewModel.state.collectAsStateWithLifecycle()
+
+          StartScreen(
+              state = state,
+              eventFlow = viewModel.eventFlow,
+              onEvent = viewModel::onEvent
+          ){
+              navController.navigate(DeckScreen){
+                  popUpTo(StartScreen) {
+                      inclusive = true
+                  }
+              }
+          }
+      }
+
+
      composable <DeckScreen>{
        val viewModel: DeckViewModel = hiltViewModel()
        val state by viewModel.state.collectAsStateWithLifecycle()
@@ -57,6 +85,18 @@ fun Navigation() {
              navigation = {}
          )
      }
+
+     composable <ExerciseScreenNav>{
+         val viewModel: ExerciseViewModel = hiltViewModel()
+         val state by viewModel.state.collectAsStateWithLifecycle()
+
+         ExerciseScreen(
+             state = state,
+             eventFlow = viewModel.eventFlow,
+             onEvent = viewModel::onEvent,
+             navigation = {})
+     }
+
 
     }
 }

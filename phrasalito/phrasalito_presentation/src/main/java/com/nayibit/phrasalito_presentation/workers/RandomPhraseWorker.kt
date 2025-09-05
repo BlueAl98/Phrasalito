@@ -13,17 +13,18 @@ import dagger.assisted.AssistedInject
 class RandomPhraseWorker  @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    private val useCaseRandomPhrase: RandomPhraseUseCase
-) : CoroutineWorker(context, workerParams) {
+    private val useCaseRandomPhrase: RandomPhraseUseCase)
+    : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {
         val randomPhrase = useCaseRandomPhrase()
 
-        if (randomPhrase != null) {
+        return if (randomPhrase != null) {
             NotificationBuilder.showNotification(applicationContext, randomPhrase.targetLanguage, randomPhrase.translation)
+            Result.success()
+        } else {
+            Result.success() // nothing to notify
         }
-
-        return Result.success()
     }
 
 }
