@@ -2,6 +2,7 @@ package com.nayibit.phrasalito_presentation.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,19 +28,25 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun IconPopover(
+    modifier: Modifier = Modifier,
     icon: ImageVector,
     expandedState: Boolean = false,
     updateExpandedState: (Boolean) -> Unit = {},
-    content: @Composable ColumnScope.() -> Unit,
+    onClick: () -> Unit = {},
+    enabled: Boolean = true,
+    content: @Composable ColumnScope.() -> Unit = {},
 ) {
    var expanded by remember { mutableStateOf(expandedState) }
 
 
-    Box {
+    Box  {
         // The trigger icon
-        IconButton(onClick = {
+        IconButton(
+            enabled = enabled,
+            onClick = {
             expanded = !expanded
             updateExpandedState(expanded)
+            onClick()
         }) {
             Icon(
                 imageVector = icon,

@@ -25,7 +25,7 @@
 
     <!-- ExerciseScreen Strings -->
     <string name="label_answer_phrase">Ingrese su respuesta</string>
-        <string name="btn_check_answer">Revisar respuesta</string>
+        <string name="btn_next_phrase">Siguiente</string>
 
 
     <!-- GLOBAL Strings -->

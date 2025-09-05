@@ -1,9 +1,11 @@
 package com.nayibit.phrasalito_presentation.screens.exerciseScreen
 
-import androidx.compose.foundation.background
+
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,11 +17,9 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -27,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,13 +36,14 @@ import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.ButtonBase
 import com.nayibit.phrasalito_presentation.composables.HighlightedText
 import com.nayibit.phrasalito_presentation.composables.IconPopover
+import com.nayibit.phrasalito_presentation.composables.LoadingScreen
 import com.nayibit.phrasalito_presentation.composables.ProgressBar
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
-import com.nayibit.phrasalito_presentation.utils.textWithoutSpecialCharacters
 import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun ExerciseScreen(
+    modifier: Modifier = Modifier,
     state: ExerciseUiState,
     eventFlow: Flow<ExerciseUiEvent>,
     onEvent: (ExerciseUiEvent) -> Unit,
@@ -55,7 +55,6 @@ fun ExerciseScreen(
         initialPage = state.currentIndex,
         pageCount = { state.phrases.size }
     )
-
 
     // Collect events lifecycle-aware
     LaunchedEffect(Unit) {
@@ -79,8 +78,16 @@ fun ExerciseScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
-        Column(
-            modifier = Modifier
+
+        if (state.isLoading)
+            LoadingScreen()
+       else if (state.phrases.isEmpty())
+           Box(modifier = modifier.fillMaxSize(),contentAlignment = Alignment.Center) {
+               Text(text = "No Phrases Found")
+           }
+       else
+          Column(
+            modifier = modifier
                 .padding(padding)
                 .fillMaxSize()
                 .padding(16.dp)
@@ -89,11 +96,11 @@ fun ExerciseScreen(
             ProgressBar(
                 current = state.currentIndex +1,
                 total = state.totalItems,
-                modifier = Modifier.weight(0.1f)
+                modifier = modifier.weight(0.1f)
             )
 
             ExercisePager(
-                modifier = Modifier.weight(0.7f),
+                modifier = modifier.weight(0.7f),
                 onEvent = onEvent,
                 state = state,
                 pagerState = pagerState
@@ -132,24 +139,37 @@ fun ExercisePager(
             Card(
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                shape = RoundedCornerShape(16.dp),
+                    .padding(16.dp)
+                    .border(
+                        width = 2.dp,
+                        color = if (state.phrases[page].isComplete) Color.Green else Color.Transparent,
+                        shape = RoundedCornerShape(16.dp)
+                    ),
                 elevation = CardDefaults.cardElevation(8.dp)
             ) {
 
-                Box(contentAlignment = Alignment.TopStart) {
-                    IconPopover(
-                        icon = Icons.Default.Info,
-                        expandedState = state.popOverState,
-                        updateExpandedState = { onEvent(ExerciseUiEvent.UpdateExpandedState(it)) }
-                    ) {
-                        Text(
-                            state.phrases[pagerState.currentPage].translation, // ✅ use pagerState, not state.currentIndex
-                            modifier = Modifier.padding(horizontal = 16.dp)
-                        )
-                    }
-                }
+                Box {
+                    Row (modifier.fillMaxWidth().padding(5.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                        IconPopover(
+                            icon = Icons.Default.Info,
+                            expandedState = state.popOverState,
+                            updateExpandedState = { onEvent(ExerciseUiEvent.UpdateExpandedState(it)) }
+                        ) {
+                            Text(
+                                state.phrases[page].translation,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                        }
 
+                        if (state.phrases[page].isComplete)
+                            IconPopover(
+                             icon = Icons.Default.PlayArrow,
+                               expandedState = state.popOverState,
+                              onClick = {
+                                onEvent(ExerciseUiEvent.OnSpeakPhrase(state.phrases[page].correctAnswer))
+                                 })
+                              }
+                          }
 
                 Box(
                     modifier = modifier
@@ -157,13 +177,9 @@ fun ExercisePager(
                         .padding(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                  /*  Text(
-                        text = state.phrases[pagerState.currentPage].example,
-                        style = MaterialTheme.typography.headlineSmall
-                    )*/
                     HighlightedText(
-                        fullText = state.phrases[pagerState.currentPage].example,
-                        highlightWords = state.phrases[pagerState.currentPage].targetLanguage.split(" ")
+                        fullText = state.phrases[page].example,
+                        highlightWords = state.phrases[page].targetLanguage.split(" ")
                     )
                 }
             }
@@ -173,8 +189,9 @@ fun ExercisePager(
             verticalArrangement = Arrangement.Center,
             ) {
             TextFieldBase(
+                enabled = !state.phrases[pagerState.currentPage].isComplete,
                 value = state.inputAnswer,
-                onValueChange = { onEvent(ExerciseUiEvent.OnInputChanged(it)) },
+                onValueChange = { onEvent(ExerciseUiEvent.OnInputChanged(it, pagerState.currentPage)) },
                 label = stringResource(R.string.label_answer_phrase)
             )
 
@@ -182,14 +199,11 @@ fun ExercisePager(
 
 
            ButtonBase(
-                enabled = state.inputAnswer.isNotEmpty(),
+                enabled = state.phrases[pagerState.currentPage].isComplete,
                 onClick = {
-                    if (state.phrases[pagerState.currentPage].targetLanguage.textWithoutSpecialCharacters() == state.inputAnswer) {
-
-                  onEvent(ExerciseUiEvent.OnCheckClicked(pagerState.currentPage))
-                    }
+                   onEvent(ExerciseUiEvent.OnNextPhrase)
                 },
-                text = stringResource(R.string.btn_check_answer))
+                text = stringResource(R.string.btn_next_phrase))
 
         }
     }

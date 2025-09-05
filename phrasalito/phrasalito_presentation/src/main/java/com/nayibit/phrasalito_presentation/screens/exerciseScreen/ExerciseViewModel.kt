@@ -5,13 +5,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.common.util.Resource
 import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesByDeckUseCase
+import com.nayibit.phrasalito_domain.useCases.tts.IsTextSpeechReadyUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.ShutDownTtsUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.SpeakTextUseCase
 import com.nayibit.phrasalito_presentation.mappers.toExerciseUI
-import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.OnCheckClicked
+import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.OnNextPhrase
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.OnInputChanged
+import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.OnSpeakPhrase
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.OnStartClicked
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.UpdateExpandedState
+import com.nayibit.phrasalito_presentation.utils.textWithoutSpecialCharacters
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -28,10 +31,11 @@ class ExerciseViewModel @Inject constructor(
     private val getAllPhrasesByDeckUseCase: GetAllPhrasesByDeckUseCase,
     private val speakTextUseCase: SpeakTextUseCase,
     private val shutDownTtsUseCase: ShutDownTtsUseCase,
+    private val isTextSpeechReadyUseCase: IsTextSpeechReadyUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    val idDeck = savedStateHandle.get<Int>("idDeck")
+    val idDeck = savedStateHandle.get<Int>("idDeck") ?: -1
 
     private val _state = MutableStateFlow(ExerciseUiState())
     val state: StateFlow<ExerciseUiState> = _state.asStateFlow()
@@ -41,7 +45,8 @@ class ExerciseViewModel @Inject constructor(
 
 
     init {
-        getAllPhrases(idDeck ?: -1)
+        observeTextToSpeechReady()
+        getAllPhrases(idDeck)
     }
 
     override fun onCleared() {
@@ -58,32 +63,55 @@ class ExerciseViewModel @Inject constructor(
             }
             is OnInputChanged -> {
                 _state.update { it.copy(inputAnswer = event.input) }
+
+              if (_state.value.phrases[event.currentIndex].targetLanguage.textWithoutSpecialCharacters() == event.input) {
+                  _state.update { currentState ->
+                      currentState.copy(
+                         // currentIndex = event.currentIndex + 1,
+                          phrases = currentState.phrases.mapIndexed { index, phrase ->
+                              if (index == event.currentIndex) phrase.copy(example = phrase.correctAnswer, isComplete = true)
+                              else phrase
+                          }
+                      )
+                  }
+              }
             }
+
             is OnStartClicked -> {
                 viewModelScope.launch {
                     _eventChannel.send(ExerciseUiEvent.ShowToast("Exercise Started!"))
                 }
             }
-            is OnCheckClicked -> {
-                viewModelScope.launch {
-                    speakTextUseCase("dont talk with me")
-                 /*   _state.update { currentState ->
-                        currentState.copy(
-                           // currentIndex = event.currentIndex + 1,
-                            phrases = currentState.phrases.mapIndexed { index, phrase ->
-                                if (index == event.currentIndex) phrase.copy(example = phrase.correctAnswer)
-                                else phrase
-                            }
-                        )
-                    }*/
+            is OnNextPhrase -> {
+               _state.update { currentState ->
+                   currentState.copy(
+                       inputAnswer = "",
+                       currentIndex = currentState.currentIndex + 1
+                   )
+               }
+            }
 
-                 /*   _state.value = _state.value.copy(
-                        currentIndex = event.currentIndex,
-                        inputAnswer = ""
-                    )*/
-                }
+            is OnSpeakPhrase -> {
+                if (_state.value.ttsState)
+                    speakTextUseCase(event.text)
+                else
+                    viewModelScope.launch {
+                        _eventChannel.send(ExerciseUiEvent.ShowToast("TTS is not ready"))
+                    }
             }
             else -> Unit
+        }
+    }
+
+    private fun observeTextToSpeechReady() {
+        viewModelScope.launch {
+            isTextSpeechReadyUseCase().collect { result ->
+                when (result){
+                    is Resource.Loading -> _state.update { it.copy(isLoading = true) }
+                    is Resource.Success -> _state.update { it.copy(isLoading = false, ttsState = true) }
+                    is Resource.Error -> _state.update { it.copy(isLoading = false, ttsState = false) }
+                }
+            }
         }
     }
 
@@ -104,7 +132,7 @@ class ExerciseViewModel @Inject constructor(
                           )
                         }
                         is Resource.Error -> {
-                         //   _state.update { it.copy(isLoading = false) }
+                            _state.update { it.copy(isLoading = false) }
                           //  _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.DynamicString(result.message)))
                         }
                     }

@@ -8,7 +8,8 @@ data class ExerciseUiState (
     val currentIndex: Int = 0,
     val totalItems: Int = 10,
     val inputAnswer : String = "",
-    val popOverState: Boolean = false
+    val popOverState: Boolean = false,
+    val ttsState : Boolean = false
 )
 
 data class ExercisePhrases(
@@ -16,5 +17,6 @@ data class ExercisePhrases(
     val targetLanguage: String,
     val translation: String,
     val example: String = "",
-    val correctAnswer: String = ""
+    val correctAnswer: String = "",
+    val isComplete: Boolean = false
 )
