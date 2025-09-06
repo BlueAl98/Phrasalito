@@ -40,8 +40,11 @@ class DeckViewModel @Inject
     fun onEvent(event: DeckUiEvent) {
         when (event) {
             is ShowModal -> {
+
                 _state.value = _state.value.copy(
-                    showModal = true
+                    showModal = true,
+                    bodyModal = event.type,
+                    currentIdDeck = event.id
                 )
             }
             is DismissModal -> {
@@ -89,7 +92,6 @@ class DeckViewModel @Inject
                     _eventFlow.emit(OpenPrompt(url, prompt))
                 }
             }
-
 
         }
     }

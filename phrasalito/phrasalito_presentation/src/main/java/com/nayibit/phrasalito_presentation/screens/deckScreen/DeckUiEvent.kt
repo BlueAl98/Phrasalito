@@ -4,7 +4,7 @@ import com.nayibit.common.util.UiText
 
 sealed class DeckUiEvent {
     data class ShowToast(val message: UiText) : DeckUiEvent()
-    object ShowModal : DeckUiEvent()
+    data class ShowModal(val type: BodyDeckModalEnum, val id: Int = 0) : DeckUiEvent()
     object DismissModal : DeckUiEvent()
     object InsertDeck : DeckUiEvent()
     data class OpenPrompt(val url: String = "", val prompt: String = "") : DeckUiEvent()

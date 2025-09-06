@@ -85,7 +85,7 @@ fun ExerciseScreen(
            Box(modifier = modifier.fillMaxSize(),contentAlignment = Alignment.Center) {
                Text(text = "No Phrases Found")
            }
-       else
+       else{
           Column(
             modifier = modifier
                 .padding(padding)
@@ -108,6 +108,7 @@ fun ExerciseScreen(
 
         }
     }
+}
 }
 
 

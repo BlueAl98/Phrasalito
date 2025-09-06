@@ -49,10 +49,10 @@ class ExerciseViewModel @Inject constructor(
         getAllPhrases(idDeck)
     }
 
-    override fun onCleared() {
+  /*  override fun onCleared() {
         super.onCleared()
         shutDownTtsUseCase()
-    }
+    }*/
 
 
     fun onEvent(event: ExerciseUiEvent) {
