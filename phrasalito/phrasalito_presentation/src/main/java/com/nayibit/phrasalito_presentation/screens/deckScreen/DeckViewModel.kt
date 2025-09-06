@@ -78,6 +78,7 @@ class DeckViewModel @Inject
             }
             is NavigationToExercise -> {
                 viewModelScope.launch {
+                    _state.value = _state.value.copy(showModal = false)
                     _eventFlow.emit(NavigationToExercise(event.id))
                 }
             }

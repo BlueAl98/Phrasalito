@@ -9,7 +9,8 @@ data class ExerciseUiState (
     val totalItems: Int = 10,
     val inputAnswer : String = "",
     val popOverState: Boolean = false,
-    val ttsState : Boolean = false
+    val ttsState : Boolean = false,
+    val testCompleted : Boolean = false
 )
 
 data class ExercisePhrases(

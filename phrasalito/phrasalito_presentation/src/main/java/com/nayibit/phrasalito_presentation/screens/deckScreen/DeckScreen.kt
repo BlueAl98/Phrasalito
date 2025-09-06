@@ -105,7 +105,7 @@ fun DeckScreen(
                                         maxCards = 10,
                                         primaryIcon = Icons.AutoMirrored.Filled.TextSnippet,
                                         onCardClick = {  onEvent(DeckUiEvent.NavigationToPhrases(phrase.id)) },
-                                        onPrimaryIconClick = { if (phrase.maxCards >= 3) onEvent(DeckUiEvent.ShowModal(BodyDeckModalEnum.BODY_START_EXERCISE)) else onEvent(DeckUiEvent.ShowToast(UiText.StringResource(R.string.label_dont_cards_enough))) },
+                                        onPrimaryIconClick = { if (phrase.maxCards >= 3) onEvent(DeckUiEvent.ShowModal(BodyDeckModalEnum.BODY_START_EXERCISE, phrase.id)) else onEvent(DeckUiEvent.ShowToast(UiText.StringResource(R.string.label_dont_cards_enough))) },
                                     )
                                 }
 
