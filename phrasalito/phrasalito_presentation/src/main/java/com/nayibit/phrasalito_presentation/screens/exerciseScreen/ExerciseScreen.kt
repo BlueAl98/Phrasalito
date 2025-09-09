@@ -104,11 +104,7 @@ fun ExerciseScreen(
         scaffoldState = sheetState,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         sheetContent = {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
+
                 state.phrases.forEach {
                     Text(it.correctAnswer + " " + it.phraseState.value )
                 }
@@ -120,7 +116,7 @@ fun ExerciseScreen(
                 }) {
                     Text("Collapse")
                 }
-            }
+
         }
     ) { padding ->
 
@@ -225,7 +221,7 @@ fun ExercisePager(
                         )
                     }
 
-                        if (state.phrases[page].phraseState == PhraseState.COMPLETED)
+                        if (state.phrases[page].phraseState != PhraseState.NOT_STARTED)
                             IconPopover(
                              icon = Icons.Default.PlayArrow,
                                expandedState = state.popOverState,
