@@ -18,12 +18,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -43,8 +43,8 @@ import com.nayibit.phrasalito_presentation.composables.HighlightedText
 import com.nayibit.phrasalito_presentation.composables.IconPopover
 import com.nayibit.phrasalito_presentation.composables.LoadingScreen
 import com.nayibit.phrasalito_presentation.composables.ProgressBar
+import com.nayibit.phrasalito_presentation.composables.SimpleConfirmDialog
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
@@ -62,11 +62,23 @@ fun ExerciseScreen(
     val coroutineScope = rememberCoroutineScope()
 
 
-
     val pagerState = rememberPagerState(
         initialPage = state.currentIndex,
         pageCount = { state.phrases.size }
     )
+
+ /*   BackHandler {
+        if (state.testCompleted){
+          println("Back pressed")
+        }
+    }*/
+
+    if (state.showDialog){
+        SimpleConfirmDialog(
+            onConfirm = { onEvent(ExerciseUiEvent.ShowAllInfo(state.currentIndex)) },
+            onCancel = { onEvent(ExerciseUiEvent.ShowDialog(false)) }
+        )
+    }
 
     // Collect events lifecycle-aware
     LaunchedEffect(Unit) {
@@ -78,10 +90,9 @@ fun ExerciseScreen(
                 is ExerciseUiEvent.NavigateNext -> {
                     navigation()
                 }
-                is ExerciseUiEvent.OnStartClicked -> {
-
+                is ExerciseUiEvent.OnNextPhrase ->{
+                    sheetState.bottomSheetState.expand()
                 }
-
                 else -> Unit
             }
         }
@@ -98,8 +109,10 @@ fun ExerciseScreen(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text("I am inside the sheet")
-                Spacer(Modifier.height(8.dp))
+                state.phrases.forEach {
+                    Text(it.correctAnswer + " " + it.phraseState.value )
+                }
+
                 Button(onClick = {
                     coroutineScope.launch {
                         sheetState.bottomSheetState.partialExpand()
@@ -111,35 +124,39 @@ fun ExerciseScreen(
         }
     ) { padding ->
 
-        if (state.isLoading)
-            LoadingScreen()
-       else if (state.phrases.isEmpty())
-           Box(modifier = modifier.fillMaxSize(),contentAlignment = Alignment.Center) {
-               Text(text = "No Phrases Found")
-           }
-       else{
-          Column(
-            modifier = modifier
-                .padding(padding)
+        Box(
+            modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(padding)
         ) {
+            if (state.isLoading)
+                LoadingScreen()
+            else if (state.phrases.isEmpty())
+                    Text(text = "No Phrases Found")
+            else {
+                Column(
+                    modifier = modifier
+                        .padding(padding)
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
 
-            ProgressBar(
-                current = state.currentIndex +1,
-                total = state.totalItems,
-                modifier = modifier.weight(0.1f)
-            )
-            ExercisePager(
-                modifier = modifier.weight(0.7f),
-                onEvent = onEvent,
-                state = state,
-                pagerState = pagerState
-            )
+                    ProgressBar(
+                        current = state.currentIndex + 1,
+                        total = state.totalItems,
+                        modifier = modifier.weight(0.1f)
+                    )
+                    ExercisePager(
+                        modifier = modifier.weight(0.7f),
+                        onEvent = onEvent,
+                        state = state,
+                        pagerState = pagerState
+                    )
 
+                }
+            }
         }
     }
-}
 }
 
 
@@ -151,6 +168,12 @@ fun ExercisePager(
     state: ExerciseUiState,
     pagerState: PagerState
 ) {
+
+    val colorManager =  when (state.phrases[pagerState.currentPage].phraseState) {
+        PhraseState.NOT_STARTED -> Color.Transparent
+        PhraseState.ERROR_ANSWER -> Color.Red
+        PhraseState.COMPLETED -> Color.Green
+    }
 
     LaunchedEffect(state.currentIndex) {
         pagerState.animateScrollToPage(state.currentIndex)
@@ -174,7 +197,7 @@ fun ExercisePager(
                     .padding(16.dp)
                     .border(
                         width = 2.dp,
-                        color = if (state.phrases[page].isComplete) Color.Green else Color.Transparent,
+                        color = colorManager,
                         shape = RoundedCornerShape(16.dp)
                     ),
                 elevation = CardDefaults.cardElevation(8.dp)
@@ -182,6 +205,8 @@ fun ExercisePager(
 
                 Box {
                     Row (modifier.fillMaxWidth().padding(5.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+
+                    Row {
                         IconPopover(
                             icon = Icons.Default.Info,
                             expandedState = state.popOverState,
@@ -193,7 +218,14 @@ fun ExercisePager(
                             )
                         }
 
-                        if (state.phrases[page].isComplete)
+                        IconPopover(
+                            enabled = state.phrases[page].phraseState == PhraseState.NOT_STARTED,
+                            icon = Icons.Default.QuestionMark,
+                            onClick = {onEvent(ExerciseUiEvent.ShowDialog(true))}
+                        )
+                    }
+
+                        if (state.phrases[page].phraseState == PhraseState.COMPLETED)
                             IconPopover(
                              icon = Icons.Default.PlayArrow,
                                expandedState = state.popOverState,
@@ -221,7 +253,7 @@ fun ExercisePager(
             verticalArrangement = Arrangement.Center,
             ) {
             TextFieldBase(
-                enabled = !state.phrases[pagerState.currentPage].isComplete,
+                enabled = state.phrases[pagerState.currentPage].phraseState == PhraseState.NOT_STARTED,
                 value = state.inputAnswer,
                 onValueChange = { onEvent(ExerciseUiEvent.OnInputChanged(it, pagerState.currentPage)) },
                 label = stringResource(R.string.label_answer_phrase)
@@ -231,9 +263,9 @@ fun ExercisePager(
 
 
            ButtonBase(
-                enabled = state.phrases[pagerState.currentPage].isComplete,
+                enabled = state.phrases[pagerState.currentPage].phraseState != PhraseState.NOT_STARTED,
                 onClick = {
-                   onEvent(ExerciseUiEvent.OnNextPhrase)
+                   onEvent(ExerciseUiEvent.OnNextPhrase(pagerState.currentPage))
                 },
                 text = stringResource(R.string.btn_next_phrase))
 

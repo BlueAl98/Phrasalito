@@ -9,10 +9,12 @@ import com.nayibit.phrasalito_domain.useCases.tts.IsTextSpeechReadyUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.ShutDownTtsUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.SpeakTextUseCase
 import com.nayibit.phrasalito_presentation.mappers.toExerciseUI
-import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.OnNextPhrase
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.OnInputChanged
+import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.OnNextPhrase
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.OnSpeakPhrase
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.OnStartClicked
+import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.ShowAllInfo
+import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.ShowDialog
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.UpdateExpandedState
 import com.nayibit.phrasalito_presentation.utils.textWithoutSpecialCharacters
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -69,7 +71,7 @@ class ExerciseViewModel @Inject constructor(
                       currentState.copy(
                          // currentIndex = event.currentIndex + 1,
                           phrases = currentState.phrases.mapIndexed { index, phrase ->
-                              if (index == event.currentIndex) phrase.copy(example = phrase.correctAnswer, isComplete = true)
+                              if (index == event.currentIndex) phrase.copy(example = phrase.correctAnswer, phraseState = PhraseState.COMPLETED)
                               else phrase
                           }
                       )
@@ -83,7 +85,18 @@ class ExerciseViewModel @Inject constructor(
                 }
             }
             is OnNextPhrase -> {
-               _state.update { currentState ->
+
+                _state.update { it.copy(popOverState = false) }
+
+                if (event.currentIndex == _state.value.phrases.size - 1) {
+                    viewModelScope.launch {
+                        _state.update { it.copy(testCompleted = true) }
+                        _eventChannel.send(OnNextPhrase(event.currentIndex))
+                    }
+                    return
+                }
+
+                _state.update { currentState ->
                    currentState.copy(
                        inputAnswer = "",
                        currentIndex = currentState.currentIndex + 1
@@ -99,8 +112,27 @@ class ExerciseViewModel @Inject constructor(
                         _eventChannel.send(ExerciseUiEvent.ShowToast("TTS is not ready"))
                     }
             }
+
+            is ShowDialog -> {
+              _state.update { it.copy(showDialog = event.show) }
+            }
+            is ShowAllInfo -> {
+                _state.update { currentState ->
+                    currentState.copy(
+                        showDialog = false,
+                        inputAnswer = "",
+                        phrases = currentState.phrases.mapIndexed { index, phrase ->
+                            if (index == event.currentIndex) phrase.copy(example = phrase.correctAnswer, phraseState = PhraseState.ERROR_ANSWER)
+                            else phrase
+                        }
+                    )
+                }
+            }
+
             else -> Unit
         }
+
+
     }
 
     private fun observeTextToSpeechReady() {
@@ -121,13 +153,12 @@ class ExerciseViewModel @Inject constructor(
             getAllPhrasesByDeckUseCase(idDeck)
                 .collect { result ->
                     when (result) {
+
                         is Resource.Loading -> _state.update { it.copy(isLoading = true) }
                         is Resource.Success -> _state.update {
                           it.copy(
                               isLoading = false,
-                              phrases = result.data.map { phrase ->
-                                  phrase.toExerciseUI()
-                              },
+                              phrases = result.data.shuffled().map { it.toExerciseUI() },
                               totalItems = result.data.size
                           )
                         }
