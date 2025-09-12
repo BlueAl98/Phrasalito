@@ -14,8 +14,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        RandomPhraseWorkerScheduler.start(this)
-
+       // RandomPhraseWorkerScheduler.start(this)
 
         enableEdgeToEdge()
         setContent {

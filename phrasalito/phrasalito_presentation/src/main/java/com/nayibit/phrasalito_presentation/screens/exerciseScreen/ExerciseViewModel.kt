@@ -1,5 +1,6 @@
 package com.nayibit.phrasalito_presentation.screens.exerciseScreen
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -50,12 +51,6 @@ class ExerciseViewModel @Inject constructor(
         observeTextToSpeechReady()
         getAllPhrases(idDeck)
     }
-
-  /*  override fun onCleared() {
-        super.onCleared()
-        shutDownTtsUseCase()
-    }*/
-
 
     fun onEvent(event: ExerciseUiEvent) {
         when (event) {
@@ -150,25 +145,28 @@ class ExerciseViewModel @Inject constructor(
 
     fun getAllPhrases(idDeck: Int) {
         viewModelScope.launch {
-            getAllPhrasesByDeckUseCase(idDeck)
-                .collect { result ->
-                    when (result) {
 
-                        is Resource.Loading -> _state.update { it.copy(isLoading = true) }
-                        is Resource.Success -> _state.update {
-                          it.copy(
-                              isLoading = false,
-                              phrases = result.data.shuffled().map { it.toExerciseUI() },
-                              totalItems = result.data.size
-                          )
-                        }
-                        is Resource.Error -> {
-                            _state.update { it.copy(isLoading = false) }
-                          //  _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.DynamicString(result.message)))
+                getAllPhrasesByDeckUseCase(idDeck)
+                    .collect { result ->
+                        when (result) {
+                            is Resource.Loading -> _state.update { it.copy(isLoading = true) }
+                            is Resource.Success -> {
+                               if (_state.value.phrases.isEmpty()) {
+                                   _state.update {
+                                       it.copy(
+                                           isLoading = false,
+                                           phrases = result.data.shuffled().map { it.toExerciseUI() },
+                                           totalItems = result.data.size
+                                       )
+                                   }
+                               }
+                            }
+                            is Resource.Error -> {
+                                _state.update { it.copy(isLoading = false) }
+                                //  _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.DynamicString(result.message)))
+                            }
                         }
                     }
-                }
+            }
         }
     }
-
-}
