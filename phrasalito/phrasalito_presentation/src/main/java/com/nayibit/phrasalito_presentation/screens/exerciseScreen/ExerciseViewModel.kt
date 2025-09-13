@@ -94,8 +94,11 @@ class ExerciseViewModel @Inject constructor(
                 _state.update { currentState ->
                    currentState.copy(
                        inputAnswer = "",
-                       currentIndex = currentState.currentIndex + 1
-                   )
+                       currentIndex = currentState.currentIndex + 1,
+                       testProgressCorrectAnswers = currentState.phrases.filter {
+                               it.phraseState == PhraseState.COMPLETED
+                           }.size.toFloat() / currentState.phrases.size.toFloat()
+                       )
                }
             }
 
@@ -117,7 +120,10 @@ class ExerciseViewModel @Inject constructor(
                         showDialog = false,
                         inputAnswer = "",
                         phrases = currentState.phrases.mapIndexed { index, phrase ->
-                            if (index == event.currentIndex) phrase.copy(example = phrase.correctAnswer, phraseState = PhraseState.ERROR_ANSWER)
+                            if (index == event.currentIndex) phrase.copy(
+                                example = phrase.correctAnswer,
+                                phraseState = PhraseState.ERROR_ANSWER
+                            )
                             else phrase
                         }
                     )
@@ -156,7 +162,8 @@ class ExerciseViewModel @Inject constructor(
                                        it.copy(
                                            isLoading = false,
                                            phrases = result.data.shuffled().map { it.toExerciseUI() },
-                                           totalItems = result.data.size
+                                           totalItems = result.data.size,
+                                           testProgressCorrectAnswers = 0f
                                        )
                                    }
                                }

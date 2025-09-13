@@ -1,6 +1,7 @@
 package com.nayibit.phrasalito_presentation.screens.exerciseScreen
 
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,9 +37,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.ButtonBase
+import com.nayibit.phrasalito_presentation.composables.CircularProgressIndicator
 import com.nayibit.phrasalito_presentation.composables.HighlightedText
 import com.nayibit.phrasalito_presentation.composables.IconPopover
 import com.nayibit.phrasalito_presentation.composables.LoadingScreen
@@ -105,9 +108,10 @@ fun ExerciseScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         sheetContent = {
 
-                state.phrases.forEach {
-                    Text(it.correctAnswer + " " + it.phraseState.value )
-                }
+            BottomSheetContent(
+                state = state,
+                onEvent = onEvent
+            )
 
                 Button(onClick = {
                     coroutineScope.launch {
@@ -267,4 +271,34 @@ fun ExercisePager(
 
         }
     }
+}
+
+
+@Composable
+@Preview
+fun PreviewBottomContent(){
+    BottomSheetContent(state = ExerciseUiState(), onEvent = {})
+}
+
+
+@Composable
+fun BottomSheetContent(
+    modifier: Modifier = Modifier,
+    state: ExerciseUiState,
+    onEvent: (ExerciseUiEvent) -> Unit
+){
+        Column(modifier.fillMaxSize()) {
+
+            Box (modifier.weight(1f)
+                .fillMaxWidth(), contentAlignment = Alignment.Center){
+
+                CircularProgressIndicator(
+                    progress = state.testProgressCorrectAnswers,
+                )
+            }
+
+
+        }
+
+
 }

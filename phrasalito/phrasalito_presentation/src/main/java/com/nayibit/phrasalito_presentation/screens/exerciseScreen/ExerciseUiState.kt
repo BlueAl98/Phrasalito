@@ -11,7 +11,8 @@ data class ExerciseUiState (
     val popOverState: Boolean = false,
     val ttsState : Boolean = false,
     val testCompleted : Boolean = false,
-    val showDialog : Boolean = false
+    val showDialog : Boolean = false,
+    val testProgressCorrectAnswers : Float = 0f
 )
 
 data class ExercisePhrases(
