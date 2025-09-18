@@ -97,7 +97,13 @@ fun Navigation() {
              state = state,
              eventFlow = viewModel.eventFlow,
              onEvent = viewModel::onEvent,
-             navigation = {})
+             navigation = {
+                 navController.navigate(DeckScreen){
+                     popUpTo(DeckScreen) {
+                         inclusive = true
+                     }
+                 }
+             })
      }
 
 

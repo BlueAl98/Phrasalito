@@ -1,7 +1,7 @@
 package com.nayibit.phrasalito_presentation.screens.exerciseScreen
 
 
-import androidx.compose.foundation.background
+import android.content.res.Configuration
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,14 +33,13 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.ButtonBase
@@ -53,7 +51,6 @@ import com.nayibit.phrasalito_presentation.composables.ProgressBar
 import com.nayibit.phrasalito_presentation.composables.SimpleConfirmDialog
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,7 +63,7 @@ fun ExerciseScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val sheetState = rememberBottomSheetScaffoldState()
-    val coroutineScope = rememberCoroutineScope()
+    val orientation = LocalConfiguration.current.orientation
 
 
     val pagerState = rememberPagerState(
@@ -111,18 +108,27 @@ fun ExerciseScreen(
         scaffoldState = sheetState,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         sheetContent = {
+            Column (modifier
+                .fillMaxHeight(0.6f)
+                .fillMaxWidth()
+                .padding(bottom = 20.dp)){
 
-            Column (modifier.fillMaxHeight(0.5f)){
-                BottomSheetContent(
-                    state = state,
-                    onEvent = onEvent
-                )
+              when (orientation) {
+                  Configuration.ORIENTATION_LANDSCAPE -> BottomSheetContentLandScape(
+                      state = state,
+                      onEvent = onEvent
+                  )
+                  else -> BottomSheetContentPortrait(
+                      state = state,
+                      onEvent = onEvent
+                  )
+              }
             }
 
         }
     ) { padding ->
 
-        Box(
+       Box(
             modifier
                 .fillMaxSize()
                 .padding(padding)
@@ -132,30 +138,133 @@ fun ExerciseScreen(
             else if (state.phrases.isEmpty())
                     Text(text = "No Phrases Found")
             else {
-                Column(
-                    modifier = modifier
-                        .padding(padding)
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
 
-                    ProgressBar(
-                        current = state.currentIndex + 1,
-                        total = state.totalItems,
-                        modifier = modifier.weight(0.1f)
-                    )
-                    ExercisePager(
-                        modifier = modifier.weight(0.7f),
-                        onEvent = onEvent,
-                        state = state,
-                        pagerState = pagerState
-                    )
-
+                when (orientation) {
+                    Configuration.ORIENTATION_LANDSCAPE -> {
+                        LandscapeContent(
+                            state = state,
+                            onEvent = onEvent,
+                            pagerState = pagerState)
+                    }
+                    else -> {
+                        PortaitContent(
+                            state = state,
+                            onEvent = onEvent,
+                            pagerState = pagerState)
+                    }
                 }
+
+
             }
         }
     }
 }
+
+@Composable
+fun PortaitContent(
+    modifier: Modifier = Modifier,
+    state: ExerciseUiState,
+    onEvent: (ExerciseUiEvent) -> Unit,
+    pagerState: PagerState
+){
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+
+    ) {
+
+        ProgressBar(
+            current = state.currentIndex + 1,
+            total = state.totalItems,
+            modifier = modifier.weight(0.1f)
+        )
+        ExercisePager(
+            modifier = modifier.weight(0.7f),
+            onEvent = onEvent,
+            state = state,
+            pagerState = pagerState
+        )
+
+        Column ( modifier = Modifier
+            .weight(0.3f)
+            .padding(horizontal = 8.dp),
+            verticalArrangement = Arrangement.Center,
+        ) {
+            TextFieldBase(
+                enabled = state.phrases[pagerState.currentPage].phraseState == PhraseState.NOT_STARTED,
+                value = state.inputAnswer,
+                onValueChange = { onEvent(ExerciseUiEvent.OnInputChanged(it, pagerState.currentPage)) },
+                label = stringResource(R.string.label_answer_phrase)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+            ButtonBase(
+                enabled = state.phrases[pagerState.currentPage].phraseState != PhraseState.NOT_STARTED,
+                onClick = {
+                    onEvent(ExerciseUiEvent.OnNextPhrase(pagerState.currentPage))
+                },
+                text = stringResource(R.string.btn_next_phrase))
+
+        }
+
+    }
+}
+
+@Composable
+fun LandscapeContent(
+    modifier: Modifier = Modifier,
+    state: ExerciseUiState,
+    onEvent: (ExerciseUiEvent) -> Unit,
+    pagerState: PagerState
+){
+
+        Row(modifier.fillMaxSize()) {
+
+            Column(
+                modifier = Modifier
+                    .weight(0.4f)
+                    .fillMaxHeight()
+                    .padding(horizontal = 8.dp),
+                verticalArrangement = Arrangement.Center,
+            ) {
+                TextFieldBase(
+                    enabled = state.phrases[pagerState.currentPage].phraseState == PhraseState.NOT_STARTED,
+                    value = state.inputAnswer,
+                    onValueChange = {
+                        onEvent(
+                            ExerciseUiEvent.OnInputChanged(
+                                it,
+                                pagerState.currentPage
+                            )
+                        )
+                    },
+                    label = stringResource(R.string.label_answer_phrase)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+
+                ButtonBase(
+                    enabled = state.phrases[pagerState.currentPage].phraseState != PhraseState.NOT_STARTED,
+                    onClick = {
+                        onEvent(ExerciseUiEvent.OnNextPhrase(pagerState.currentPage))
+                    },
+                    text = stringResource(R.string.btn_next_phrase)
+                )
+            }
+
+            ExercisePager(
+                modifier = modifier.weight(0.6f),
+                onEvent = onEvent,
+                state = state,
+                pagerState = pagerState
+            )
+
+        }
+    }
+
 
 
 
@@ -202,7 +311,9 @@ fun ExercisePager(
             ) {
 
                 Box {
-                    Row (modifier.fillMaxWidth().padding(5.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Row (modifier
+                        .fillMaxWidth()
+                        .padding(5.dp), horizontalArrangement = Arrangement.SpaceBetween) {
 
                     Row {
                         IconPopover(
@@ -247,77 +358,134 @@ fun ExercisePager(
             }
         }
 
-        Column ( modifier = Modifier.weight(0.3f).padding(horizontal = 8.dp),
-            verticalArrangement = Arrangement.Center,
-            ) {
-            TextFieldBase(
-                enabled = state.phrases[pagerState.currentPage].phraseState == PhraseState.NOT_STARTED,
-                value = state.inputAnswer,
-                onValueChange = { onEvent(ExerciseUiEvent.OnInputChanged(it, pagerState.currentPage)) },
-                label = stringResource(R.string.label_answer_phrase)
-            )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-
-           ButtonBase(
-                enabled = state.phrases[pagerState.currentPage].phraseState != PhraseState.NOT_STARTED,
-                onClick = {
-                   onEvent(ExerciseUiEvent.OnNextPhrase(pagerState.currentPage))
-                },
-                text = stringResource(R.string.btn_next_phrase))
-
-        }
     }
 }
 
 
 @Composable
-@Preview
-fun PreviewBottomContent(){
-    BottomSheetContent(state = ExerciseUiState(), onEvent = {})
-}
-
-
-@Composable
-fun BottomSheetContent(
+fun BottomSheetContentLandScape(
     modifier: Modifier = Modifier,
     state: ExerciseUiState,
     onEvent: (ExerciseUiEvent) -> Unit
-){
-        Column(modifier.fillMaxSize(),
+) {
+    Row(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Left side - Progress indicator
+        Box(
+            modifier = Modifier
+                .weight(0.4f)
+                .fillMaxHeight(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                progress = 0.75f,
+                sizePercentage = 1f, // Larger in landscape
+                strokeWidthPercentage = 0.08f,
+                textSizePercentage = 0.20f
+            )
+        }
+
+        // Right side - Text and button
+        Column(
+            modifier = Modifier
+                .weight(0.6f)
+                .fillMaxHeight()
+                .padding(start = 24.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+        ) {
+            Text(
+                text = stringResource(R.string.label_percentage_correct_answers),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleLarge,
+                color = Color.Red
+            )
 
-                CircularProgressIndicator(
-                    progress = state.testProgressCorrectAnswers,
-                    strokeWidth = 20.dp,
-                    size = 150.dp
-                )
-               Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-                    Text(stringResource(R.string.label_percentage_correct_answers), modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.Red)
+            Text(
+                text = stringResource(R.string.label_description_percentage_correct_answers),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.labelMedium,
+                color = Color.Gray
+            )
 
-               Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            Text(stringResource(R.string.label_description_percentage_correct_answers), modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = Color.Gray
-                        )
-             Spacer(modifier = Modifier.height(16.dp))
+            ButtonBase(
+                onClick = { onEvent(ExerciseUiEvent.NavigateNext) },
+                text = stringResource(R.string.btn_finish_exercise),
+                modifier = Modifier.fillMaxWidth(0.8f) // 80% width for better proportions
+            )
+        }
+    }
+}
 
-                    ButtonBase(
-                        onClick = { onEvent(ExerciseUiEvent.OnStartClicked) },
-                        text = stringResource(R.string.btn_finish_exercise),
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
 
-                }
 
-            }
+@Composable
+fun BottomSheetContentPortrait(
+    modifier: Modifier = Modifier,
+    state: ExerciseUiState,
+    onEvent: (ExerciseUiEvent) -> Unit
+) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CircularProgressIndicator(
+            progress = 0.75f,
+            sizePercentage = 0.5f, // 50% of available space
+            strokeWidthPercentage = 0.08f, // 6% of circle size for stroke
+            textSizePercentage = 0.20f // 12% of circle size for text
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = stringResource(R.string.label_percentage_correct_answers),
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleLarge,
+            color = Color.Red
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = stringResource(R.string.label_description_percentage_correct_answers),
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.labelMedium,
+            color = Color.Gray
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        ButtonBase(
+            onClick = { onEvent(ExerciseUiEvent.NavigateNext) },
+            text = stringResource(R.string.btn_finish_exercise),
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+    }
+}
+
+
+
+
+

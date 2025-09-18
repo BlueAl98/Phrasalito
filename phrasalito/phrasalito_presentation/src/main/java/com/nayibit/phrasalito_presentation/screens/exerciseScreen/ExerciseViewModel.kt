@@ -129,6 +129,11 @@ class ExerciseViewModel @Inject constructor(
                     )
                 }
             }
+            is ExerciseUiEvent.NavigateNext -> {
+                viewModelScope.launch {
+                    _eventChannel.send(ExerciseUiEvent.NavigateNext)
+                }
+            }
 
             else -> Unit
         }
