@@ -2,6 +2,8 @@ package com.nayibit.phrasalito_presentation.screens.exerciseScreen
 
 
 import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -71,11 +74,14 @@ fun ExerciseScreen(
         pageCount = { state.phrases.size }
     )
 
- /*   BackHandler {
-        if (state.testCompleted){
-          println("Back pressed")
+    BackHandler {
+        if (state.testCompleted) {
+          onEvent(ExerciseUiEvent.NavigateNext)
+        }else{
+            // here event modal
+           // onEvent(ExerciseUiEvent.ShowToast("Finish the exercise first"))
         }
-    }*/
+    }
 
     if (state.showDialog){
         SimpleConfirmDialog(
@@ -133,10 +139,12 @@ fun ExerciseScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            if (state.isLoading)
-                LoadingScreen()
-            else if (state.phrases.isEmpty())
-                    Text(text = "No Phrases Found")
+           if (state.isLoading)
+               LoadingScreen()
+           else if (state.phrases.isEmpty())
+               Box(contentAlignment = Alignment.Center, modifier = modifier.fillMaxSize()) {
+                   Text(text = "No Phrases Found")
+          }
             else {
 
                 when (orientation) {
@@ -170,7 +178,6 @@ fun PortaitContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-
     ) {
 
         ProgressBar(
@@ -221,38 +228,47 @@ fun LandscapeContent(
 ){
 
         Row(modifier.fillMaxSize()) {
-
             Column(
                 modifier = Modifier
                     .weight(0.4f)
                     .fillMaxHeight()
-                    .padding(horizontal = 8.dp),
-                verticalArrangement = Arrangement.Center,
+                    .padding(horizontal = 8.dp, vertical = 5.dp),
+                verticalArrangement = Arrangement.SpaceEvenly
+
             ) {
-                TextFieldBase(
-                    enabled = state.phrases[pagerState.currentPage].phraseState == PhraseState.NOT_STARTED,
-                    value = state.inputAnswer,
-                    onValueChange = {
-                        onEvent(
-                            ExerciseUiEvent.OnInputChanged(
-                                it,
-                                pagerState.currentPage
+                Box(modifier.weight(0.15f)) {
+                ProgressBar(
+                    current = state.currentIndex + 1,
+                    total = state.totalItems
+                )
+            }
+
+                Column(modifier.weight(0.85f), verticalArrangement = Arrangement.Center) {
+                    TextFieldBase(
+                        enabled = state.phrases[pagerState.currentPage].phraseState == PhraseState.NOT_STARTED,
+                        value = state.inputAnswer,
+                        onValueChange = {
+                            onEvent(
+                                ExerciseUiEvent.OnInputChanged(
+                                    it,
+                                    pagerState.currentPage
+                                )
                             )
-                        )
-                    },
-                    label = stringResource(R.string.label_answer_phrase)
-                )
+                        },
+                        label = stringResource(R.string.label_answer_phrase)
+                    )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
 
-                ButtonBase(
-                    enabled = state.phrases[pagerState.currentPage].phraseState != PhraseState.NOT_STARTED,
-                    onClick = {
-                        onEvent(ExerciseUiEvent.OnNextPhrase(pagerState.currentPage))
-                    },
-                    text = stringResource(R.string.btn_next_phrase)
-                )
+                    ButtonBase(
+                        enabled = state.phrases[pagerState.currentPage].phraseState != PhraseState.NOT_STARTED,
+                        onClick = {
+                            onEvent(ExerciseUiEvent.OnNextPhrase(pagerState.currentPage))
+                        },
+                        text = stringResource(R.string.btn_next_phrase)
+                    )
+                }
             }
 
             ExercisePager(
@@ -384,7 +400,7 @@ fun BottomSheetContentLandScape(
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(
-                progress = 0.75f,
+                progress = state.testProgressCorrectAnswers,
                 sizePercentage = 1f, // Larger in landscape
                 strokeWidthPercentage = 0.08f,
                 textSizePercentage = 0.20f
@@ -412,7 +428,7 @@ fun BottomSheetContentLandScape(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = stringResource(R.string.label_description_percentage_correct_answers),
+                text = "Respuestas correctas: ${state.phrases.filter { it.phraseState == PhraseState.COMPLETED }.size } /  ${state.totalItems}",
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.labelMedium,
@@ -444,7 +460,7 @@ fun BottomSheetContentPortrait(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         CircularProgressIndicator(
-            progress = 0.75f,
+            progress = state.testProgressCorrectAnswers,
             sizePercentage = 0.5f, // 50% of available space
             strokeWidthPercentage = 0.08f, // 6% of circle size for stroke
             textSizePercentage = 0.20f // 12% of circle size for text
@@ -466,7 +482,7 @@ fun BottomSheetContentPortrait(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = stringResource(R.string.label_description_percentage_correct_answers),
+            text = "Respuestas correctas: ${state.phrases.filter { it.phraseState == PhraseState.COMPLETED }.size } /  ${state.totalItems}",
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth(),

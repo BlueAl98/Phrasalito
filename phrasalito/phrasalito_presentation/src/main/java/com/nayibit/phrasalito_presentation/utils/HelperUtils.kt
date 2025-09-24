@@ -28,20 +28,35 @@ fun validateExample(phrase: String, example: String = ""): ValidateExampleResult
 
 
 fun exercisePhrase(targetPhrase: String, example: String): String {
-    val targetWords = targetPhrase.lowercase().split(" ").textWithoutSpecialCharacters()
+    // Build normalized target set (remove non-letter/digits for matching)
+    val targetSet = targetPhrase
+        .lowercase()
+        .replace(Regex("[^\\p{L}\\p{Nd}'’-]+"), " ")
+        .split(Regex("\\s+"))
+        .filter { it.isNotBlank() }
+        .map { it.replace(Regex("[^\\p{L}\\p{Nd}]+"), "") } // "don't" -> "dont"
+        .toSet()
 
-    val convertString = example.split(" ").map { word ->
-        // Remove punctuation like commas, periods, etc.
-        val cleanWord = word.filter { it.isLetterOrDigit() }
+    // Regex matches words containing letters/digits and common contractions/hyphens
+    val wordRegex = Regex("""\b[\p{L}\p{Nd}'’-]+\b""")
 
-        if (targetWords.contains(cleanWord.lowercase())) {
-            "_".repeat(cleanWord.length) + word.takeLastWhile { !it.isLetterOrDigit() }
+    return wordRegex.replace(example) { mr ->
+        val word = mr.value                            // preserves original case/punct inside token
+        val cleaned = word.lowercase().replace(Regex("[^\\p{L}\\p{Nd}]+"), "")
+        if (cleaned.isNotBlank() && cleaned in targetSet) {
+            // replace each letter/digit with '_' but keep punctuation inside the token
+            word.map { if (it.isLetterOrDigit()) '_' else it }.joinToString("")
         } else {
             word
         }
     }
+}
 
-    return convertString.joinToString(" ")
+fun calculateProgressPercentage(
+    total: Int,
+    completed: Int
+): Float {
+   return  completed.toFloat() / total.toFloat()
 }
 
 

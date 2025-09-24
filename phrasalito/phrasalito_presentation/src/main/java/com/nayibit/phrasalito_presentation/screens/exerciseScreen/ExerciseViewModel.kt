@@ -1,10 +1,10 @@
 package com.nayibit.phrasalito_presentation.screens.exerciseScreen
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.common.util.Resource
+import com.nayibit.common.util.normalizeSpaces
 import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesByDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.IsTextSpeechReadyUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.ShutDownTtsUseCase
@@ -17,6 +17,7 @@ import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEven
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.ShowAllInfo
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.ShowDialog
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.UpdateExpandedState
+import com.nayibit.phrasalito_presentation.utils.calculateProgressPercentage
 import com.nayibit.phrasalito_presentation.utils.textWithoutSpecialCharacters
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -61,10 +62,9 @@ class ExerciseViewModel @Inject constructor(
             is OnInputChanged -> {
                 _state.update { it.copy(inputAnswer = event.input) }
 
-              if (_state.value.phrases[event.currentIndex].targetLanguage.textWithoutSpecialCharacters() == event.input) {
+              if (_state.value.phrases[event.currentIndex].targetLanguage.textWithoutSpecialCharacters() == event.input.normalizeSpaces()) {
                   _state.update { currentState ->
                       currentState.copy(
-                         // currentIndex = event.currentIndex + 1,
                           phrases = currentState.phrases.mapIndexed { index, phrase ->
                               if (index == event.currentIndex) phrase.copy(example = phrase.correctAnswer, phraseState = PhraseState.COMPLETED)
                               else phrase
@@ -85,7 +85,13 @@ class ExerciseViewModel @Inject constructor(
 
                 if (event.currentIndex == _state.value.phrases.size - 1) {
                     viewModelScope.launch {
-                        _state.update { it.copy(testCompleted = true) }
+                        _state.update { it.copy(
+                            testCompleted = true,
+                            testProgressCorrectAnswers = calculateProgressPercentage(
+                                total = it.totalItems ,
+                                completed = it.phrases.filter { it.phraseState == PhraseState.COMPLETED }.size
+                            )
+                        ) }
                         _eventChannel.send(OnNextPhrase(event.currentIndex))
                     }
                     return
@@ -95,11 +101,14 @@ class ExerciseViewModel @Inject constructor(
                    currentState.copy(
                        inputAnswer = "",
                        currentIndex = currentState.currentIndex + 1,
-                       testProgressCorrectAnswers = currentState.phrases.filter {
-                               it.phraseState == PhraseState.COMPLETED
-                           }.size.toFloat() / currentState.phrases.size.toFloat()
+                       testProgressCorrectAnswers = calculateProgressPercentage(
+                           total = currentState.totalItems ,
+                           completed = currentState.phrases.filter { it.phraseState == PhraseState.COMPLETED }.size
                        )
+
+                   )
                }
+
             }
 
             is OnSpeakPhrase -> {
@@ -145,9 +154,9 @@ class ExerciseViewModel @Inject constructor(
         viewModelScope.launch {
             isTextSpeechReadyUseCase().collect { result ->
                 when (result){
-                    is Resource.Loading -> _state.update { it.copy(isLoading = true) }
-                    is Resource.Success -> _state.update { it.copy(isLoading = false, ttsState = true) }
-                    is Resource.Error -> _state.update { it.copy(isLoading = false, ttsState = false) }
+                    is Resource.Loading -> { _state.update { it.copy(ttsState = false) }}
+                    is Resource.Success -> _state.update { it.copy( ttsState = true) }
+                    is Resource.Error -> _state.update { it.copy( ttsState = false) }
                 }
             }
         }
@@ -156,7 +165,6 @@ class ExerciseViewModel @Inject constructor(
 
     fun getAllPhrases(idDeck: Int) {
         viewModelScope.launch {
-
                 getAllPhrasesByDeckUseCase(idDeck)
                     .collect { result ->
                         when (result) {
