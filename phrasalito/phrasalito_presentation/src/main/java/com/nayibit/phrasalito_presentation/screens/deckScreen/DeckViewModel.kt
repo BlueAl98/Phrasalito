@@ -3,6 +3,7 @@ package com.nayibit.phrasalito_presentation.screens.deckScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.common.util.Resource
+import com.nayibit.common.util.UiText
 import com.nayibit.phrasalito_domain.model.Deck
 import com.nayibit.phrasalito_domain.useCases.decks.GetAllDecksUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.InsertDeckUseCase
@@ -39,8 +40,11 @@ class DeckViewModel @Inject
     fun onEvent(event: DeckUiEvent) {
         when (event) {
             is ShowModal -> {
+
                 _state.value = _state.value.copy(
-                    showModal = true
+                    showModal = true,
+                    bodyModal = event.type,
+                    currentIdDeck = event.id
                 )
             }
             is DismissModal -> {
@@ -67,10 +71,16 @@ class DeckViewModel @Inject
                 )
                 insertDeck(deck)
             }
-            is Navigation -> {
+            is NavigationToPhrases -> {
                 viewModelScope.launch {
-                _eventFlow.emit(Navigation(event.id))
+                _eventFlow.emit(NavigationToPhrases(event.id))
               }
+            }
+            is NavigationToExercise -> {
+                viewModelScope.launch {
+                    _state.value = _state.value.copy(showModal = false)
+                    _eventFlow.emit(NavigationToExercise(event.id))
+                }
             }
 
             is OpenPrompt -> {
@@ -83,7 +93,6 @@ class DeckViewModel @Inject
                     _eventFlow.emit(OpenPrompt(url, prompt))
                 }
             }
-
 
         }
     }
@@ -121,7 +130,7 @@ class DeckViewModel @Inject
                                 isLoadingButton = false,
                                 nameDeck = ""
                             )
-                           _eventFlow.emit(ShowToast("Deck inserted successfully"))
+                           _eventFlow.emit(ShowToast(UiText.DynamicString("Deck inserted successfully")))
                         }
                         is Resource.Error -> {
                             _state.value = _state.value.copy(
@@ -131,7 +140,7 @@ class DeckViewModel @Inject
                                 isLoadingButton = false,
                                 nameDeck = ""
                             )
-                            _eventFlow.emit(ShowToast("Error: ${result.message}"))
+                            _eventFlow.emit(ShowToast(UiText.DynamicString("Error: ${result.message}")))
                         }
 
                     }
@@ -159,7 +168,7 @@ class DeckViewModel @Inject
                             isLoading = false,
                             errorMessage = result.message
                         )
-                        _eventFlow.emit(ShowToast("Error: ${result.message}"))
+                        _eventFlow.emit(ShowToast(UiText.DynamicString("Error: ${result.message}")))
                     }
                 }
             }

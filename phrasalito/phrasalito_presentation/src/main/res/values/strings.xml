@@ -12,6 +12,10 @@
     <!-- DeckScreen Strings -->
     <string name="label_learn_phrase">Nombre del Deck</string>
     <string name="phrase_deleted_successfully">Frase eliminada con éxito</string>
+    <string name="label_modal_start_exercise">¿Estas listo para ponerte a prueba?</string>
+    <string name="label_dont_cards_enough">Necesitas minimo 3 frases para comenzar</string>
+
+
 
     <!-- PhraseScreen Strings -->
     <string name="label_phrase">Frase</string>
@@ -25,11 +29,16 @@
 
     <!-- ExerciseScreen Strings -->
     <string name="label_answer_phrase">Ingrese su respuesta</string>
-        <string name="btn_next_phrase">Siguiente</string>
+     <string name="btn_next_phrase">Siguiente</string>
+     <string name="label_exercise_time">Tiempo de ejercicio</string>
+    <string name="btn_finish_exercise">Terminar</string>"
+    <string name="label_percentage_correct_answers">Porcentaje de aciertos</string>">
+    <string name="label_description_percentage_correct_answers">Descripción</string>">
 
 
     <!-- GLOBAL Strings -->
     <string name="btn_save">Guardar</string>
+    <string name="btn_accept">Aceptar</string>
     <string name="btn_cancel">Cancelar</string>
     <string name="btn_update">Actualizar</string>
     <string name="btn_delete">Eliminar</string>

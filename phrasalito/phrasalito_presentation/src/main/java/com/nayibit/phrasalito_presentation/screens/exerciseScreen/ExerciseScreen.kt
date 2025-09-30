@@ -1,16 +1,21 @@
 package com.nayibit.phrasalito_presentation.screens.exerciseScreen
 
 
+import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -18,29 +23,39 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.QuestionMark
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.ButtonBase
+import com.nayibit.phrasalito_presentation.composables.CircularProgressIndicator
 import com.nayibit.phrasalito_presentation.composables.HighlightedText
 import com.nayibit.phrasalito_presentation.composables.IconPopover
 import com.nayibit.phrasalito_presentation.composables.LoadingScreen
 import com.nayibit.phrasalito_presentation.composables.ProgressBar
+import com.nayibit.phrasalito_presentation.composables.SimpleConfirmDialog
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
 import kotlinx.coroutines.flow.Flow
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseScreen(
     modifier: Modifier = Modifier,
@@ -50,11 +65,30 @@ fun ExerciseScreen(
     navigation: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val sheetState = rememberBottomSheetScaffoldState()
+    val orientation = LocalConfiguration.current.orientation
+
 
     val pagerState = rememberPagerState(
         initialPage = state.currentIndex,
         pageCount = { state.phrases.size }
     )
+
+    BackHandler {
+        if (state.testCompleted) {
+          onEvent(ExerciseUiEvent.NavigateNext)
+        }else{
+            // here event modal
+           // onEvent(ExerciseUiEvent.ShowToast("Finish the exercise first"))
+        }
+    }
+
+    if (state.showDialog){
+        SimpleConfirmDialog(
+            onConfirm = { onEvent(ExerciseUiEvent.ShowAllInfo(state.currentIndex)) },
+            onCancel = { onEvent(ExerciseUiEvent.ShowDialog(false)) }
+        )
+    }
 
     // Collect events lifecycle-aware
     LaunchedEffect(Unit) {
@@ -66,41 +100,179 @@ fun ExerciseScreen(
                 is ExerciseUiEvent.NavigateNext -> {
                     navigation()
                 }
-                is ExerciseUiEvent.OnStartClicked -> {
-
+                is ExerciseUiEvent.OnNextPhrase ->{
+                    sheetState.bottomSheetState.expand()
                 }
-
                 else -> Unit
             }
         }
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+    BottomSheetScaffold(
+        sheetPeekHeight = 0.dp,
+        sheetSwipeEnabled = false,
+        scaffoldState = sheetState,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        sheetContent = {
+            Column (modifier
+                .fillMaxHeight(0.6f)
+                .fillMaxWidth()
+                .padding(bottom = 20.dp)){
+
+              when (orientation) {
+                  Configuration.ORIENTATION_LANDSCAPE -> BottomSheetContentLandScape(
+                      state = state,
+                      onEvent = onEvent
+                  )
+                  else -> BottomSheetContentPortrait(
+                      state = state,
+                      onEvent = onEvent
+                  )
+              }
+            }
+
+        }
     ) { padding ->
 
-        if (state.isLoading)
-            LoadingScreen()
-       else if (state.phrases.isEmpty())
-           Box(modifier = modifier.fillMaxSize(),contentAlignment = Alignment.Center) {
-               Text(text = "No Phrases Found")
-           }
-       else
-          Column(
-            modifier = modifier
-                .padding(padding)
+       Box(
+            modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(padding)
         ) {
+           if (state.isLoading)
+               LoadingScreen()
+           else if (state.phrases.isEmpty())
+               Box(contentAlignment = Alignment.Center, modifier = modifier.fillMaxSize()) {
+                   Text(text = "No Phrases Found")
+          }
+            else {
 
-            ProgressBar(
-                current = state.currentIndex +1,
-                total = state.totalItems,
-                modifier = modifier.weight(0.1f)
+                when (orientation) {
+                    Configuration.ORIENTATION_LANDSCAPE -> {
+                        LandscapeContent(
+                            state = state,
+                            onEvent = onEvent,
+                            pagerState = pagerState)
+                    }
+                    else -> {
+                        PortaitContent(
+                            state = state,
+                            onEvent = onEvent,
+                            pagerState = pagerState)
+                    }
+                }
+
+
+            }
+        }
+    }
+}
+
+@Composable
+fun PortaitContent(
+    modifier: Modifier = Modifier,
+    state: ExerciseUiState,
+    onEvent: (ExerciseUiEvent) -> Unit,
+    pagerState: PagerState
+){
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+    ) {
+
+        ProgressBar(
+            current = state.currentIndex + 1,
+            total = state.totalItems,
+            modifier = modifier.weight(0.1f)
+        )
+        ExercisePager(
+            modifier = modifier.weight(0.7f),
+            onEvent = onEvent,
+            state = state,
+            pagerState = pagerState
+        )
+
+        Column ( modifier = Modifier
+            .weight(0.3f)
+            .padding(horizontal = 8.dp),
+            verticalArrangement = Arrangement.Center,
+        ) {
+            TextFieldBase(
+                enabled = state.phrases[pagerState.currentPage].phraseState == PhraseState.NOT_STARTED,
+                value = state.inputAnswer,
+                onValueChange = { onEvent(ExerciseUiEvent.OnInputChanged(it, pagerState.currentPage)) },
+                label = stringResource(R.string.label_answer_phrase)
             )
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+            ButtonBase(
+                enabled = state.phrases[pagerState.currentPage].phraseState != PhraseState.NOT_STARTED,
+                onClick = {
+                    onEvent(ExerciseUiEvent.OnNextPhrase(pagerState.currentPage))
+                },
+                text = stringResource(R.string.btn_next_phrase))
+
+        }
+
+    }
+}
+
+@Composable
+fun LandscapeContent(
+    modifier: Modifier = Modifier,
+    state: ExerciseUiState,
+    onEvent: (ExerciseUiEvent) -> Unit,
+    pagerState: PagerState
+){
+
+        Row(modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .weight(0.4f)
+                    .fillMaxHeight()
+                    .padding(horizontal = 8.dp, vertical = 5.dp),
+                verticalArrangement = Arrangement.SpaceEvenly
+
+            ) {
+                Box(modifier.weight(0.15f)) {
+                ProgressBar(
+                    current = state.currentIndex + 1,
+                    total = state.totalItems
+                )
+            }
+
+                Column(modifier.weight(0.85f), verticalArrangement = Arrangement.Center) {
+                    TextFieldBase(
+                        enabled = state.phrases[pagerState.currentPage].phraseState == PhraseState.NOT_STARTED,
+                        value = state.inputAnswer,
+                        onValueChange = {
+                            onEvent(
+                                ExerciseUiEvent.OnInputChanged(
+                                    it,
+                                    pagerState.currentPage
+                                )
+                            )
+                        },
+                        label = stringResource(R.string.label_answer_phrase)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+
+                    ButtonBase(
+                        enabled = state.phrases[pagerState.currentPage].phraseState != PhraseState.NOT_STARTED,
+                        onClick = {
+                            onEvent(ExerciseUiEvent.OnNextPhrase(pagerState.currentPage))
+                        },
+                        text = stringResource(R.string.btn_next_phrase)
+                    )
+                }
+            }
+
             ExercisePager(
-                modifier = modifier.weight(0.7f),
+                modifier = modifier.weight(0.6f),
                 onEvent = onEvent,
                 state = state,
                 pagerState = pagerState
@@ -108,7 +280,7 @@ fun ExerciseScreen(
 
         }
     }
-}
+
 
 
 
@@ -119,6 +291,12 @@ fun ExercisePager(
     state: ExerciseUiState,
     pagerState: PagerState
 ) {
+
+    val colorManager =  when (state.phrases[pagerState.currentPage].phraseState) {
+        PhraseState.NOT_STARTED -> Color.Transparent
+        PhraseState.ERROR_ANSWER -> Color.Red
+        PhraseState.COMPLETED -> Color.Green
+    }
 
     LaunchedEffect(state.currentIndex) {
         pagerState.animateScrollToPage(state.currentIndex)
@@ -142,14 +320,18 @@ fun ExercisePager(
                     .padding(16.dp)
                     .border(
                         width = 2.dp,
-                        color = if (state.phrases[page].isComplete) Color.Green else Color.Transparent,
+                        color = colorManager,
                         shape = RoundedCornerShape(16.dp)
                     ),
                 elevation = CardDefaults.cardElevation(8.dp)
             ) {
 
                 Box {
-                    Row (modifier.fillMaxWidth().padding(5.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Row (modifier
+                        .fillMaxWidth()
+                        .padding(5.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+
+                    Row {
                         IconPopover(
                             icon = Icons.Default.Info,
                             expandedState = state.popOverState,
@@ -161,7 +343,14 @@ fun ExercisePager(
                             )
                         }
 
-                        if (state.phrases[page].isComplete)
+                        IconPopover(
+                            enabled = state.phrases[page].phraseState == PhraseState.NOT_STARTED,
+                            icon = Icons.Default.QuestionMark,
+                            onClick = {onEvent(ExerciseUiEvent.ShowDialog(true))}
+                        )
+                    }
+
+                        if (state.phrases[page].phraseState != PhraseState.NOT_STARTED)
                             IconPopover(
                              icon = Icons.Default.PlayArrow,
                                expandedState = state.popOverState,
@@ -185,26 +374,134 @@ fun ExercisePager(
             }
         }
 
-        Column ( modifier = Modifier.weight(0.3f).padding(horizontal = 8.dp),
+
+    }
+}
+
+
+@Composable
+fun BottomSheetContentLandScape(
+    modifier: Modifier = Modifier,
+    state: ExerciseUiState,
+    onEvent: (ExerciseUiEvent) -> Unit
+) {
+    Row(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Left side - Progress indicator
+        Box(
+            modifier = Modifier
+                .weight(0.4f)
+                .fillMaxHeight(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                progress = state.testProgressCorrectAnswers,
+                sizePercentage = 1f, // Larger in landscape
+                strokeWidthPercentage = 0.08f,
+                textSizePercentage = 0.20f
+            )
+        }
+
+        // Right side - Text and button
+        Column(
+            modifier = Modifier
+                .weight(0.6f)
+                .fillMaxHeight()
+                .padding(start = 24.dp),
             verticalArrangement = Arrangement.Center,
-            ) {
-            TextFieldBase(
-                enabled = !state.phrases[pagerState.currentPage].isComplete,
-                value = state.inputAnswer,
-                onValueChange = { onEvent(ExerciseUiEvent.OnInputChanged(it, pagerState.currentPage)) },
-                label = stringResource(R.string.label_answer_phrase)
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(R.string.label_percentage_correct_answers),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleLarge,
+                color = Color.Red
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            Text(
+                text = "Respuestas correctas: ${state.phrases.filter { it.phraseState == PhraseState.COMPLETED }.size } /  ${state.totalItems}",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.labelMedium,
+                color = Color.Gray
+            )
 
-           ButtonBase(
-                enabled = state.phrases[pagerState.currentPage].isComplete,
-                onClick = {
-                   onEvent(ExerciseUiEvent.OnNextPhrase)
-                },
-                text = stringResource(R.string.btn_next_phrase))
+            Spacer(modifier = Modifier.height(24.dp))
 
+            ButtonBase(
+                onClick = { onEvent(ExerciseUiEvent.NavigateNext) },
+                text = stringResource(R.string.btn_finish_exercise),
+                modifier = Modifier.fillMaxWidth(0.8f) // 80% width for better proportions
+            )
         }
     }
 }
+
+
+
+@Composable
+fun BottomSheetContentPortrait(
+    modifier: Modifier = Modifier,
+    state: ExerciseUiState,
+    onEvent: (ExerciseUiEvent) -> Unit
+) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CircularProgressIndicator(
+            progress = state.testProgressCorrectAnswers,
+            sizePercentage = 0.5f, // 50% of available space
+            strokeWidthPercentage = 0.08f, // 6% of circle size for stroke
+            textSizePercentage = 0.20f // 12% of circle size for text
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = stringResource(R.string.label_percentage_correct_answers),
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleLarge,
+            color = Color.Red
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Respuestas correctas: ${state.phrases.filter { it.phraseState == PhraseState.COMPLETED }.size } /  ${state.totalItems}",
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.labelMedium,
+            color = Color.Gray
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        ButtonBase(
+            onClick = { onEvent(ExerciseUiEvent.NavigateNext) },
+            text = stringResource(R.string.btn_finish_exercise),
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+    }
+}
+
+
+
+
+

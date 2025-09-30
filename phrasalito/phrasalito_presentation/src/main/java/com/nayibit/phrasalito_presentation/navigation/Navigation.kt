@@ -39,7 +39,7 @@ fun Navigation() {
 
     NavHost(
         navController = navController,
-        startDestination = /*DeckScreen*/ ExerciseScreenNav(1)
+        startDestination = DeckScreen
     ) {
 
       composable<StartScreen> {
@@ -67,12 +67,15 @@ fun Navigation() {
          DeckScreen(
              state = state,
              eventFlow = viewModel.eventFlow,
-             onEvent = viewModel::onEvent
-         ){ idDeck ->
-            navController.navigate(PhraseScreenNav(idDeck))
-         }
-     }
-
+             onEvent = viewModel::onEvent,
+             navigationToPhrases = { idDeck ->
+                 navController.navigate(PhraseScreenNav(idDeck))
+             },
+             navigationToExercise = { idDeck ->
+                 navController.navigate(ExerciseScreenNav(idDeck))
+             }
+         )
+}
      composable<PhraseScreenNav> {
 
         val  viewModel: PhraseViewModel = hiltViewModel()
@@ -94,7 +97,13 @@ fun Navigation() {
              state = state,
              eventFlow = viewModel.eventFlow,
              onEvent = viewModel::onEvent,
-             navigation = {})
+             navigation = {
+                 navController.navigate(DeckScreen){
+                     popUpTo(DeckScreen) {
+                         inclusive = true
+                     }
+                 }
+             })
      }
 
 

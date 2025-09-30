@@ -9,7 +9,10 @@ data class ExerciseUiState (
     val totalItems: Int = 10,
     val inputAnswer : String = "",
     val popOverState: Boolean = false,
-    val ttsState : Boolean = false
+    val ttsState : Boolean = false,
+    val testCompleted : Boolean = false,
+    val showDialog : Boolean = false,
+    val testProgressCorrectAnswers : Float = 0f
 )
 
 data class ExercisePhrases(
@@ -18,5 +21,11 @@ data class ExercisePhrases(
     val translation: String,
     val example: String = "",
     val correctAnswer: String = "",
-    val isComplete: Boolean = false
+    val phraseState: PhraseState = PhraseState.NOT_STARTED
 )
+
+enum class PhraseState(val value: Int){
+    NOT_STARTED(0),
+    ERROR_ANSWER(1),
+    COMPLETED(2)
+}
