@@ -6,7 +6,7 @@
 ![License](https://img.shields.io/github/license/BlueAl98/Phrasalito)
 
 **Phrasalito** is an Android application written in **Kotlin** that helps users learn and practice **English phrasal verbs** with quizzes, flashcards, and spaced repetition.  
-The project follows **Clean Architecture**, is organized in a **multi-module Gradle setup**, and integrates **testing** and **CI/CD pipelines**.
+The project follows **Clean Architecture**, **JetCompose**, is organized in a **multi-module Gradle setup**, and integrates **testing** and **CI/CD pipelines**.
 
 ---
 
@@ -28,7 +28,7 @@ The project is built around **Clean Architecture + MVVM**, enforcing separation 
 
 ```
 ┌───────────────────────┐
-│       App (UI)        │  → Activities, Fragments, ViewModels
+│       App (UI)        │  → Activities, composables, ViewModels
 └───────────┬───────────┘
             │
 ┌───────────▼───────────┐
@@ -60,7 +60,8 @@ The project is built around **Clean Architecture + MVVM**, enforcing separation 
 - **Presentation**  
   - ViewModels (MVVM)  
   - State handling with Kotlin `Flow` / `StateFlow`  
-  - UI models and adapters  
+  - UI models
+  - JetCompose 
 
 - **App**  
   - Android entry point  
@@ -73,7 +74,7 @@ The project is built around **Clean Architecture + MVVM**, enforcing separation 
 
 ```
 Phrasalito/
-│── app/                       # Android app module (Activities, Fragments, navigation)
+│── app/                       # Android app module (Activities, Composables, navigation)
 │   ├── src/main/java/.../ui   # UI components
 │   ├── src/main/res           # Resources (layouts, drawables, strings)
 │
@@ -92,7 +93,7 @@ Phrasalito/
 │   └── presentation/          # Presentation layer
 │       ├── viewmodels/        # ViewModels
 │       ├── state/             # UI state classes
-│       └── adapters/          # RecyclerView/List adapters
+│       └── adapters/          # composables
 │
 │── build.gradle.kts           # Root Gradle config
 │── settings.gradle.kts        # Multi-module setup
@@ -116,25 +117,6 @@ Phrasalito/
   - AndroidX Test for instrumentation tests  
 - **Build:** Gradle Kotlin DSL  
 - **CI/CD:** GitHub Actions (build & test on push/PR)  
-
----
-
-## 🚀 Getting Started
-
-### Requirements
-- Android Studio Ladybug+  
-- JDK 17+  
-- Gradle 8+  
-
-### Clone & Build
-```bash
-git clone https://github.com/BlueAl98/Phrasalito.git
-cd Phrasalito
-./gradlew clean build
-```
-
-### Run
-Open the project in Android Studio → choose emulator/physical device → press ▶️.
 
 ---
 
@@ -162,17 +144,6 @@ Workflows in `.github/workflows/` handle:
 - ✅ Build on every push/PR  
 - ✅ Run unit + instrumentation tests  
 - ✅ Verify Gradle + Kotlin DSL integrity  
-
----
-
-## 🔮 Future Improvements
-
-- Add spaced repetition algorithm (e.g. SM-2)  
-- Cloud sync for user progress  
-- More quizzes and phrasal verb categories  
-- Dark theme and accessibility improvements  
-- i18n for Spanish/other learners  
-
 ---
 
 ## 📸 Screenshots (to add)
