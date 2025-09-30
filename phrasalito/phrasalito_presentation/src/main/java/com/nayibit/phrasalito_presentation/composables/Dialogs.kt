@@ -9,15 +9,24 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,8 +40,11 @@ fun BaseDialog(
     showDialog: Boolean,
     offsideDismiss: Boolean = true,
     onDismissRequest: () -> Unit = {},
-    content: @Composable () -> Unit,
+    content: @Composable () -> Unit
 ) {
+
+  //  val scrollState = rememberScrollState()
+
         AnimatedVisibility(
             visible = showDialog,
             enter = fadeIn(tween(250)) + scaleIn(tween(250)),
@@ -60,7 +72,7 @@ fun BaseDialog(
                     shadowElevation = 8.dp  // Sombra para efecto de elevación
                 ) {
                     Column(
-                        modifier = Modifier.padding(20.dp),
+                        modifier = Modifier.padding(20.dp).verticalScroll(rememberScrollState()),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
@@ -73,4 +85,31 @@ fun BaseDialog(
                 onDismissRequest()
             }
         }
+}
+
+@Composable
+fun SimpleConfirmDialog(
+    title: String = "Title",
+    message: String = "Message",
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { onCancel() },
+        title = { Text(title) },
+        text = { Text(message) },
+        confirmButton = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                OutlinedButton(onClick = { onCancel() }) {
+                    Text("Cancelar")
+                }
+                OutlinedButton(onClick = { onConfirm() }) {
+                    Text("Confirmar")
+                }
+            }
+        }
+    )
 }

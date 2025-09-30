@@ -23,7 +23,7 @@ class RandomPhraseWorker  @AssistedInject constructor(
             NotificationBuilder.showNotification(applicationContext, randomPhrase.targetLanguage, randomPhrase.translation)
             Result.success()
         } else {
-            Result.success() // nothing to notify
+            Result.success()
         }
     }
 

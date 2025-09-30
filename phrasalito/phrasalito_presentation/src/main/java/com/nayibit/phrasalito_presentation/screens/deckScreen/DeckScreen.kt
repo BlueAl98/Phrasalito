@@ -13,10 +13,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.TextSnippet
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -24,6 +26,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
+import com.nayibit.common.util.UiText
+import com.nayibit.common.util.asString
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.BaseDialog
 import com.nayibit.phrasalito_presentation.composables.ButtonBase
@@ -39,7 +43,8 @@ fun DeckScreen(
     state: DeckStateUi,
     eventFlow: Flow<DeckUiEvent>,
     onEvent: (DeckUiEvent) -> Unit,
-    navigation: (id: Int) -> Unit
+    navigationToPhrases: (id: Int) -> Unit,
+    navigationToExercise: (id: Int) -> Unit
     ) {
 
     val context = LocalContext.current
@@ -49,11 +54,16 @@ fun DeckScreen(
         eventFlow.collect { event ->
             when (event) {
                 is DeckUiEvent.ShowToast -> {
-                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                    val message = event.message.asString(context)
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 }
-                is DeckUiEvent.Navigation -> {
-                     navigation(event.id)
+                is DeckUiEvent.NavigationToPhrases -> {
+                    navigationToPhrases(event.id)
                 }
+                is DeckUiEvent.NavigationToExercise -> {
+                    navigationToExercise(event.id)
+                }
+
                 is DeckUiEvent.OpenPrompt -> {
                     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     val clip = ClipData.newPlainText("Prompt", event.prompt)
@@ -75,22 +85,27 @@ fun DeckScreen(
 
     Scaffold(
         content = { padding ->
-            Box(modifier.fillMaxSize().padding(padding)) {
+            Box(modifier
+                .fillMaxSize()
+                .padding(padding)) {
                 when {
                     state.isLoading -> {
                         LoadingScreen()
                     }
                     state.decks.isNotEmpty() -> {
-                        LazyColumn(modifier = modifier.fillMaxSize().testTag("deck_list")) {
+                        LazyColumn(modifier = modifier
+                            .fillMaxSize()
+                            .testTag("deck_list")) {
                             items(state.decks, key = { it.id }) { phrase ->
                                 Row {
+
                                     CardDeck(
-                                        modifier = modifier.testTag("deck_item_${phrase.id}"),
                                         title = phrase.name,
-                                        maxCards = phrase.maxCards,
-                                        onClick = {
-                                           onEvent(DeckUiEvent.Navigation(phrase.id))
-                                        }
+                                        currentCards = phrase.maxCards,
+                                        maxCards = 10,
+                                        primaryIcon = Icons.AutoMirrored.Filled.TextSnippet,
+                                        onCardClick = {  onEvent(DeckUiEvent.NavigationToPhrases(phrase.id)) },
+                                        onPrimaryIconClick = { if (phrase.maxCards >= 3) onEvent(DeckUiEvent.ShowModal(BodyDeckModalEnum.BODY_START_EXERCISE, phrase.id)) else onEvent(DeckUiEvent.ShowToast(UiText.StringResource(R.string.label_dont_cards_enough))) },
                                     )
                                 }
 
@@ -99,42 +114,73 @@ fun DeckScreen(
                     }
                 }
 
-                    BaseDialog(
-                        showDialog = state.showModal,
-                        offsideDismiss = false
-                    ) {
-                         TextFieldBase(
-                           value = state.nameDeck,
-                           onValueChange = { onEvent(DeckUiEvent.UpdateTextFirstPhrase(it))},
-                           label  = stringResource(R.string.label_learn_phrase))
-
-                        ButtonBase(
-                            text = stringResource(id = R.string.btn_save),
-                            onClick = { if (state.nameDeck.isNotEmpty()) onEvent(DeckUiEvent.InsertDeck) else onEvent(DeckUiEvent.ShowToast("Campo vacio")) },
-                            loading = state.isLoadingButton
-                        )
-                        ButtonBase(
-                            text = stringResource(id = R.string.btn_cancel),
-                            onClick = { onEvent(DeckUiEvent.DismissModal) },
-                            enabled = !state.isLoadingButton
-                        )
 
 
+             BaseDialog(
+                    showDialog = state.showModal,
+                    offsideDismiss = false
+                ) {
+                    when (state.bodyModal) {
+                        BodyDeckModalEnum.BODY_INSERT_DECK -> BodyModalInsertDeck(state = state, onEvent = onEvent)
+                        BodyDeckModalEnum.BODY_START_EXERCISE -> BodyModalStartExercise(state = state, onEvent = onEvent)
                     }
 
                 }
 
+      }
+
 
         }, floatingActionButton = {
             FloatingActionButton(onClick = {
-                onEvent(DeckUiEvent.ShowModal)
+                onEvent(DeckUiEvent.ShowModal(BodyDeckModalEnum.BODY_INSERT_DECK))
             }) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
         }
     )
 
+}
 
 
+@Composable
+fun BodyModalInsertDeck(
+    state: DeckStateUi,
+    onEvent: (DeckUiEvent) -> Unit
+    ) {
 
+    TextFieldBase(
+        value = state.nameDeck,
+        onValueChange = { onEvent(DeckUiEvent.UpdateTextFirstPhrase(it))},
+        label  = stringResource(R.string.label_learn_phrase))
+
+    ButtonBase(
+        text = stringResource(id = R.string.btn_save),
+        onClick = { if (state.nameDeck.isNotEmpty()) onEvent(DeckUiEvent.InsertDeck) else onEvent(DeckUiEvent.ShowToast(UiText.StringResource(R.string.label_emty_fields))) },
+        loading = state.isLoadingButton
+    )
+    ButtonBase(
+        text = stringResource(id = R.string.btn_cancel),
+        onClick = { onEvent(DeckUiEvent.DismissModal) },
+        enabled = !state.isLoadingButton
+    )
+
+    }
+
+@Composable
+fun BodyModalStartExercise(
+    state: DeckStateUi,
+    onEvent: (DeckUiEvent) -> Unit
+    ) {
+
+    Text(stringResource(id = R.string.label_modal_start_exercise))
+
+    ButtonBase(
+        text = stringResource(id = R.string.btn_accept),
+        onClick = {  onEvent(DeckUiEvent.NavigationToExercise(state.currentIdDeck)) },
+
+    )
+    ButtonBase(
+        text = stringResource(id = R.string.btn_cancel),
+        onClick = { onEvent(DeckUiEvent.DismissModal) }
+    )
 }

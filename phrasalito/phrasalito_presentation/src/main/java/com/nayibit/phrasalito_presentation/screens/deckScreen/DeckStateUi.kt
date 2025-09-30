@@ -9,6 +9,14 @@ data class DeckStateUi (
     val errorMessage: String? = null,
     val showModal: Boolean = false,
     val nameDeck: String = "",
-    val maxDeck: String = "",
-    val isLoadingButton: Boolean = false
+    val maxDeck: Int = 0,
+    val isLoadingButton: Boolean = false,
+    val bodyModal: BodyDeckModalEnum = BodyDeckModalEnum.BODY_INSERT_DECK,
+    val currentIdDeck: Int = 0
 )
+
+
+enum class BodyDeckModalEnum() {
+    BODY_INSERT_DECK,
+    BODY_START_EXERCISE
+}
