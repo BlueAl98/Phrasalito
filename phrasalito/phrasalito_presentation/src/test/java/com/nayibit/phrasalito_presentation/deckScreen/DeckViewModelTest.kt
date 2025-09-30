@@ -9,6 +9,7 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import app.cash.turbine.test
 import com.nayibit.common.util.Resource
+import com.nayibit.common.util.UiText.DynamicString
 import com.nayibit.phrasalito_domain.useCases.decks.GetAllDecksUseCase
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.ShowToast
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckViewModel
@@ -92,7 +93,7 @@ class DeckViewModelTest {
         viewModel.eventFlow.test {
             val event = awaitItem()
             assertTrue(event is ShowToast)
-            assertEquals("Deck inserted successfully", (event as ShowToast).message)
+            assertEquals(DynamicString("Deck inserted successfully"), (event as ShowToast).message)
             cancelAndIgnoreRemainingEvents()
         }
     }
