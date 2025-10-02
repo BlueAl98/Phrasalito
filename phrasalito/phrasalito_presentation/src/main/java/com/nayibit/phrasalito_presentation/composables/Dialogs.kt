@@ -90,14 +90,12 @@ fun BaseDialog(
 @Composable
 fun SimpleConfirmDialog(
     title: String = "Title",
-    message: String = "Message",
     onConfirm: () -> Unit,
     onCancel: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = { onCancel() },
         title = { Text(title) },
-        text = { Text(message) },
         confirmButton = {
             Row(
                 modifier = Modifier.fillMaxWidth(),

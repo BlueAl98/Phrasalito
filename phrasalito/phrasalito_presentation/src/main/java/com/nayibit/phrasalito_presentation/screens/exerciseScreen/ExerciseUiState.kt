@@ -12,7 +12,8 @@ data class ExerciseUiState (
     val ttsState : Boolean = false,
     val testCompleted : Boolean = false,
     val showDialog : Boolean = false,
-    val testProgressCorrectAnswers : Float = 0f
+    val testProgressCorrectAnswers : Float = 0f,
+    val bodyModalExercise : BodyModalExercise = BodyModalExercise.BODY_SKIP_QUESTION
 )
 
 data class ExercisePhrases(
@@ -28,4 +29,9 @@ enum class PhraseState(val value: Int){
     NOT_STARTED(0),
     ERROR_ANSWER(1),
     COMPLETED(2)
+}
+
+enum class BodyModalExercise{
+    BODY_SKIP_QUESTION,
+    BODY_EXIT_SCREEN
 }

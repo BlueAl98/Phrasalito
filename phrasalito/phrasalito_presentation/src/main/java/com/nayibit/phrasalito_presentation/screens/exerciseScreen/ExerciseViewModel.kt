@@ -16,6 +16,7 @@ import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEven
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.OnStartClicked
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.ShowAllInfo
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.ShowDialog
+import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.ShowSnackBar
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.UpdateExpandedState
 import com.nayibit.phrasalito_presentation.utils.calculateProgressPercentage
 import com.nayibit.phrasalito_presentation.utils.textWithoutSpecialCharacters
@@ -76,7 +77,7 @@ class ExerciseViewModel @Inject constructor(
 
             is OnStartClicked -> {
                 viewModelScope.launch {
-                    _eventChannel.send(ExerciseUiEvent.ShowToast("Exercise Started!"))
+                    _eventChannel.send(ExerciseUiEvent.ShowSnackBar("Exercise Started!"))
                 }
             }
             is OnNextPhrase -> {
@@ -116,12 +117,12 @@ class ExerciseViewModel @Inject constructor(
                     speakTextUseCase(event.text)
                 else
                     viewModelScope.launch {
-                        _eventChannel.send(ExerciseUiEvent.ShowToast("TTS is not ready"))
+                        _eventChannel.send(ExerciseUiEvent.ShowSnackBar("TTS is not ready"))
                     }
             }
 
             is ShowDialog -> {
-              _state.update { it.copy(showDialog = event.show) }
+              _state.update { it.copy(showDialog = event.show, bodyModalExercise = event.type) }
             }
             is ShowAllInfo -> {
                 _state.update { currentState ->
@@ -143,8 +144,11 @@ class ExerciseViewModel @Inject constructor(
                     _eventChannel.send(ExerciseUiEvent.NavigateNext)
                 }
             }
-
-            else -> Unit
+            is ShowSnackBar -> {
+                viewModelScope.launch {
+                    _eventChannel.send(ShowSnackBar(event.message))
+                }
+            }
         }
 
 

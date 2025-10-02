@@ -3,7 +3,6 @@ package com.nayibit.phrasalito_presentation.screens.exerciseScreen
 
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -78,15 +76,21 @@ fun ExerciseScreen(
         if (state.testCompleted) {
           onEvent(ExerciseUiEvent.NavigateNext)
         }else{
-            // here event modal
-           // onEvent(ExerciseUiEvent.ShowToast("Finish the exercise first"))
+         onEvent(ExerciseUiEvent.ShowDialog(true, BodyModalExercise.BODY_EXIT_SCREEN))
         }
+
     }
 
     if (state.showDialog){
         SimpleConfirmDialog(
-            onConfirm = { onEvent(ExerciseUiEvent.ShowAllInfo(state.currentIndex)) },
-            onCancel = { onEvent(ExerciseUiEvent.ShowDialog(false)) }
+            title = if (state.bodyModalExercise == BodyModalExercise.BODY_SKIP_QUESTION) stringResource(R.string.title_skip_question) else stringResource(R.string.title_exit_screen),
+            onConfirm = {
+                if (state.bodyModalExercise == BodyModalExercise.BODY_SKIP_QUESTION)
+                     onEvent(ExerciseUiEvent.ShowAllInfo(state.currentIndex))
+                else
+                    onEvent(ExerciseUiEvent.NavigateNext)
+                        },
+            onCancel = { onEvent(ExerciseUiEvent.ShowDialog(false, BodyModalExercise.BODY_SKIP_QUESTION)) }
         )
     }
 
@@ -94,7 +98,7 @@ fun ExerciseScreen(
     LaunchedEffect(Unit) {
         eventFlow.collect { event ->
             when (event) {
-                is ExerciseUiEvent.ShowToast -> {
+                is ExerciseUiEvent.ShowSnackBar -> {
                     snackbarHostState.showSnackbar(event.message)
                 }
                 is ExerciseUiEvent.NavigateNext -> {
@@ -346,7 +350,7 @@ fun ExercisePager(
                         IconPopover(
                             enabled = state.phrases[page].phraseState == PhraseState.NOT_STARTED,
                             icon = Icons.Default.QuestionMark,
-                            onClick = {onEvent(ExerciseUiEvent.ShowDialog(true))}
+                            onClick = {onEvent(ExerciseUiEvent.ShowDialog(true, BodyModalExercise.BODY_SKIP_QUESTION))}
                         )
                     }
 

@@ -45,7 +45,8 @@
     <string name="label_emty_fields">Campos vacios</string>
     <string name="error_example_not_contains_phrase">El ejemplo no contiene la frase ingresada</string>
     <string name="error_example_is_not_longer_than_phrase">El ejemplo debe ser mas largo que la frase ingresada</string>
-
+    <string name="title_skip_question">¿Estas seguro de revelar esta pregunta?</string>
+    <string name="title_exit_screen">¿Estas seguro de salir, aun no has finalizado el test?</string>
 
 
 </resources>
