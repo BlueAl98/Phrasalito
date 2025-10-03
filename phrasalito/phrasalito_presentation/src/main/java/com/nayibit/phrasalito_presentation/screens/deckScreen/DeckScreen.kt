@@ -6,15 +6,18 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.TextSnippet
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -25,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.nayibit.common.util.UiText
 import com.nayibit.common.util.asString
@@ -32,6 +36,7 @@ import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.BaseDialog
 import com.nayibit.phrasalito_presentation.composables.ButtonBase
 import com.nayibit.phrasalito_presentation.composables.CardDeck
+import com.nayibit.phrasalito_presentation.composables.DeckBadgeType
 import com.nayibit.phrasalito_presentation.composables.LoadingScreen
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
 import kotlinx.coroutines.flow.Flow
@@ -97,16 +102,18 @@ fun DeckScreen(
                             .fillMaxSize()
                             .testTag("deck_list")) {
                             items(state.decks, key = { it.id }) { phrase ->
-                                Row {
-
+                                Row(modifier.padding(3.dp)) {
                                     CardDeck(
+                                        modifier = modifier.padding(5.dp),
                                         title = phrase.name,
                                         currentCards = phrase.maxCards,
-                                        maxCards = 10,
-                                        primaryIcon = Icons.AutoMirrored.Filled.TextSnippet,
-                                        onCardClick = {  onEvent(DeckUiEvent.NavigationToPhrases(phrase.id)) },
-                                        onPrimaryIconClick = { if (phrase.maxCards >= 3) onEvent(DeckUiEvent.ShowModal(BodyDeckModalEnum.BODY_START_EXERCISE, phrase.id)) else onEvent(DeckUiEvent.ShowToast(UiText.StringResource(R.string.label_dont_cards_enough))) },
+                                        totalCards = 10,
+                                        icon = Icons.Default.Star,
+                                        badgeType = DeckBadgeType.NONE,
+                                        onClick = {if (phrase.maxCards >= 3) onEvent(DeckUiEvent.ShowModal(BodyDeckModalEnum.BODY_START_EXERCISE, phrase.id)) else onEvent(DeckUiEvent.ShowToast(UiText.StringResource(R.string.label_dont_cards_enough))) },
+                                        onClickToTest = { onEvent(DeckUiEvent.NavigationToPhrases(phrase.id)) },
                                     )
+
                                 }
 
                             }

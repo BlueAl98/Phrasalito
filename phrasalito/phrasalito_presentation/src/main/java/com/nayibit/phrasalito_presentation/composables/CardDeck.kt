@@ -1,198 +1,318 @@
 package com.nayibit.phrasalito_presentation.composables
 
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
-/*
-@Composable
-fun CardDeck(
-    title: String,
-    maxCards: Int = 0,
-    currentCards: Int = 0,
-    modifier: Modifier = Modifier,
-    icon: ImageVector = Icons.Default.ArrowForward,
-    onClick: () -> Unit = {},
-    backgroundColor: Color = MaterialTheme.colorScheme.primaryContainer,
-    contentColor: Color = MaterialTheme.colorScheme.onSurface,
-    borderColor: Color = MaterialTheme.colorScheme.outline,
-    cornerRadius: Dp = 16.dp,
-    elevation: Dp = 4.dp,
-    iconTint: Color = MaterialTheme.colorScheme.tertiary
-) {
-    Card(
-        onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(cornerRadius),
-        border = BorderStroke(1.dp, borderColor),
-        colors = CardDefaults.cardColors(
-            containerColor = backgroundColor,
-            contentColor = contentColor
-        ),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = elevation)
-    ) {
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 14.dp), // 👈 common padding for all children
-            verticalArrangement = Arrangement.spacedBy(8.dp) // 👈 equal spacing between row & text
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically // 👈 centers icon & text vertically
-            ) {
-                Text(
-                    text = "Nombre deck: $title",
-                    style = MaterialTheme.typography.titleMedium
-                )
+data class DeckCardColors(
+    val primaryGradientStart: Color = Color(0xFF667EEA),
+    val primaryGradientEnd: Color = Color(0xFF764BA2),
+    val cardBackground: Color = Color.White,
+    val textPrimary: Color = Color(0xFF1A1A1A),
+    val textSecondary: Color = Color(0xFF666666),
+    val progressBackground: Color = Color(0xFFE0E0E0),
+    val badgeNew: Brush = Brush.horizontalGradient(
+        colors = listOf(Color(0xFF667EEA), Color(0xFF764BA2))
+    ),
+    val badgeComplete: Brush = Brush.horizontalGradient(
+        colors = listOf(Color(0xFF10B981), Color(0xFF059669))
+    )
+)
 
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = iconTint
-                )
-            }
-
-            Text(
-                text = "Num cards $currentCards - $maxCards",
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
-
-    }
+enum class DeckBadgeType {
+    NONE,
+    NEW,
+    COMPLETE
 }
-*/
 
 
 @Composable
 fun CardDeck(
     title: String,
-    currentCards: Int = 0,
-    maxCards: Int = 0,
+    currentCards: Int,
+    totalCards: Int,
+    icon: ImageVector = Icons.Default.Star,
+    badgeType: DeckBadgeType = DeckBadgeType.NONE,
+    onClick: () -> Unit,
+    onClickToTest: () -> Unit,
     modifier: Modifier = Modifier,
-    primaryIcon: ImageVector = Icons.Default.ArrowForward,
-    secondaryIcon: ImageVector? = null, // optional second icon
-    onCardClick: () -> Unit = {},
-    onPrimaryIconClick: () -> Unit = {},
-    onSecondaryIconClick: () -> Unit = {},
-    backgroundColor: Color = MaterialTheme.colorScheme.surface,
-    contentColor: Color = MaterialTheme.colorScheme.onSurface,
-    borderColor: Color = MaterialTheme.colorScheme.outline,
-    cornerRadius: Dp = 16.dp,
-    elevation: Dp = 4.dp,
-    iconTint: Color = MaterialTheme.colorScheme.primary
+    colors: DeckCardColors = DeckCardColors()
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    val elevation by animateDpAsState(
+        targetValue = if (isPressed) 2.dp else 8.dp,
+        animationSpec = tween(durationMillis = 150),
+        label = "elevation"
+    )
+
+    val offsetY by animateDpAsState(
+        targetValue = if (isPressed) (-2).dp else (-4).dp,
+        animationSpec = tween(durationMillis = 150),
+        label = "offsetY"
+    )
+
+    val progress = if (totalCards > 0) currentCards.toFloat() / totalCards.toFloat() else 0f
+
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(cornerRadius),
-        border = BorderStroke(1.dp, borderColor),
+            .offset(y = offsetY)
+            .shadow(
+                elevation = elevation,
+                shape = RoundedCornerShape(20.dp),
+                spotColor = colors.primaryGradientStart.copy(alpha = 0.3f)
+            )
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClickToTest
+            ),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = backgroundColor,
-            contentColor = contentColor
-        ),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = elevation)
+            containerColor = colors.cardBackground
+        )
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onCardClick() }
-                .padding(horizontal = 16.dp, vertical = 14.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Left content: title + card info
-            Column(
-                modifier
-                    .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = "Cards: $currentCards / $maxCards",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+        Box(modifier = Modifier.fillMaxWidth()) {
+            // Left gradient border
+            Box(
+                modifier = Modifier
+                    .width(4.dp)
+                    .fillMaxHeight()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                colors.primaryGradientStart,
+                                colors.primaryGradientEnd
+                            )
+                        )
+                    )
+                    .align(Alignment.CenterStart)
+            )
+
+            // Badge
+            if (badgeType != DeckBadgeType.NONE) {
+                DeckBadge(
+                    type = badgeType,
+                    colors = colors,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(12.dp)
                 )
             }
 
-            // Right content: icons
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                secondaryIcon?.let {
-                    Icon(
-                        imageVector = it,
-                        contentDescription = null,
-                        tint = iconTint,
-                        modifier = Modifier
-                            .size(30.dp)
-                            .clickable { onSecondaryIconClick() }
+            // Card content
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Icon
+                DeckIcon(
+                    icon = icon,
+                    colors = colors
+                )
+
+                // Content
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        text = title,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = colors.textPrimary,
+                        lineHeight = 24.sp
+                    )
+
+                    DeckProgress(
+                        currentCards = currentCards,
+                        totalCards = totalCards,
+                        progress = progress,
+                        colors = colors
                     )
                 }
 
-                Spacer(modifier = Modifier.size(10.dp))
-
-                Icon(
-                    imageVector = primaryIcon,
-                    contentDescription = null,
-                    tint = iconTint,
-                    modifier = Modifier
-                        .size(30.dp)
-                        .clickable { onPrimaryIconClick() }
-                )
+                // Arrow
+                DeckArrow(colors = colors, onClick = onClick)
             }
         }
     }
 }
 
-@Preview
 @Composable
-private fun Cardpreview() {
-    CardDeck(
-        title = "My Deck IS THE BEST DECK FOR LEARN ENGLISH",
-        currentCards = 10,
-        maxCards = 20,
-        primaryIcon = Icons.Default.ArrowForward,
-        secondaryIcon = Icons.Default.Info,
-        onCardClick = { /* Navigate to deck details */ },
-        onPrimaryIconClick = { /* Start exercise */ },
-        onSecondaryIconClick = { /* Show info */ }
-    )
-
+private fun DeckIcon(
+    icon: ImageVector,
+    colors: DeckCardColors
+) {
+    Box(
+        modifier = Modifier
+            .size(60.dp)
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(16.dp),
+                spotColor = colors.primaryGradientStart.copy(alpha = 0.3f)
+            )
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        colors.primaryGradientStart,
+                        colors.primaryGradientEnd
+                    )
+                ),
+                shape = RoundedCornerShape(16.dp)
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = Color.White,
+            modifier = Modifier.size(32.dp)
+        )
+    }
 }
+
+@Composable
+private fun DeckProgress(
+    currentCards: Int,
+    totalCards: Int,
+    progress: Float,
+    colors: DeckCardColors
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            text = "$currentCards / $totalCards",
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            color = colors.textSecondary
+        )
+
+        // Progress bar
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .height(6.dp)
+                .background(
+                    color = colors.progressBackground,
+                    shape = RoundedCornerShape(3.dp)
+                )
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(progress)
+                    .background(
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(
+                                colors.primaryGradientStart,
+                                colors.primaryGradientEnd
+                            )
+                        ),
+                        shape = RoundedCornerShape(3.dp)
+                    )
+            )
+        }
+    }
+}
+
+@Composable
+private fun DeckArrow(colors: DeckCardColors, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .size(32.dp)
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        colors.primaryGradientStart.copy(alpha = 0.15f),
+                        colors.primaryGradientEnd.copy(alpha = 0.15f)
+                    )
+                ),
+                shape = RoundedCornerShape(10.dp)
+            )
+            .clickable{onClick()}
+        ,
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.KeyboardArrowRight,
+            contentDescription = "Open deck",
+            tint = colors.primaryGradientStart,
+            modifier = Modifier.size(16.dp)
+        )
+    }
+}
+
+@Composable
+private fun DeckBadge(
+    type: DeckBadgeType,
+    colors: DeckCardColors,
+    modifier: Modifier = Modifier
+) {
+    val (text, brush) = when (type) {
+        DeckBadgeType.NEW -> "NEW" to colors.badgeNew
+        DeckBadgeType.COMPLETE -> "COMPLETE" to colors.badgeComplete
+        DeckBadgeType.NONE -> return
+    }
+
+    Box(
+        modifier = modifier
+            .background(
+                brush = brush,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .padding(horizontal = 10.dp, vertical = 4.dp)
+    ) {
+        Text(
+            text = text,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.White,
+            letterSpacing = 0.5.sp
+        )
+    }
+}
+

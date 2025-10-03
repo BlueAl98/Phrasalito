@@ -39,7 +39,7 @@ fun Navigation() {
 
     NavHost(
         navController = navController,
-        startDestination = DeckScreen
+        startDestination = StartScreen
     ) {
 
       composable<StartScreen> {
@@ -51,7 +51,7 @@ fun Navigation() {
               eventFlow = viewModel.eventFlow,
               onEvent = viewModel::onEvent
           ){
-              navController.navigate(DeckScreen){
+              navController.navigate(StartScreen){
                   popUpTo(StartScreen) {
                       inclusive = true
                   }
