@@ -1,6 +1,7 @@
 package com.nayibit.phrasalito_presentation.composables
 
 
+import androidx.compose.animation.core.AnimationVector
 import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -16,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +29,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -44,7 +47,13 @@ data class OnboardingColors(
 
 
 @Composable
-fun AnimatedIllustration(colors: OnboardingColors) {
+fun AnimatedIllustration(
+    modifier: Modifier = Modifier,
+    colors: OnboardingColors,
+    mainImageVector: ImageVector = Icons.Default.Check,
+    topIconVector: ImageVector = Icons.Default.Star,
+    bottomIconVector: ImageVector = Icons.Default.QuestionMark
+    ) {
     val infiniteTransition = rememberInfiniteTransition(label = "illustration")
 
     // Float animation for main container
@@ -108,7 +117,7 @@ fun AnimatedIllustration(colors: OnboardingColors) {
     ) {
         // Background Circle with pulse
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .scale(pulseScale)
                 .alpha(pulseAlpha)
@@ -130,7 +139,7 @@ fun AnimatedIllustration(colors: OnboardingColors) {
         ) {
             // Floating element 1 (top left)
             FloatingElement(
-                icon = Icons.Default.Star,
+                icon = topIconVector,
                 iconColor = colors.accentYellow,
                 modifier = Modifier
                     .align(Alignment.TopStart)
@@ -156,7 +165,7 @@ fun AnimatedIllustration(colors: OnboardingColors) {
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.Check,
+                    imageVector = mainImageVector,
                     contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier.size(60.dp)
@@ -165,7 +174,7 @@ fun AnimatedIllustration(colors: OnboardingColors) {
 
             // Floating element 2 (bottom right)
             FloatingElement(
-                icon = Icons.Default.Check,
+                icon = bottomIconVector,
                 iconColor = colors.primaryGradientStart,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)

@@ -35,6 +35,10 @@
     <string name="label_percentage_correct_answers">Porcentaje de aciertos</string>">
     <string name="label_description_percentage_correct_answers">Descripción</string>">
 
+    <!-- StartScreen Strings -->
+    <string name="welcome_title">Bienvenido a Frasalito</string>
+    <string name="description_welcome">Una app para aprender frases y palabras de manera sencilla</string>
+
 
     <!-- GLOBAL Strings -->
     <string name="btn_save">Guardar</string>

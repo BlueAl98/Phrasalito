@@ -13,7 +13,7 @@ class InsertSkipTutorialUseCase @Inject constructor(
     operator fun invoke() = flow {
         try {
             emit(Resource.Loading)
-            dataStoreRepository.saveData(Constants.SKIP_TUTORIAL, true)
+            dataStoreRepository.saveData(Constants.FIRST_TIME, true)
             emit(Resource.Success(true))
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Unknown error"))

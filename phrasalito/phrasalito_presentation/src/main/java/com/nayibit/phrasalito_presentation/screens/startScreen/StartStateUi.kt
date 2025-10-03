@@ -4,6 +4,7 @@ data class StartStateUi(
     val isLoading: Boolean = false,
     val checkPermissions: Boolean = false,
     val hasPermission: Boolean = false,
-    val errorMessage: String? = null
-
-    )
+    val errorMessage: String? = null,
+    val totalpages: Int = 2,
+    val currentPage: Int = 0
+)

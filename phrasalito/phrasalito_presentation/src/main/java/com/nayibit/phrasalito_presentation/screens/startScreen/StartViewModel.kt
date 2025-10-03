@@ -33,7 +33,7 @@ class StartViewModel @Inject constructor(
 
             Navigate -> {
                 viewModelScope.launch {
-                    _eventFlow.emit(StartUiEvent.Navigate)
+                    _eventFlow.emit(Navigate)
                 }
             }
             is ShowToast -> {
@@ -50,6 +50,12 @@ class StartViewModel @Inject constructor(
                 if (event.hasPermission){
                     skipTutorial()
                 }
+            }
+
+            NextPage -> {
+                _state.value = _state.value.copy(
+                    currentPage = _state.value.currentPage + 1
+                )
             }
         }
         }
