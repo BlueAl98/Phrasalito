@@ -1,18 +1,21 @@
 package com.nayibit.phrasalito_presentation.screens.startScreen
 
-import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -27,18 +30,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.AnimatedIllustration
 import com.nayibit.phrasalito_presentation.composables.DotsIndicator
 import com.nayibit.phrasalito_presentation.composables.OnboardingColors
+import com.nayibit.phrasalito_presentation.composables.isLandscape
 import com.nayibit.phrasalito_presentation.composables.rememberNotificationPermissionHandler
+import com.nayibit.phrasalito_presentation.screens.exerciseScreen.LandscapeContent
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -72,19 +77,16 @@ fun StartScreen(
         state = state,
         onEvent = onEvent
     )
-
-
 }
+
 
 @Composable
 fun OnboardingScreen(
+    modifier: Modifier = Modifier,
     state: StartStateUi,
     onEvent: (StartUiEvent) -> Unit,
     colors: OnboardingColors = OnboardingColors()
 ) {
-
-    val configuration = LocalConfiguration.current
-    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     val pagerState = rememberPagerState(
         initialPage = state.currentPage,
@@ -96,94 +98,253 @@ fun OnboardingScreen(
     }
 
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.onPrimary)
-            .padding(horizontal = 30.dp, vertical = 40.dp)
+
+    Box(modifier = modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colorScheme.onPrimary)
+        .padding(horizontal = 15.dp, vertical = 15.dp)
+        ){
+
+      if (isLandscape())
+         ContentLandscape(
+             state = state,
+             onEvent = onEvent,
+             colors = colors,
+             pagerState = pagerState)
+        else
+          ContentPortrait(
+              state = state,
+              onEvent = onEvent,
+              colors = colors,
+              pagerState = pagerState)
+    }
+
+}
+
+
+@Composable
+fun ContentLandscape(
+    modifier: Modifier = Modifier,
+    state: StartStateUi,
+    onEvent: (StartUiEvent) -> Unit,
+    colors: OnboardingColors,
+    pagerState: PagerState
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-                HorizontalPager(
-                    modifier = Modifier.weight(0.75f),
-                    state = pagerState,
-                    userScrollEnabled = false
-                ) { page ->
-                    when (page) {
-                        0 -> WelcomeTab()
-                        1 -> PermisionTab(colors = colors)
-                    }
+
+    Row (modifier.fillMaxSize()){
+
+
+        HorizontalPager(
+            modifier = Modifier.weight(0.50f),
+            state = pagerState,
+            userScrollEnabled = false
+        ) { page ->
+
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()){
+
+            when (page) {
+                    0 -> AnimatedIllustration(colors = colors)
+                    1 -> AnimatedIllustration(colors = colors, mainImageVector = Icons.Filled.NotificationsActive)
+                }
             }
+        }
 
-
-            // Buttons
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.25f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+        Column (modifier
+            .weight(0.50f)
+            .fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Dots Indicator
-                DotsIndicator(
-                    totalDots = state.totalpages,
-                    currentDot = state.currentPage,
-                    colors = colors
-                )
 
-                Spacer(modifier = Modifier.height(30.dp))
-
-                // Primary Button
-                Button(
-                    onClick = {
-                        if (state.totalpages > state.currentPage + 1) {
-                            onEvent(StartUiEvent.NextPage)
-                        }else{
-                            onEvent(StartUiEvent.InsertSkipTutorial)
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent
-                    ),
-                    contentPadding = PaddingValues(0.dp),
-                    elevation = ButtonDefaults.buttonElevation(
-                        defaultElevation = 4.dp,
-                        pressedElevation = 8.dp
+            when(pagerState.currentPage){
+                0 -> {
+                    Text(
+                        text = stringResource(R.string.welcome_title),
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textPrimary,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 36.sp
                     )
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                brush = Brush.horizontalGradient(
-                                    colors = listOf(
-                                        colors.primaryGradientStart,
-                                        colors.primaryGradientEnd
-                                    )
-                                )
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = stringResource(R.string.next),
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color.White
-                        )
-                    }
+
+
+                    Text(
+                        text = stringResource(R.string.description_welcome),
+                        fontSize = 16.sp,
+                        color = colors.textSecondary,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 24.sp
+                    )
+
+                }
+                1 -> {
+                    Text(
+                        text = stringResource(R.string.notification_title),
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textPrimary,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 36.sp
+                    )
+                    Text(
+                        text = stringResource(R.string.notification_description),
+                        fontSize = 16.sp,
+                        color = colors.textSecondary,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 24.sp
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+
+            DotsIndicator(
+                totalDots = state.totalpages,
+                currentDot = state.currentPage,
+                colors = colors
+            )
+
+
+            Button(
+                onClick = {
+                    if (state.totalpages > state.currentPage + 1) {
+                        onEvent(StartUiEvent.NextPage)
+                    }else{
+                        onEvent(StartUiEvent.InsertSkipTutorial)
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent
+                ),
+                contentPadding = PaddingValues(0.dp),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 4.dp,
+                    pressedElevation = 8.dp
+                )
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    colors.primaryGradientStart,
+                                    colors.primaryGradientEnd
+                                )
+                            )
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.next),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    )
+                }
+            }
         }
+
     }
+
+    }
+
+
+@Composable
+fun ContentPortrait(
+    modifier: Modifier = Modifier,
+    state: StartStateUi,
+    onEvent: (StartUiEvent) -> Unit,
+    colors: OnboardingColors,
+    pagerState: PagerState
+    ) {
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        HorizontalPager(
+            modifier = Modifier.weight(0.75f),
+            state = pagerState,
+            userScrollEnabled = false
+        ) { page ->
+            when (page) {
+                0 -> WelcomeTab()
+                1 -> PermisionTab(colors = colors)
+            }
+        }
+
+        // Buttons
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.25f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Dots Indicator
+            DotsIndicator(
+                totalDots = state.totalpages,
+                currentDot = state.currentPage,
+                colors = colors
+            )
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+            // Primary Button
+            Button(
+                onClick = {
+                    if (state.totalpages > state.currentPage + 1) {
+                        onEvent(StartUiEvent.NextPage)
+                    }else{
+                        onEvent(StartUiEvent.InsertSkipTutorial)
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent
+                ),
+                contentPadding = PaddingValues(0.dp),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 4.dp,
+                    pressedElevation = 8.dp
+                )
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    colors.primaryGradientStart,
+                                    colors.primaryGradientEnd
+                                )
+                            )
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.next),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+    }
+
 }
+
+
 
 
 @Composable
@@ -223,8 +384,8 @@ fun PermisionTab(modifier: Modifier = Modifier, colors: OnboardingColors) {
 @Composable
 fun WelcomeTab(modifier: Modifier = Modifier,
      colors: OnboardingColors = OnboardingColors(),
-     title: String = "Welcome to Your App",
-     description: String = "Discover amazing features and streamline your daily tasks") {
+     title: String = "",
+     description: String = "") {
 
     Column (Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceEvenly,

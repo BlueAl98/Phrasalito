@@ -38,6 +38,8 @@
     <!-- StartScreen Strings -->
     <string name="welcome_title">Bienvenido a Frasalito</string>
     <string name="description_welcome">Una app para aprender frases y palabras de manera sencilla</string>
+    <string name="notification_description">Activa el permiso para recibir notificaciones</string>
+    <string name="notification_title">Notificaciones</string>
 
 
     <!-- GLOBAL Strings -->

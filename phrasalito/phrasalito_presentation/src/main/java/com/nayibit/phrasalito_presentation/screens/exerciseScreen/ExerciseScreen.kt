@@ -87,8 +87,10 @@ fun ExerciseScreen(
             onConfirm = {
                 if (state.bodyModalExercise == BodyModalExercise.BODY_SKIP_QUESTION)
                      onEvent(ExerciseUiEvent.ShowAllInfo(state.currentIndex))
-                else
+                else {
+                    onEvent(ExerciseUiEvent.ShowDialog(false, BodyModalExercise.BODY_EXIT_SCREEN))
                     onEvent(ExerciseUiEvent.NavigateNext)
+                }
                         },
             onCancel = { onEvent(ExerciseUiEvent.ShowDialog(false, BodyModalExercise.BODY_SKIP_QUESTION)) }
         )
