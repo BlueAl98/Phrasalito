@@ -6,6 +6,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -36,6 +39,8 @@ import com.nayibit.phrasalito_presentation.composables.CardDeck
 import com.nayibit.phrasalito_presentation.composables.DeckBadgeType
 import com.nayibit.phrasalito_presentation.composables.LoadingScreen
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientStart
 import kotlinx.coroutines.flow.Flow
 
 
@@ -135,10 +140,12 @@ fun DeckScreen(
 
 
         }, floatingActionButton = {
-            FloatingActionButton(onClick = {
+            FloatingActionButton(
+               containerColor = primaryGradientEnd,
+                onClick = {
                 onEvent(DeckUiEvent.ShowModal(BodyDeckModalEnum.BODY_INSERT_DECK))
             }) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
+                Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.White)
             }
         }
     )

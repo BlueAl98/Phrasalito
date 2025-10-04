@@ -32,6 +32,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientStart
 
 
 data class OnboardingColors(
@@ -124,8 +126,8 @@ fun AnimatedIllustration(
                 .background(
                     brush = Brush.radialGradient(
                         colors = listOf(
-                            colors.primaryGradientStart.copy(alpha = 0.2f),
-                            colors.primaryGradientEnd.copy(alpha = 0.4f)
+                            primaryGradientStart.copy(alpha = 0.2f),
+                            primaryGradientEnd.copy(alpha = 0.4f)
                         )
                     ),
                     shape = CircleShape

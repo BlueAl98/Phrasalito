@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -72,11 +73,14 @@ fun StartScreen(
             }
         }
     }
+    Scaffold {
+        OnboardingScreen(
+            state = state,
+            onEvent = onEvent,
+            modifier = modifier.padding(it)
+        )
+    }
 
-    OnboardingScreen(
-        state = state,
-        onEvent = onEvent
-    )
 }
 
 
@@ -101,7 +105,6 @@ fun OnboardingScreen(
 
     Box(modifier = modifier
         .fillMaxSize()
-        .background(MaterialTheme.colorScheme.onPrimary)
         .padding(horizontal = 15.dp, vertical = 15.dp)
         ){
 
@@ -162,7 +165,6 @@ fun ContentLandscape(
                         text = stringResource(R.string.welcome_title),
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
-                        color = colors.textPrimary,
                         textAlign = TextAlign.Center,
                         lineHeight = 36.sp
                     )
@@ -171,7 +173,6 @@ fun ContentLandscape(
                     Text(
                         text = stringResource(R.string.description_welcome),
                         fontSize = 16.sp,
-                        color = colors.textSecondary,
                         textAlign = TextAlign.Center,
                         lineHeight = 24.sp
                     )
@@ -182,14 +183,12 @@ fun ContentLandscape(
                         text = stringResource(R.string.notification_title),
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
-                        color = colors.textPrimary,
                         textAlign = TextAlign.Center,
                         lineHeight = 36.sp
                     )
                     Text(
                         text = stringResource(R.string.notification_description),
                         fontSize = 16.sp,
-                        color = colors.textSecondary,
                         textAlign = TextAlign.Center,
                         lineHeight = 24.sp
                     )

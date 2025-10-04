@@ -38,22 +38,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nayibit.phrasalito_presentation.ui.theme.badgeComplete
+import com.nayibit.phrasalito_presentation.ui.theme.badgeNew
+import com.nayibit.phrasalito_presentation.ui.theme.cardBackground
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientStart
+import com.nayibit.phrasalito_presentation.ui.theme.progressBackground
+import com.nayibit.phrasalito_presentation.ui.theme.textPrimary
+import com.nayibit.phrasalito_presentation.ui.theme.textSecondary
 
-
-data class DeckCardColors(
-    val primaryGradientStart: Color = Color(0xFF667EEA),
-    val primaryGradientEnd: Color = Color(0xFF764BA2),
-    val cardBackground: Color = Color.White,
-    val textPrimary: Color = Color(0xFF1A1A1A),
-    val textSecondary: Color = Color(0xFF666666),
-    val progressBackground: Color = Color(0xFFE0E0E0),
-    val badgeNew: Brush = Brush.horizontalGradient(
-        colors = listOf(Color(0xFF667EEA), Color(0xFF764BA2))
-    ),
-    val badgeComplete: Brush = Brush.horizontalGradient(
-        colors = listOf(Color(0xFF10B981), Color(0xFF059669))
-    )
-)
 
 enum class DeckBadgeType {
     NONE,
@@ -71,8 +64,7 @@ fun CardDeck(
     badgeType: DeckBadgeType = DeckBadgeType.NONE,
     onClick: () -> Unit,
     onClickToTest: () -> Unit,
-    modifier: Modifier = Modifier,
-    colors: DeckCardColors = DeckCardColors()
+    modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -98,17 +90,15 @@ fun CardDeck(
             .shadow(
                 elevation = elevation,
                 shape = RoundedCornerShape(20.dp),
-                spotColor = colors.primaryGradientStart.copy(alpha = 0.3f)
+                spotColor = primaryGradientStart.copy(alpha = 0.3f)
             )
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
                 onClick = onClickToTest
             ),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = colors.cardBackground
-        )
+        shape = RoundedCornerShape(20.dp)
+
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             // Left gradient border
@@ -119,8 +109,8 @@ fun CardDeck(
                     .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(
-                                colors.primaryGradientStart,
-                                colors.primaryGradientEnd
+                                primaryGradientStart,
+                                primaryGradientEnd
                             )
                         )
                     )
@@ -131,7 +121,6 @@ fun CardDeck(
             if (badgeType != DeckBadgeType.NONE) {
                 DeckBadge(
                     type = badgeType,
-                    colors = colors,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(12.dp)
@@ -148,8 +137,7 @@ fun CardDeck(
             ) {
                 // Icon
                 DeckIcon(
-                    icon = icon,
-                    colors = colors
+                    icon = icon
                 )
 
                 // Content
@@ -161,20 +149,18 @@ fun CardDeck(
                         text = title,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = colors.textPrimary,
                         lineHeight = 24.sp
                     )
 
                     DeckProgress(
                         currentCards = currentCards,
                         totalCards = totalCards,
-                        progress = progress,
-                        colors = colors
+                        progress = progress
                     )
                 }
 
                 // Arrow
-                DeckArrow(colors = colors, onClick = onClick)
+                DeckArrow(onClick = onClick)
             }
         }
     }
@@ -182,8 +168,7 @@ fun CardDeck(
 
 @Composable
 private fun DeckIcon(
-    icon: ImageVector,
-    colors: DeckCardColors
+    icon: ImageVector
 ) {
     Box(
         modifier = Modifier
@@ -191,13 +176,13 @@ private fun DeckIcon(
             .shadow(
                 elevation = 4.dp,
                 shape = RoundedCornerShape(16.dp),
-                spotColor = colors.primaryGradientStart.copy(alpha = 0.3f)
+                spotColor = primaryGradientStart.copy(alpha = 0.3f)
             )
             .background(
                 brush = Brush.linearGradient(
                     colors = listOf(
-                        colors.primaryGradientStart,
-                        colors.primaryGradientEnd
+                        primaryGradientStart,
+                        primaryGradientEnd
                     )
                 ),
                 shape = RoundedCornerShape(16.dp)
@@ -217,8 +202,7 @@ private fun DeckIcon(
 private fun DeckProgress(
     currentCards: Int,
     totalCards: Int,
-    progress: Float,
-    colors: DeckCardColors
+    progress: Float
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -228,7 +212,6 @@ private fun DeckProgress(
             text = "$currentCards / $totalCards",
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
-            color = colors.textSecondary
         )
 
         // Progress bar
@@ -237,7 +220,7 @@ private fun DeckProgress(
                 .weight(1f)
                 .height(6.dp)
                 .background(
-                    color = colors.progressBackground,
+                    color = progressBackground,
                     shape = RoundedCornerShape(3.dp)
                 )
         ) {
@@ -248,8 +231,8 @@ private fun DeckProgress(
                     .background(
                         brush = Brush.horizontalGradient(
                             colors = listOf(
-                                colors.primaryGradientStart,
-                                colors.primaryGradientEnd
+                                primaryGradientStart,
+                                primaryGradientEnd
                             )
                         ),
                         shape = RoundedCornerShape(3.dp)
@@ -260,15 +243,15 @@ private fun DeckProgress(
 }
 
 @Composable
-private fun DeckArrow(colors: DeckCardColors, onClick: () -> Unit) {
+private fun DeckArrow(onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .size(32.dp)
             .background(
                 brush = Brush.linearGradient(
                     colors = listOf(
-                        colors.primaryGradientStart.copy(alpha = 0.15f),
-                        colors.primaryGradientEnd.copy(alpha = 0.15f)
+                        primaryGradientStart.copy(alpha = 0.15f),
+                        primaryGradientEnd.copy(alpha = 0.15f)
                     )
                 ),
                 shape = RoundedCornerShape(10.dp)
@@ -280,7 +263,7 @@ private fun DeckArrow(colors: DeckCardColors, onClick: () -> Unit) {
         Icon(
             imageVector = Icons.Default.KeyboardArrowRight,
             contentDescription = "Open deck",
-            tint = colors.primaryGradientStart,
+            tint = primaryGradientStart,
             modifier = Modifier.size(16.dp)
         )
     }
@@ -289,12 +272,11 @@ private fun DeckArrow(colors: DeckCardColors, onClick: () -> Unit) {
 @Composable
 private fun DeckBadge(
     type: DeckBadgeType,
-    colors: DeckCardColors,
     modifier: Modifier = Modifier
 ) {
     val (text, brush) = when (type) {
-        DeckBadgeType.NEW -> "NEW" to colors.badgeNew
-        DeckBadgeType.COMPLETE -> "COMPLETE" to colors.badgeComplete
+        DeckBadgeType.NEW -> "NEW" to badgeNew
+        DeckBadgeType.COMPLETE -> "COMPLETE" to badgeComplete
         DeckBadgeType.NONE -> return
     }
 
