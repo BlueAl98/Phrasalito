@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -22,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,7 +33,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nayibit.phrasalito_presentation.R
@@ -44,7 +41,6 @@ import com.nayibit.phrasalito_presentation.composables.DotsIndicator
 import com.nayibit.phrasalito_presentation.composables.OnboardingColors
 import com.nayibit.phrasalito_presentation.composables.isLandscape
 import com.nayibit.phrasalito_presentation.composables.rememberNotificationPermissionHandler
-import com.nayibit.phrasalito_presentation.screens.exerciseScreen.LandscapeContent
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -262,7 +258,7 @@ fun ContentPortrait(
     ) {
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         HorizontalPager(
@@ -278,7 +274,7 @@ fun ContentPortrait(
 
         // Buttons
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .weight(0.25f),
             verticalArrangement = Arrangement.Center,
@@ -299,10 +295,11 @@ fun ContentPortrait(
                     if (state.totalpages > state.currentPage + 1) {
                         onEvent(StartUiEvent.NextPage)
                     }else{
+                   //     permissionState.requestPermission()
                         onEvent(StartUiEvent.InsertSkipTutorial)
                     }
                 },
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
                     .height(56.dp),
                 shape = RoundedCornerShape(14.dp),
@@ -316,7 +313,7 @@ fun ContentPortrait(
                 )
             ) {
                 Box(
-                    modifier = Modifier
+                    modifier = modifier
                         .fillMaxSize()
                         .background(
                             brush = Brush.horizontalGradient(
@@ -338,7 +335,7 @@ fun ContentPortrait(
             }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = modifier.height(20.dp))
     }
 
 }
@@ -369,30 +366,21 @@ fun PermisionTab(modifier: Modifier = Modifier, colors: OnboardingColors) {
             textAlign = TextAlign.Center,
             lineHeight = 24.sp
         )
-
-        Button(onClick = {
-         permissionState.requestPermission()
-        }) {
-            Text("Somehing")
-        }
-
     }
 }
 
 
 @Composable
 fun WelcomeTab(modifier: Modifier = Modifier,
-     colors: OnboardingColors = OnboardingColors(),
-     title: String = "",
-     description: String = "") {
+     colors: OnboardingColors = OnboardingColors()) {
 
-    Column (Modifier.fillMaxSize(),
+    Column (modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
