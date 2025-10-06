@@ -115,6 +115,9 @@ dependencies {
     implementation (libs.androidx.hilt.work)
     ksp (libs.androidx.hilt.compiler)
 
+    implementation (libs.compose.swipeable.cards)
+
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

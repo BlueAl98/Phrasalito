@@ -72,6 +72,10 @@ dependencies {
     ksp (libs.androidx.hilt.compiler)
 
 
+   // implementation ("com.github.smartword-app:compose-swipeable-cards:1.1.4")
+    implementation (libs.compose.swipeable.cards)
+
+
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))

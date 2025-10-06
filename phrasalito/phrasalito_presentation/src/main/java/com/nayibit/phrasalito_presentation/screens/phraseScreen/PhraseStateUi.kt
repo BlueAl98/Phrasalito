@@ -1,5 +1,6 @@
 package com.nayibit.phrasalito_presentation.screens.phraseScreen
 
+import androidx.compose.ui.graphics.Color
 import com.nayibit.phrasalito_domain.model.Deck
 
 data class PhraseStateUi(
@@ -12,7 +13,8 @@ data class PhraseStateUi(
     val translation: String = "",
     val example: String = "",
     val bodyModal: BodyModalEnum = BodyModalEnum.BODY_INSERT_PHRASE,
-    val phraseToUpdate: PhraseUi? = null
+    val phraseToUpdate: PhraseUi? = null,
+    val curentCardPhrase : Int = 0
     )
 
 data class PhraseUi(
@@ -20,7 +22,8 @@ data class PhraseUi(
     val targetLanguage: String,
     val translation: String,
     val isOptionsRevealed: Boolean = false,
-    val example: String = ""
+    val example: String = "",
+    val color: Color = Color(0xFF4CAF50)
 )
 
 enum class BodyModalEnum() {
