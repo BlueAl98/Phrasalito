@@ -1,6 +1,11 @@
 package com.nayibit.phrasalito_presentation.screens.phraseScreen
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +22,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,7 +42,6 @@ import com.spartapps.swipeablecards.state.rememberSwipeableCardsState
 import com.spartapps.swipeablecards.ui.SwipeableCardDirection
 import com.spartapps.swipeablecards.ui.lazy.LazySwipeableCards
 import com.spartapps.swipeablecards.ui.lazy.items
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 
 
@@ -89,45 +94,21 @@ fun PhraseScreen(
 
                     state.phrases.isNotEmpty() -> {
 
-                        AreaStudyCards(
-                            modifier = modifier,
-                            state = state,
-                            onEvent = onEvent
-                        )
-
-                      /*  LazyColumn(modifier = modifier.fillMaxSize()) {
-                            items(state.phrases, key = { it.id }) { phrase ->
-                                SwipeableItemWithActions(
-                                    direction = SwipeDirection.EndToStart,
-                                    isRevealed = phrase.isOptionsRevealed,
-                                    onExpanded = { onEvent(PhraseUiEvent.ExpandItem(phrase.id))},
-                                    onCollapsed = { onEvent(PhraseUiEvent.CollapsedItem(phrase.id))},
-                                    actions = {
-                                        ActionIcon(
-                                            modifier = modifier.fillMaxHeight(),
-                                            onClick = { onEvent(PhraseUiEvent.ShowModal(BodyModalEnum.BODY_DELETE_PHRASE,phrase)) },
-                                            icon = Icons.Default.Delete)
-                                        ActionIcon(
-                                            modifier = modifier.fillMaxHeight(),
-                                            onClick = { onEvent(PhraseUiEvent.ShowModal(BodyModalEnum.BODY_UPDATE_PHRASE,phrase))},
-                                            icon = Icons.Default.Edit
-                                            )
-                                    }
-                                ){
-                                    FlipCard(
-                                        phrase = phrase.targetLanguage,
-                                        translation = phrase.translation,
-                                    )
-                                }
-
+                        key (state.phrases) {
+                            AnimatedVisibility(
+                                visible = true,
+                                enter = fadeIn(tween(500)) + slideInHorizontally(initialOffsetX = { it / 2 }),
+                                exit = fadeOut(tween(200))
+                            ) {
+                                AreaStudyCards(
+                                    modifier = modifier,
+                                    state = state,
+                                    onEvent = onEvent
+                                )
                             }
-                        } */
+                        }
                     }
-                    else -> { AreaStudyCards(
-                        modifier = modifier,
-                        state = state,
-                        onEvent = onEvent
-                    )} //Text(text = stringResource(R.string.label_dont_have_phrases), modifier.align(Alignment.Center))
+                    else -> Text(text = stringResource(R.string.label_dont_have_phrases), modifier.align(Alignment.Center))
                 }
 
                 BaseDialog(
@@ -273,56 +254,64 @@ fun AreaStudyCards(
     state: PhraseStateUi,
     onEvent: (PhraseUiEvent) -> Unit
 ){
-    val stateCard = rememberSwipeableCardsState(
-        initialCardIndex = state.curentCardPhrase,
-        itemCount = { state.phrases.size },
 
-        )
+        val stateCard = rememberSwipeableCardsState(
+            initialCardIndex = state.curentCardPhrase,
+            itemCount = { state.phrases.size })
 
-    LaunchedEffect(stateCard.currentCardIndex) {
-        if (stateCard.currentCardIndex >= state.phrases.size) {
-            delay(200) // optional smooth delay
-            stateCard.setCurrentIndex(0)
-        }
-    }
 
-    Column(modifier.fillMaxSize().padding(10.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center) {
-
-        Row(modifier.weight(0.10f)){
-            Text(text = "Current Card: ${stateCard.currentCardIndex}")
-            Text(text = "Total Cards: ${state.phrases.size}")
-        }
-
-        Box(modifier.weight(0.80f).fillMaxWidth().padding(10.dp),
-            contentAlignment = Alignment.Center
-            ){
-
-            LazySwipeableCards<PhraseUi>(
-                modifier = Modifier.fillMaxWidth().padding(end = 20.dp),
-                state = stateCard,
-                onSwipe = { phrase, direction ->
-                    when (direction) {
-                        SwipeableCardDirection.Right -> { /* Handle right swipe */
-                        }
-
-                        SwipeableCardDirection.Left -> { /* Handle left swipe */
-                        }
-                    }
-                }
-            ){
-                items(state.phrases) { phrase, index, offset ->
-                   Box(modifier.fillMaxSize()){
-                       AdaptiveLanguageCard(
-                           modifier = modifier.fillMaxSize(),
-                           phrase = phrase,
-                           isLandscape = isLandscape()
-                       )
-                   }
-                }
+        LaunchedEffect(state.curentCardPhrase) {
+            if (state.curentCardPhrase >= state.phrases.size) {
+                stateCard.setCurrentIndex(0)
+                onEvent(PhraseUiEvent.UploadCurrentIndexCard(0, true))
             }
         }
 
-    }
+        Column(
+            modifier.fillMaxSize().padding(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+
+            Row(modifier.weight(0.10f)) {
+                Text(text = "Current Card: ${state.curentCardPhrase + 1}")
+                Text(text = "Total Cards: ${state.phrases.size}")
+            }
+
+            Box(
+                modifier.weight(0.80f).fillMaxWidth().padding(10.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                LazySwipeableCards<PhraseUi>(
+                    modifier = Modifier.fillMaxWidth().padding(end = 20.dp),
+                    state = stateCard,
+                    onSwipe = { phrase, direction ->
+                        when (direction) {
+                            SwipeableCardDirection.Right -> {
+                                onEvent(PhraseUiEvent.UploadCurrentIndexCard(stateCard.currentCardIndex))
+                            }
+
+                            SwipeableCardDirection.Left -> { /* Handle left swipe */
+                                onEvent(PhraseUiEvent.UploadCurrentIndexCard(stateCard.currentCardIndex))
+                            }
+                        }
+                    }
+                ) {
+                    items(state.phrases) { phrase, index, offset ->
+                        Box(modifier.fillMaxSize()) {
+                            AdaptiveLanguageCard(
+                                modifier = modifier.fillMaxSize(),
+                                phrase = phrase,
+                                isLandscape = isLandscape(),
+                                onEdit = {
+                                   onEvent(PhraseUiEvent.ShowModal(BodyModalEnum.BODY_UPDATE_PHRASE, phrase))
+                                }
+                            )
+                        }
+                    }
+                }
+
+            }
+        }
+
 }

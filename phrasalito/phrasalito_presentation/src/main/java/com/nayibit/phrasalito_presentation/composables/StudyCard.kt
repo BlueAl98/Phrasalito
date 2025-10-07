@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Card
@@ -27,7 +28,8 @@ import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUi
 @Composable
 fun LanguagePhraseCard(
     phrase: PhraseUi,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier, 
+    onEdit : () -> Unit = {}
 ) {
     var isTranslationVisible by remember { mutableStateOf(false) }
 
@@ -51,6 +53,17 @@ fun LanguagePhraseCard(
                 .padding(24.dp),
             contentAlignment = Alignment.Center
         ) {
+                IconButton(
+                    onClick = { onEdit() },
+                    modifier = Modifier.align(Alignment.TopEnd),
+                    content = {
+                        Icon(
+                           imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit",
+                            tint = Color.White
+                        )
+                    }
+                )
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -150,7 +163,8 @@ fun LanguagePhraseCard(
 @Composable
 fun LanguagePhraseCardLandscape(
     phrase: PhraseUi,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onEdit : () -> Unit = {}
 ) {
     var isTranslationVisible by remember { mutableStateOf(false) }
 
@@ -174,6 +188,20 @@ fun LanguagePhraseCardLandscape(
                 .padding(20.dp),
             contentAlignment = Alignment.Center
         ) {
+
+            IconButton(
+                onClick = { onEdit() },
+                modifier = Modifier.align(Alignment.TopStart),
+                content = {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit",
+                        tint = Color.White
+                    )
+                }
+            )
+
+
             Row(
                 modifier = Modifier.fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically
@@ -279,12 +307,13 @@ fun LanguagePhraseCardLandscape(
 fun AdaptiveLanguageCard(
     phrase: PhraseUi,
     isLandscape: Boolean = false,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onEdit : () -> Unit = {}
 ) {
     if (isLandscape) {
-        LanguagePhraseCardLandscape(phrase = phrase, modifier = modifier)
+        LanguagePhraseCardLandscape(phrase = phrase, modifier = modifier, onEdit = onEdit)
     } else {
-        LanguagePhraseCard(phrase = phrase, modifier = modifier)
+        LanguagePhraseCard(phrase = phrase, modifier = modifier, onEdit = onEdit)
     }
 }
 

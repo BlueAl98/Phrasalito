@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.common.util.Resource
 import com.nayibit.common.util.UiText
+import com.nayibit.common.util.normalizeSpaces
 import com.nayibit.phrasalito_domain.model.Phrase
 import com.nayibit.phrasalito_domain.useCases.phrases.DeletebyIdPhraseUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesByDeckUseCase
@@ -13,8 +14,8 @@ import com.nayibit.phrasalito_domain.useCases.phrases.UpdatePhraseByIdUseCase
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.mappers.toPhrase
 import com.nayibit.phrasalito_presentation.mappers.toPhraseUi
+import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUiEvent.UploadCurrentIndexCard
 import com.nayibit.phrasalito_presentation.utils.ValidateExampleResult
-import com.nayibit.common.util.normalizeSpaces
 import com.nayibit.phrasalito_presentation.utils.validateExample
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -176,10 +177,17 @@ class PhraseViewModel
                     example = event.phraseUi?.example ?: ""
                 ) }
             }
+            is UploadCurrentIndexCard -> {
+                if (!event.reset)
+                    _state.update { it.copy(curentCardPhrase = it.curentCardPhrase + 1) }
+                else
+                   _state.update { it.copy(curentCardPhrase = 0) }
+            }
 
 
         }
     }
+
 
     fun insertPhrase(phrase: Phrase){
         viewModelScope.launch {

@@ -14,4 +14,5 @@ sealed class PhraseUiEvent {
     data class CollapsedItem(val id: Int) : PhraseUiEvent()
     data class DeletePhrase(val id: Int) : PhraseUiEvent()
     data class UpdatePhrase(val phraseUi: PhraseUi) : PhraseUiEvent()
+    data class UploadCurrentIndexCard(val index: Int , val reset: Boolean = false ) : PhraseUiEvent()
 }
