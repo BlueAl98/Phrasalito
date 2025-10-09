@@ -14,8 +14,7 @@ data class PhraseStateUi(
     val example: String = "",
     val bodyModal: BodyModalEnum = BodyModalEnum.BODY_INSERT_PHRASE,
     val phraseToUpdate: PhraseUi? = null,
-    val curentCardPhrase : Int = 0
-    )
+    val curentCardPhrase : Int = 0)
 
 data class PhraseUi(
     val id: Int,

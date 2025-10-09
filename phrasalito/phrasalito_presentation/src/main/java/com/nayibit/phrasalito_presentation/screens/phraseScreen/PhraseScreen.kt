@@ -10,14 +10,20 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,8 +42,10 @@ import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.AdaptiveLanguageCard
 import com.nayibit.phrasalito_presentation.composables.BaseDialog
 import com.nayibit.phrasalito_presentation.composables.ButtonBase
+import com.nayibit.phrasalito_presentation.composables.DynamicIconSection
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
 import com.nayibit.phrasalito_presentation.composables.isLandscape
+import com.nayibit.phrasalito_presentation.model.IconItem
 import com.spartapps.swipeablecards.state.rememberSwipeableCardsState
 import com.spartapps.swipeablecards.ui.SwipeableCardDirection
 import com.spartapps.swipeablecards.ui.lazy.LazySwipeableCards
@@ -69,7 +77,7 @@ fun PhraseScreen(
     }
 
     Scaffold(
-        floatingActionButton = {
+    /*    floatingActionButton = {
             FloatingActionButton(
                 onClick = {
                     onEvent(PhraseUiEvent.ShowModal(BodyModalEnum.BODY_INSERT_PHRASE))
@@ -80,7 +88,7 @@ fun PhraseScreen(
                     contentDescription = null
                 )
             }
-        },
+        },*/
         content = { padding ->
             Box(modifier
                 .fillMaxSize()
@@ -254,10 +262,21 @@ fun AreaStudyCards(
     state: PhraseStateUi,
     onEvent: (PhraseUiEvent) -> Unit
 ){
+    val icons = listOf(
+        IconItem(Icons.Default.AddCircle, "Agregar", Color(0xFFE91E63)),
+        IconItem(Icons.Default.Edit, "Editar", Color(0xFF4CAF50), onClick = {  onEvent(
+            PhraseUiEvent.ShowModal(
+                BodyModalEnum.BODY_UPDATE_PHRASE,
+                state.phrases[state.curentCardPhrase]
+            )
+        )}),
+        IconItem(Icons.Default.Delete, "Eliminar", Color(0xFF2196F3)),
+        IconItem(Icons.Default.Description, "Examen", Color(0xFFFF9800))
+    )
 
-        val stateCard = rememberSwipeableCardsState(
-            initialCardIndex = state.curentCardPhrase,
-            itemCount = { state.phrases.size })
+   val stateCard = rememberSwipeableCardsState(
+        initialCardIndex = state.curentCardPhrase,
+         itemCount = { state.phrases.size })
 
 
         LaunchedEffect(state.curentCardPhrase) {
@@ -267,16 +286,30 @@ fun AreaStudyCards(
             }
         }
 
+
+    if (!isLandscape()) {
         Column(
             modifier.fillMaxSize().padding(10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
 
-            Row(modifier.weight(0.10f)) {
-                Text(text = "Current Card: ${state.curentCardPhrase + 1}")
-                Text(text = "Total Cards: ${state.phrases.size}")
+            Box(
+                modifier.weight(0.10f).padding(5.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                    Text(
+                        modifier = modifier.padding(5.dp),
+                        text = "Cards: ${state.curentCardPhrase + 1} /  ${state.phrases.size}",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+
             }
+
+            DynamicIconSection(items = icons)
+
+
+            Spacer(modifier.weight(0.05f))
 
             Box(
                 modifier.weight(0.80f).fillMaxWidth().padding(10.dp),
@@ -304,7 +337,92 @@ fun AreaStudyCards(
                                 phrase = phrase,
                                 isLandscape = isLandscape(),
                                 onEdit = {
-                                   onEvent(PhraseUiEvent.ShowModal(BodyModalEnum.BODY_UPDATE_PHRASE, phrase))
+                                    onEvent(
+                                        PhraseUiEvent.ShowModal(
+                                            BodyModalEnum.BODY_UPDATE_PHRASE,
+                                            phrase
+                                        )
+                                    )
+                                }
+                            )
+                        }
+                    }
+                }
+
+            }
+        }
+    }else{
+
+        Row (
+            modifier.fillMaxSize().padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+
+        ) {
+
+            Box(
+                modifier.weight(0.30f).fillMaxHeight(0.8f),
+                contentAlignment = Alignment.Center
+            ) {
+
+              Card(
+                    modifier = modifier.fillMaxSize(),
+                    shape = RoundedCornerShape(12.dp),
+                ) {
+                    Column(modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            modifier = modifier.padding(5.dp),
+                            text = "Cards",
+                            style = MaterialTheme.typography.titleLarge,
+                        )
+                        Text(
+                            modifier = modifier.padding(5.dp),
+                            text = "${state.curentCardPhrase + 1} /  ${state.phrases.size}",
+                            style = MaterialTheme.typography.titleLarge,
+                        )
+
+                        DynamicIconSection(items = icons, columns = 2)
+
+                    }
+
+                }
+            }
+
+            Box(
+                modifier.weight(0.65f),
+                contentAlignment = Alignment.Center
+            ) {
+
+                LazySwipeableCards<PhraseUi>(
+                    modifier = Modifier.fillMaxWidth(0.9f).fillMaxHeight(0.9f).padding(end = 20.dp),
+                    state = stateCard,
+                    onSwipe = { phrase, direction ->
+                        when (direction) {
+                            SwipeableCardDirection.Right -> {
+                                onEvent(PhraseUiEvent.UploadCurrentIndexCard(stateCard.currentCardIndex))
+                            }
+
+                            SwipeableCardDirection.Left -> { /* Handle left swipe */
+                                onEvent(PhraseUiEvent.UploadCurrentIndexCard(stateCard.currentCardIndex))
+                            }
+                        }
+                    }
+                ) {
+                    items(state.phrases) { phrase, index, offset ->
+                        Box(modifier.fillMaxSize()) {
+                            AdaptiveLanguageCard(
+                                modifier = modifier.fillMaxSize(),
+                                phrase = phrase,
+                                isLandscape = isLandscape(),
+                                onEdit = {
+                                    onEvent(
+                                        PhraseUiEvent.ShowModal(
+                                            BodyModalEnum.BODY_UPDATE_PHRASE,
+                                            phrase
+                                        )
+                                    )
                                 }
                             )
                         }
@@ -314,4 +432,5 @@ fun AreaStudyCards(
             }
         }
 
+    }
 }
