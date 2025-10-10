@@ -70,9 +70,6 @@ fun Navigation() {
              onEvent = viewModel::onEvent,
              navigationToPhrases = { idDeck ->
                  navController.navigate(PhraseScreenNav(idDeck))
-             },
-             navigationToExercise = { idDeck ->
-                 navController.navigate(ExerciseScreenNav(idDeck))
              }
          )
 }
@@ -85,7 +82,9 @@ fun Navigation() {
              state = state,
              eventFlow = viewModel.eventFlow,
              onEvent = viewModel::onEvent,
-             navigation = {}
+             navigation = {
+                 navController.navigate(ExerciseScreenNav(it))
+             }
          )
      }
 
@@ -105,7 +104,5 @@ fun Navigation() {
                  }
              })
      }
-
-
     }
 }

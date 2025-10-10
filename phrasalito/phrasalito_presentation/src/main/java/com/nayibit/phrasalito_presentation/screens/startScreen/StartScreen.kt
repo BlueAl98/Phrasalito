@@ -50,7 +50,7 @@ fun StartScreen(
     eventFlow: Flow<StartUiEvent>,
     onEvent: (StartUiEvent) -> Unit,
     navigation: () -> Unit
-    ) {
+) {
 
     val context = LocalContext.current
 
@@ -61,6 +61,7 @@ fun StartScreen(
                 is StartUiEvent.Navigate -> {
                     navigation()
                 }
+
                 is StartUiEvent.ShowToast -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
                 }
@@ -99,23 +100,26 @@ fun OnboardingScreen(
 
 
 
-    Box(modifier = modifier
-        .fillMaxSize()
-        .padding(horizontal = 15.dp, vertical = 15.dp)
-        ){
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 15.dp, vertical = 15.dp)
+    ) {
 
-      if (isLandscape())
-         ContentLandscape(
-             state = state,
-             onEvent = onEvent,
-             colors = colors,
-             pagerState = pagerState)
+        if (isLandscape())
+            ContentLandscape(
+                state = state,
+                onEvent = onEvent,
+                colors = colors,
+                pagerState = pagerState
+            )
         else
-          ContentPortrait(
-              state = state,
-              onEvent = onEvent,
-              colors = colors,
-              pagerState = pagerState)
+            ContentPortrait(
+                state = state,
+                onEvent = onEvent,
+                colors = colors,
+                pagerState = pagerState
+            )
     }
 
 }
@@ -128,9 +132,9 @@ fun ContentLandscape(
     onEvent: (StartUiEvent) -> Unit,
     colors: OnboardingColors,
     pagerState: PagerState
-    ) {
+) {
 
-    Row (modifier.fillMaxSize()){
+    Row(modifier.fillMaxSize()) {
 
 
         HorizontalPager(
@@ -139,23 +143,27 @@ fun ContentLandscape(
             userScrollEnabled = false
         ) { page ->
 
-            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()){
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
 
-            when (page) {
+                when (page) {
                     0 -> AnimatedIllustration(colors = colors)
-                    1 -> AnimatedIllustration(colors = colors, mainImageVector = Icons.Filled.NotificationsActive)
+                    1 -> AnimatedIllustration(
+                        colors = colors,
+                        mainImageVector = Icons.Filled.NotificationsActive
+                    )
                 }
             }
         }
 
-        Column (modifier
-            .weight(0.50f)
-            .fillMaxHeight(),
+        Column(
+            modifier
+                .weight(0.50f)
+                .fillMaxHeight(),
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+        ) {
 
-            when(pagerState.currentPage){
+            when (pagerState.currentPage) {
                 0 -> {
                     Text(
                         text = stringResource(R.string.welcome_title),
@@ -174,6 +182,7 @@ fun ContentLandscape(
                     )
 
                 }
+
                 1 -> {
                     Text(
                         text = stringResource(R.string.notification_title),
@@ -203,7 +212,7 @@ fun ContentLandscape(
                 onClick = {
                     if (state.totalpages > state.currentPage + 1) {
                         onEvent(StartUiEvent.NextPage)
-                    }else{
+                    } else {
                         onEvent(StartUiEvent.InsertSkipTutorial)
                     }
                 },
@@ -245,7 +254,7 @@ fun ContentLandscape(
 
     }
 
-    }
+}
 
 
 @Composable
@@ -255,7 +264,7 @@ fun ContentPortrait(
     onEvent: (StartUiEvent) -> Unit,
     colors: OnboardingColors,
     pagerState: PagerState
-    ) {
+) {
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -294,8 +303,8 @@ fun ContentPortrait(
                 onClick = {
                     if (state.totalpages > state.currentPage + 1) {
                         onEvent(StartUiEvent.NextPage)
-                    }else{
-                   //     permissionState.requestPermission()
+                    } else {
+                        //     permissionState.requestPermission()
                         onEvent(StartUiEvent.InsertSkipTutorial)
                     }
                 },
@@ -341,8 +350,6 @@ fun ContentPortrait(
 }
 
 
-
-
 @Composable
 fun PermisionTab(modifier: Modifier = Modifier, colors: OnboardingColors) {
     val permissionState = rememberNotificationPermissionHandler()
@@ -353,11 +360,15 @@ fun PermisionTab(modifier: Modifier = Modifier, colors: OnboardingColors) {
         }
     }
 
-    Column (modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly){
-         AnimatedIllustration(
-             colors = colors,
-             mainImageVector = Icons.Filled.NotificationsActive
-         )
+    Column(
+        modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly
+    ) {
+        AnimatedIllustration(
+            colors = colors,
+            mainImageVector = Icons.Filled.NotificationsActive
+        )
 
         Text(
             text = "Activa el permiso para recibir notificaciones",
@@ -371,10 +382,13 @@ fun PermisionTab(modifier: Modifier = Modifier, colors: OnboardingColors) {
 
 
 @Composable
-fun WelcomeTab(modifier: Modifier = Modifier,
-     colors: OnboardingColors = OnboardingColors()) {
+fun WelcomeTab(
+    modifier: Modifier = Modifier,
+    colors: OnboardingColors = OnboardingColors()
+) {
 
-    Column (modifier.fillMaxSize(),
+    Column(
+        modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

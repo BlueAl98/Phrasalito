@@ -31,13 +31,3 @@ fun HighlightedText(fullText: String, highlightWords: List<String>) {
 
     Text(text = annotatedText, style = MaterialTheme.typography.headlineSmall)
 }
-
-@Preview
-@Composable
-fun HighlightedTextPreview() {
-    HighlightedText(
-        fullText = "I like Kotlin and Jetpack Compose",
-        highlightWords = listOf("Kotlin", "Compose")
-    )
-
-}

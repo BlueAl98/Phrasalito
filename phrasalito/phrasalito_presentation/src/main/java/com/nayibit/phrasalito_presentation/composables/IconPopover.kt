@@ -71,18 +71,4 @@ fun IconPopover(
     }
 }
 
-@Preview
-@Composable
-fun Example(){
-    Box(Modifier.fillMaxSize()) {
-        IconPopover(icon = Icons.Default.MoreVert) {
-            DropdownMenuItem(
-                enabled = false,
-                modifier = Modifier.background(Color.Transparent),
-                text = { Text("Option 1", color = Color.Black) },
-                onClick = { /* handle */ }
-            )
-        }
-    }
-}
 

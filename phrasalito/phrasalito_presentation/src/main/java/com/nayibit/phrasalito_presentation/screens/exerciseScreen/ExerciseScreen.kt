@@ -74,25 +74,34 @@ fun ExerciseScreen(
 
     BackHandler {
         if (state.testCompleted) {
-          onEvent(ExerciseUiEvent.NavigateNext)
-        }else{
-         onEvent(ExerciseUiEvent.ShowDialog(true, BodyModalExercise.BODY_EXIT_SCREEN))
+            onEvent(ExerciseUiEvent.NavigateNext)
+        } else {
+            onEvent(ExerciseUiEvent.ShowDialog(true, BodyModalExercise.BODY_EXIT_SCREEN))
         }
 
     }
 
-    if (state.showDialog){
+    if (state.showDialog) {
         SimpleConfirmDialog(
-            title = if (state.bodyModalExercise == BodyModalExercise.BODY_SKIP_QUESTION) stringResource(R.string.title_skip_question) else stringResource(R.string.title_exit_screen),
+            title = if (state.bodyModalExercise == BodyModalExercise.BODY_SKIP_QUESTION) stringResource(
+                R.string.title_skip_question
+            ) else stringResource(R.string.title_exit_screen),
             onConfirm = {
                 if (state.bodyModalExercise == BodyModalExercise.BODY_SKIP_QUESTION)
-                     onEvent(ExerciseUiEvent.ShowAllInfo(state.currentIndex))
+                    onEvent(ExerciseUiEvent.ShowAllInfo(state.currentIndex))
                 else {
                     onEvent(ExerciseUiEvent.ShowDialog(false, BodyModalExercise.BODY_EXIT_SCREEN))
                     onEvent(ExerciseUiEvent.NavigateNext)
                 }
-                        },
-            onCancel = { onEvent(ExerciseUiEvent.ShowDialog(false, BodyModalExercise.BODY_SKIP_QUESTION)) }
+            },
+            onCancel = {
+                onEvent(
+                    ExerciseUiEvent.ShowDialog(
+                        false,
+                        BodyModalExercise.BODY_SKIP_QUESTION
+                    )
+                )
+            }
         )
     }
 
@@ -103,12 +112,15 @@ fun ExerciseScreen(
                 is ExerciseUiEvent.ShowSnackBar -> {
                     snackbarHostState.showSnackbar(event.message)
                 }
+
                 is ExerciseUiEvent.NavigateNext -> {
                     navigation()
                 }
-                is ExerciseUiEvent.OnNextPhrase ->{
+
+                is ExerciseUiEvent.OnNextPhrase -> {
                     sheetState.bottomSheetState.expand()
                 }
+
                 else -> Unit
             }
         }
@@ -120,37 +132,40 @@ fun ExerciseScreen(
         scaffoldState = sheetState,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         sheetContent = {
-            Column (modifier
-                .fillMaxHeight(0.6f)
-                .fillMaxWidth()
-                .padding(bottom = 20.dp)){
+            Column(
+                modifier
+                    .fillMaxHeight(0.6f)
+                    .fillMaxWidth()
+                    .padding(bottom = 20.dp)
+            ) {
 
-              when (orientation) {
-                  Configuration.ORIENTATION_LANDSCAPE -> BottomSheetContentLandScape(
-                      state = state,
-                      onEvent = onEvent
-                  )
-                  else -> BottomSheetContentPortrait(
-                      state = state,
-                      onEvent = onEvent
-                  )
-              }
+                when (orientation) {
+                    Configuration.ORIENTATION_LANDSCAPE -> BottomSheetContentLandScape(
+                        state = state,
+                        onEvent = onEvent
+                    )
+
+                    else -> BottomSheetContentPortrait(
+                        state = state,
+                        onEvent = onEvent
+                    )
+                }
             }
 
         }
     ) { padding ->
 
-       Box(
+        Box(
             modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
-           if (state.isLoading)
-               LoadingScreen()
-           else if (state.phrases.isEmpty())
-               Box(contentAlignment = Alignment.Center, modifier = modifier.fillMaxSize()) {
-                   Text(text = "No Phrases Found")
-          }
+            if (state.isLoading)
+                LoadingScreen()
+            else if (state.phrases.isEmpty())
+                Box(contentAlignment = Alignment.Center, modifier = modifier.fillMaxSize()) {
+                    Text(text = "No Phrases Found")
+                }
             else {
 
                 when (orientation) {
@@ -158,13 +173,16 @@ fun ExerciseScreen(
                         LandscapeContent(
                             state = state,
                             onEvent = onEvent,
-                            pagerState = pagerState)
+                            pagerState = pagerState
+                        )
                     }
+
                     else -> {
                         PortaitContent(
                             state = state,
                             onEvent = onEvent,
-                            pagerState = pagerState)
+                            pagerState = pagerState
+                        )
                     }
                 }
 
@@ -180,7 +198,7 @@ fun PortaitContent(
     state: ExerciseUiState,
     onEvent: (ExerciseUiEvent) -> Unit,
     pagerState: PagerState
-){
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -198,15 +216,23 @@ fun PortaitContent(
             pagerState = pagerState
         )
 
-        Column ( modifier = Modifier
-            .weight(0.3f)
-            .padding(horizontal = 8.dp),
+        Column(
+            modifier = Modifier
+                .weight(0.3f)
+                .padding(horizontal = 8.dp),
             verticalArrangement = Arrangement.Center,
         ) {
             TextFieldBase(
                 enabled = state.phrases[pagerState.currentPage].phraseState == PhraseState.NOT_STARTED,
                 value = state.inputAnswer,
-                onValueChange = { onEvent(ExerciseUiEvent.OnInputChanged(it, pagerState.currentPage)) },
+                onValueChange = {
+                    onEvent(
+                        ExerciseUiEvent.OnInputChanged(
+                            it,
+                            pagerState.currentPage
+                        )
+                    )
+                },
                 label = stringResource(R.string.label_answer_phrase)
             )
 
@@ -218,7 +244,8 @@ fun PortaitContent(
                 onClick = {
                     onEvent(ExerciseUiEvent.OnNextPhrase(pagerState.currentPage))
                 },
-                text = stringResource(R.string.btn_next_phrase))
+                text = stringResource(R.string.btn_next_phrase)
+            )
 
         }
 
@@ -231,63 +258,61 @@ fun LandscapeContent(
     state: ExerciseUiState,
     onEvent: (ExerciseUiEvent) -> Unit,
     pagerState: PagerState
-){
+) {
 
-        Row(modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier
-                    .weight(0.4f)
-                    .fillMaxHeight()
-                    .padding(horizontal = 8.dp, vertical = 5.dp),
-                verticalArrangement = Arrangement.SpaceEvenly
+    Row(modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .weight(0.4f)
+                .fillMaxHeight()
+                .padding(horizontal = 8.dp, vertical = 5.dp),
+            verticalArrangement = Arrangement.SpaceEvenly
 
-            ) {
-                Box(modifier.weight(0.15f)) {
+        ) {
+            Box(modifier.weight(0.15f)) {
                 ProgressBar(
                     current = state.currentIndex + 1,
                     total = state.totalItems
                 )
             }
 
-                Column(modifier.weight(0.85f), verticalArrangement = Arrangement.Center) {
-                    TextFieldBase(
-                        enabled = state.phrases[pagerState.currentPage].phraseState == PhraseState.NOT_STARTED,
-                        value = state.inputAnswer,
-                        onValueChange = {
-                            onEvent(
-                                ExerciseUiEvent.OnInputChanged(
-                                    it,
-                                    pagerState.currentPage
-                                )
+            Column(modifier.weight(0.85f), verticalArrangement = Arrangement.Center) {
+                TextFieldBase(
+                    enabled = state.phrases[pagerState.currentPage].phraseState == PhraseState.NOT_STARTED,
+                    value = state.inputAnswer,
+                    onValueChange = {
+                        onEvent(
+                            ExerciseUiEvent.OnInputChanged(
+                                it,
+                                pagerState.currentPage
                             )
-                        },
-                        label = stringResource(R.string.label_answer_phrase)
-                    )
+                        )
+                    },
+                    label = stringResource(R.string.label_answer_phrase)
+                )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
 
-                    ButtonBase(
-                        enabled = state.phrases[pagerState.currentPage].phraseState != PhraseState.NOT_STARTED,
-                        onClick = {
-                            onEvent(ExerciseUiEvent.OnNextPhrase(pagerState.currentPage))
-                        },
-                        text = stringResource(R.string.btn_next_phrase)
-                    )
-                }
+                ButtonBase(
+                    enabled = state.phrases[pagerState.currentPage].phraseState != PhraseState.NOT_STARTED,
+                    onClick = {
+                        onEvent(ExerciseUiEvent.OnNextPhrase(pagerState.currentPage))
+                    },
+                    text = stringResource(R.string.btn_next_phrase)
+                )
             }
-
-            ExercisePager(
-                modifier = modifier.weight(0.6f),
-                onEvent = onEvent,
-                state = state,
-                pagerState = pagerState
-            )
-
         }
+
+        ExercisePager(
+            modifier = modifier.weight(0.6f),
+            onEvent = onEvent,
+            state = state,
+            pagerState = pagerState
+        )
+
     }
-
-
+}
 
 
 @Composable
@@ -298,7 +323,7 @@ fun ExercisePager(
     pagerState: PagerState
 ) {
 
-    val colorManager =  when (state.phrases[pagerState.currentPage].phraseState) {
+    val colorManager = when (state.phrases[pagerState.currentPage].phraseState) {
         PhraseState.NOT_STARTED -> Color.Transparent
         PhraseState.ERROR_ANSWER -> Color.Red
         PhraseState.COMPLETED -> Color.Green
@@ -333,38 +358,53 @@ fun ExercisePager(
             ) {
 
                 Box {
-                    Row (modifier
-                        .fillMaxWidth()
-                        .padding(5.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Row(
+                        modifier
+                            .fillMaxWidth()
+                            .padding(5.dp), horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
 
-                    Row {
-                        IconPopover(
-                            icon = Icons.Default.Info,
-                            expandedState = state.popOverState,
-                            updateExpandedState = { onEvent(ExerciseUiEvent.UpdateExpandedState(it)) }
-                        ) {
-                            Text(
-                                state.phrases[page].translation,
-                                modifier = Modifier.padding(horizontal = 16.dp)
+                        Row {
+                            IconPopover(
+                                icon = Icons.Default.Info,
+                                expandedState = state.popOverState,
+                                updateExpandedState = {
+                                    onEvent(
+                                        ExerciseUiEvent.UpdateExpandedState(
+                                            it
+                                        )
+                                    )
+                                }
+                            ) {
+                                Text(
+                                    state.phrases[page].translation,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+                            }
+
+                            IconPopover(
+                                enabled = state.phrases[page].phraseState == PhraseState.NOT_STARTED,
+                                icon = Icons.Default.QuestionMark,
+                                onClick = {
+                                    onEvent(
+                                        ExerciseUiEvent.ShowDialog(
+                                            true,
+                                            BodyModalExercise.BODY_SKIP_QUESTION
+                                        )
+                                    )
+                                }
                             )
                         }
 
-                        IconPopover(
-                            enabled = state.phrases[page].phraseState == PhraseState.NOT_STARTED,
-                            icon = Icons.Default.QuestionMark,
-                            onClick = {onEvent(ExerciseUiEvent.ShowDialog(true, BodyModalExercise.BODY_SKIP_QUESTION))}
-                        )
-                    }
-
                         if (state.phrases[page].phraseState != PhraseState.NOT_STARTED)
                             IconPopover(
-                             icon = Icons.Default.PlayArrow,
-                               expandedState = state.popOverState,
-                              onClick = {
-                                onEvent(ExerciseUiEvent.OnSpeakPhrase(state.phrases[page].correctAnswer))
-                                 })
-                              }
-                          }
+                                icon = Icons.Default.PlayArrow,
+                                expandedState = state.popOverState,
+                                onClick = {
+                                    onEvent(ExerciseUiEvent.OnSpeakPhrase(state.phrases[page].correctAnswer))
+                                })
+                    }
+                }
 
                 Box(
                     modifier = modifier
@@ -434,7 +474,7 @@ fun BottomSheetContentLandScape(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Respuestas correctas: ${state.phrases.filter { it.phraseState == PhraseState.COMPLETED }.size } /  ${state.totalItems}",
+                text = "Respuestas correctas: ${state.phrases.filter { it.phraseState == PhraseState.COMPLETED }.size} /  ${state.totalItems}",
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.labelMedium,
@@ -451,7 +491,6 @@ fun BottomSheetContentLandScape(
         }
     }
 }
-
 
 
 @Composable
@@ -488,7 +527,7 @@ fun BottomSheetContentPortrait(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Respuestas correctas: ${state.phrases.filter { it.phraseState == PhraseState.COMPLETED }.size } /  ${state.totalItems}",
+            text = "Respuestas correctas: ${state.phrases.filter { it.phraseState == PhraseState.COMPLETED }.size} /  ${state.totalItems}",
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth(),

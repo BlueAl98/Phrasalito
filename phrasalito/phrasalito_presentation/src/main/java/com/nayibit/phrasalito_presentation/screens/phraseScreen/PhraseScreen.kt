@@ -34,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nayibit.common.util.UiText
 import com.nayibit.common.util.asString
@@ -52,7 +51,6 @@ import com.spartapps.swipeablecards.ui.lazy.LazySwipeableCards
 import com.spartapps.swipeablecards.ui.lazy.items
 import kotlinx.coroutines.flow.Flow
 
-
 @Composable
 fun PhraseScreen(
     modifier: Modifier = Modifier,
@@ -60,39 +58,33 @@ fun PhraseScreen(
     eventFlow: Flow<PhraseUiEvent>,
     onEvent: (PhraseUiEvent) -> Unit,
     navigation: (id: Int) -> Unit
-    )
-{
-      val context = LocalContext.current
+) {
+    val context = LocalContext.current
 
-      LaunchedEffect(Unit) {
+    LaunchedEffect(Unit) {
         eventFlow.collect { event ->
             when (event) {
                 is PhraseUiEvent.ShowToast -> {
                     val message = event.message.asString(context)
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 }
+
+                is PhraseUiEvent.Navigation -> {
+                    navigation(state.idDeck)
+                }
+
                 else -> {}
             }
-     }
+        }
     }
 
     Scaffold(
-    /*    floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    onEvent(PhraseUiEvent.ShowModal(BodyModalEnum.BODY_INSERT_PHRASE))
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = null
-                )
-            }
-        },*/
         content = { padding ->
-            Box(modifier
-                .fillMaxSize()
-                .padding(padding)) {
+            Box(
+                modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
                 when {
                     state.isLoading -> {
                         Box(modifier.fillMaxSize()) {
@@ -102,7 +94,7 @@ fun PhraseScreen(
 
                     state.phrases.isNotEmpty() -> {
 
-                        key (state.phrases) {
+                        key(state.phrases) {
                             AnimatedVisibility(
                                 visible = true,
                                 enter = fadeIn(tween(500)) + slideInHorizontally(initialOffsetX = { it / 2 }),
@@ -116,7 +108,11 @@ fun PhraseScreen(
                             }
                         }
                     }
-                    else -> Text(text = stringResource(R.string.label_dont_have_phrases), modifier.align(Alignment.Center))
+
+                    else -> Text(
+                        text = stringResource(R.string.label_dont_have_phrases),
+                        modifier.align(Alignment.Center)
+                    )
                 }
 
                 BaseDialog(
@@ -127,6 +123,7 @@ fun PhraseScreen(
                         BodyModalEnum.BODY_INSERT_PHRASE -> BodyModalInsertPhrase(state, onEvent)
                         BodyModalEnum.BODY_UPDATE_PHRASE -> BodyModalUpdatePhrase(state, onEvent)
                         BodyModalEnum.BODY_DELETE_PHRASE -> BodyModalDeletePhrase(state, onEvent)
+                        BodyModalEnum.BODY_START_EXERCISE -> BodyModalStartExercise(onEvent)
                     }
 
                 }
@@ -136,82 +133,175 @@ fun PhraseScreen(
 }
 
 
+@Composable
+fun BodyModalStartExercise(
+    onEvent: (PhraseUiEvent) -> Unit
+) {
+
+    Text(stringResource(id = R.string.label_modal_start_exercise))
+
+    ButtonBase(
+        text = stringResource(id = R.string.btn_accept),
+        onClick = { onEvent(PhraseUiEvent.Navigation) })
+    ButtonBase(
+        text = stringResource(id = R.string.btn_cancel),
+        onClick = { onEvent(PhraseUiEvent.DismissModal) }
+    )
+}
+
 
 @Composable
 fun BodyModalInsertPhrase(
     state: PhraseStateUi,
-    onEvent: (PhraseUiEvent) -> Unit
-){
+    onEvent: (PhraseUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+
     TextFieldBase(
         value = state.firstPhrase,
-        onValueChange = { onEvent(PhraseUiEvent.UpdateTextFirstPhrase(it))},
-        label  = stringResource(R.string.label_phrase))
+        onValueChange = { onEvent(PhraseUiEvent.UpdateTextFirstPhrase(it)) },
+        label = stringResource(R.string.label_phrase)
+    )
 
     TextFieldBase(
         value = state.translation,
-        onValueChange = { onEvent(PhraseUiEvent.UpdateTextTraslation(it))},
-        label  = stringResource(R.string.label_traduction_phrase))
+        onValueChange = { onEvent(PhraseUiEvent.UpdateTextTraslation(it)) },
+        label = stringResource(R.string.label_traduction_phrase)
+    )
 
     TextFieldBase(
         value = state.example,
-        onValueChange = { onEvent(PhraseUiEvent.UpdateTextExample(it))},
-        label  = stringResource(R.string.label_example_phrase))
+        onValueChange = { onEvent(PhraseUiEvent.UpdateTextExample(it)) },
+        label = stringResource(R.string.label_example_phrase)
+    )
 
-    ButtonBase(
-        text = stringResource(id = R.string.btn_save),
-        onClick = { if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(PhraseUiEvent.InsertPhrase) else onEvent(PhraseUiEvent.ShowToast(
-            UiText.StringResource(R.string.label_emty_fields))) },
-        loading = state.isLoadingButton
-    )
-    ButtonBase(
-        text = stringResource(id = R.string.btn_cancel),
-        onClick = { onEvent(PhraseUiEvent.DismissModal) },
-        enabled = !state.isLoadingButton
-    )
+    if (!isLandscape()) {
+        ButtonBase(
+            text = stringResource(id = R.string.btn_save),
+            onClick = {
+                if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(
+                    PhraseUiEvent.InsertPhrase
+                ) else onEvent(
+                    PhraseUiEvent.ShowToast(
+                        UiText.StringResource(R.string.label_emty_fields)
+                    )
+                )
+            },
+            loading = state.isLoadingButton
+        )
+        ButtonBase(
+            text = stringResource(id = R.string.btn_cancel),
+            onClick = { onEvent(PhraseUiEvent.DismissModal) },
+            enabled = !state.isLoadingButton
+        )
+    } else {
+        Row {
+            ButtonBase(
+                modifier = modifier.weight(0.45f),
+                text = stringResource(id = R.string.btn_save),
+                onClick = {
+                    if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(
+                        PhraseUiEvent.InsertPhrase
+                    ) else onEvent(
+                        PhraseUiEvent.ShowToast(
+                            UiText.StringResource(R.string.label_emty_fields)
+                        )
+                    )
+                },
+                loading = state.isLoadingButton
+            )
+            Spacer(modifier.weight(0.05f))
+            ButtonBase(
+                modifier = modifier.weight(0.45f),
+                text = stringResource(id = R.string.btn_cancel),
+                onClick = { onEvent(PhraseUiEvent.DismissModal) },
+                enabled = !state.isLoadingButton
+            )
+        }
+    }
+
 }
 
 
 @Composable
 fun BodyModalUpdatePhrase(
     state: PhraseStateUi,
-    onEvent: (PhraseUiEvent) -> Unit
-){
+    onEvent: (PhraseUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     TextFieldBase(
         value = state.firstPhrase,
-        onValueChange = { onEvent(PhraseUiEvent.UpdateTextFirstPhrase(it))},
-        label  = stringResource(R.string.label_phrase))
+        onValueChange = { onEvent(PhraseUiEvent.UpdateTextFirstPhrase(it)) },
+        label = stringResource(R.string.label_phrase)
+    )
 
     TextFieldBase(
         value = state.translation,
-        onValueChange = { onEvent(PhraseUiEvent.UpdateTextTraslation(it))},
-        label  = stringResource(R.string.label_traduction_phrase))
+        onValueChange = { onEvent(PhraseUiEvent.UpdateTextTraslation(it)) },
+        label = stringResource(R.string.label_traduction_phrase)
+    )
 
 
     TextFieldBase(
         value = state.example,
-        onValueChange = { onEvent(PhraseUiEvent.UpdateTextExample(it))},
-        label  = stringResource(R.string.label_example_phrase))
+        onValueChange = { onEvent(PhraseUiEvent.UpdateTextExample(it)) },
+        label = stringResource(R.string.label_example_phrase)
+    )
 
 
-    ButtonBase(
-        text = stringResource(id = R.string.btn_update),
-        onClick = { if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(PhraseUiEvent.UpdatePhrase(state.phraseToUpdate!!)) else onEvent(PhraseUiEvent.ShowToast(
-            UiText.StringResource(R.string.label_emty_fields)
-        )) },
-        loading = state.isLoadingButton
-    )
-    ButtonBase(
-        text = stringResource(id = R.string.btn_cancel),
-        onClick = { onEvent(PhraseUiEvent.DismissModal) },
-        enabled = !state.isLoadingButton
-    )
+    if (!isLandscape()) {
+        ButtonBase(
+            text = stringResource(id = R.string.btn_update),
+            onClick = {
+                if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(
+                    PhraseUiEvent.UpdatePhrase(state.phraseToUpdate!!)
+                ) else onEvent(
+                    PhraseUiEvent.ShowToast(
+                        UiText.StringResource(R.string.label_emty_fields)
+                    )
+                )
+            },
+            loading = state.isLoadingButton
+        )
+        ButtonBase(
+            text = stringResource(id = R.string.btn_cancel),
+            onClick = { onEvent(PhraseUiEvent.DismissModal) },
+            enabled = !state.isLoadingButton
+        )
+    } else {
+        Row {
+            ButtonBase(
+                modifier = modifier.weight(0.45f),
+                text = stringResource(id = R.string.btn_update),
+                onClick = {
+                    if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(
+                        PhraseUiEvent.UpdatePhrase(state.phraseToUpdate!!)
+                    ) else onEvent(
+                        PhraseUiEvent.ShowToast(
+                            UiText.StringResource(R.string.label_emty_fields)
+                        )
+                    )
+                },
+                loading = state.isLoadingButton
+            )
+
+            Spacer(modifier.weight(0.05f))
+
+            ButtonBase(
+                modifier = modifier.weight(0.45f),
+                text = stringResource(id = R.string.btn_cancel),
+                onClick = { onEvent(PhraseUiEvent.DismissModal) },
+                enabled = !state.isLoadingButton
+            )
+        }
+    }
 }
 
 @Composable
 fun BodyModalDeletePhrase(
     state: PhraseStateUi,
     onEvent: (PhraseUiEvent) -> Unit
-){
+) {
     Text(text = stringResource(R.string.title_delete_phrase))
 
     ButtonBase(
@@ -228,81 +318,73 @@ fun BodyModalDeletePhrase(
 
 
 @Composable
-@Preview
-fun AreaStudyCardsPreview(){
-
-    val state = PhraseStateUi(
-        phrases = listOf(
-            PhraseUi(
-                id = 1,
-                targetLanguage = "Hola",
-                translation = "Hello",
-                example = "¡Hola! ¿Cómo estás?"
-                ),
-
-            PhraseUi(
-                id = 1,
-                targetLanguage = "Hola",
-                translation = "Hello",
-                example = "¡Hola! ¿Cómo estás?",
-                color = Color(0xFF318BD3)
-            )
-            ))
-    val onEvent: (PhraseUiEvent) -> Unit = {}
-
-    AreaStudyCards(
-      state = state,
-      onEvent = onEvent
-    )
-}
-
-@Composable
 fun AreaStudyCards(
     modifier: Modifier = Modifier,
     state: PhraseStateUi,
     onEvent: (PhraseUiEvent) -> Unit
-){
+) {
     val icons = listOf(
-        IconItem(Icons.Default.AddCircle, "Agregar", Color(0xFFE91E63)),
-        IconItem(Icons.Default.Edit, "Editar", Color(0xFF4CAF50), onClick = {  onEvent(
-            PhraseUiEvent.ShowModal(
-                BodyModalEnum.BODY_UPDATE_PHRASE,
-                state.phrases[state.curentCardPhrase]
+        IconItem(Icons.Default.AddCircle, "Agregar", Color(0xFFE91E63), onClick = {
+            onEvent(PhraseUiEvent.ShowModal(BodyModalEnum.BODY_INSERT_PHRASE))
+        }),
+        IconItem(Icons.Default.Edit, "Editar", Color(0xFF4CAF50), onClick = {
+            onEvent(
+                PhraseUiEvent.ShowModal(
+                    BodyModalEnum.BODY_UPDATE_PHRASE,
+                    state.phrases[state.curentCardPhrase]
+                )
             )
-        )}),
-        IconItem(Icons.Default.Delete, "Eliminar", Color(0xFF2196F3)),
-        IconItem(Icons.Default.Description, "Examen", Color(0xFFFF9800))
+        }),
+        IconItem(Icons.Default.Delete, "Eliminar", Color(0xFF2196F3), onClick = {
+            onEvent(
+                PhraseUiEvent.ShowModal(
+                    BodyModalEnum.BODY_DELETE_PHRASE,
+                    state.phrases[state.curentCardPhrase]
+                )
+            )
+        }),
+        IconItem(Icons.Default.Description, "Examen", Color(0xFFFF9800), onClick = {
+            onEvent(
+                PhraseUiEvent.ShowModal(
+                    BodyModalEnum.BODY_START_EXERCISE
+                )
+            )
+        })
     )
 
-   val stateCard = rememberSwipeableCardsState(
+    val stateCard = rememberSwipeableCardsState(
         initialCardIndex = state.curentCardPhrase,
-         itemCount = { state.phrases.size })
+        itemCount = { state.phrases.size })
 
 
-        LaunchedEffect(state.curentCardPhrase) {
-            if (state.curentCardPhrase >= state.phrases.size) {
-                stateCard.setCurrentIndex(0)
-                onEvent(PhraseUiEvent.UploadCurrentIndexCard(0, true))
-            }
+    LaunchedEffect(state.curentCardPhrase) {
+        if (state.curentCardPhrase >= state.phrases.size) {
+            stateCard.setCurrentIndex(0)
+            onEvent(PhraseUiEvent.UploadCurrentIndexCard(0, true))
         }
+    }
 
 
     if (!isLandscape()) {
         Column(
-            modifier.fillMaxSize().padding(10.dp),
+            modifier
+                .fillMaxSize()
+                .padding(10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
 
             Box(
-                modifier.weight(0.10f).padding(5.dp),
+                modifier
+                    .weight(0.10f)
+                    .padding(5.dp),
                 contentAlignment = Alignment.Center
             ) {
-                    Text(
-                        modifier = modifier.padding(5.dp),
-                        text = "Cards: ${state.curentCardPhrase + 1} /  ${state.phrases.size}",
-                        style = MaterialTheme.typography.titleLarge
-                    )
+                Text(
+                    modifier = modifier.padding(5.dp),
+                    text = "Cards: ${state.curentCardPhrase + 1} /  ${state.phrases.size}",
+                    style = MaterialTheme.typography.titleLarge
+                )
 
             }
 
@@ -312,11 +394,16 @@ fun AreaStudyCards(
             Spacer(modifier.weight(0.05f))
 
             Box(
-                modifier.weight(0.80f).fillMaxWidth().padding(10.dp),
+                modifier
+                    .weight(0.80f)
+                    .fillMaxWidth()
+                    .padding(10.dp),
                 contentAlignment = Alignment.Center
             ) {
                 LazySwipeableCards<PhraseUi>(
-                    modifier = Modifier.fillMaxWidth().padding(end = 20.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 20.dp),
                     state = stateCard,
                     onSwipe = { phrase, direction ->
                         when (direction) {
@@ -336,7 +423,7 @@ fun AreaStudyCards(
                                 modifier = modifier.fillMaxSize(),
                                 phrase = phrase,
                                 isLandscape = isLandscape(),
-                                onEdit = {
+                                onEvent = {
                                     onEvent(
                                         PhraseUiEvent.ShowModal(
                                             BodyModalEnum.BODY_UPDATE_PHRASE,
@@ -351,25 +438,30 @@ fun AreaStudyCards(
 
             }
         }
-    }else{
+    } else {
 
-        Row (
-            modifier.fillMaxSize().padding(10.dp),
+        Row(
+            modifier
+                .fillMaxSize()
+                .padding(10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
 
         ) {
 
             Box(
-                modifier.weight(0.30f).fillMaxHeight(0.8f),
+                modifier
+                    .weight(0.30f)
+                    .fillMaxHeight(0.8f),
                 contentAlignment = Alignment.Center
             ) {
 
-              Card(
+                Card(
                     modifier = modifier.fillMaxSize(),
                     shape = RoundedCornerShape(12.dp),
                 ) {
-                    Column(modifier.fillMaxSize(),
+                    Column(
+                        modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
@@ -396,7 +488,10 @@ fun AreaStudyCards(
             ) {
 
                 LazySwipeableCards<PhraseUi>(
-                    modifier = Modifier.fillMaxWidth(0.9f).fillMaxHeight(0.9f).padding(end = 20.dp),
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .fillMaxHeight(0.9f)
+                        .padding(end = 20.dp),
                     state = stateCard,
                     onSwipe = { phrase, direction ->
                         when (direction) {
@@ -416,7 +511,7 @@ fun AreaStudyCards(
                                 modifier = modifier.fillMaxSize(),
                                 phrase = phrase,
                                 isLandscape = isLandscape(),
-                                onEdit = {
+                                onEvent = {
                                     onEvent(
                                         PhraseUiEvent.ShowModal(
                                             BodyModalEnum.BODY_UPDATE_PHRASE,

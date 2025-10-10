@@ -90,16 +90,3 @@ fun IconWithTitle(item: IconItem) {
     }
 
 }
-
-@Composable
-@Preview
-fun DemoScreen() {
-    val icons = listOf(
-        IconItem(Icons.Default.Home, "Home", Color(0xFF4CAF50)),
-        IconItem(Icons.Default.Settings, "Settings", Color(0xFF2196F3)),
-        IconItem(Icons.Default.Favorite, "Favorites", Color(0xFFE91E63)),
-        IconItem(Icons.Default.Person, "Profile", Color(0xFFFF9800))
-    )
-
-    DynamicIconSection(items = icons)
-}

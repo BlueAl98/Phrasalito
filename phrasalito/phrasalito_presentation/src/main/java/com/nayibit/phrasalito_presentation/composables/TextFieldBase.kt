@@ -76,14 +76,3 @@ fun TextFieldBase(
     )
 }
 
-@Composable
-@Preview
-fun TextFieldBasePreview(){
-
-    TextFieldBase(
-        value = "",
-        onValueChange = {},
-        label = "Custom color",
-        placeholder = "Try custom color"
-    )
-}

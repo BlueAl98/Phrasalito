@@ -1,10 +1,20 @@
 package com.nayibit.phrasalito_presentation.composables
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Card
@@ -13,14 +23,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUi
@@ -29,7 +42,7 @@ import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUi
 fun LanguagePhraseCard(
     phrase: PhraseUi,
     modifier: Modifier = Modifier, 
-    onEdit : () -> Unit = {}
+    onEvent : () -> Unit = {}
 ) {
     var isTranslationVisible by remember { mutableStateOf(false) }
 
@@ -53,17 +66,6 @@ fun LanguagePhraseCard(
                 .padding(24.dp),
             contentAlignment = Alignment.Center
         ) {
-                IconButton(
-                    onClick = { onEdit() },
-                    modifier = Modifier.align(Alignment.TopEnd),
-                    content = {
-                        Icon(
-                           imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit",
-                            tint = Color.White
-                        )
-                    }
-                )
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -137,14 +139,25 @@ fun LanguagePhraseCard(
                         Column(
                             modifier = Modifier.padding(16.dp)
                         ) {
-                            Text(
-                                text = "Example:",
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    fontWeight = FontWeight.Bold
-                                ),
-                                color = phrase.color,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
+                            Row {
+                                Text(
+                                    text = "Example:",
+                                    style = MaterialTheme.typography.titleSmall.copy(
+                                        fontWeight = FontWeight.Bold
+                                    ),
+                                    color = phrase.color
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+
+                                Icon(
+                                    modifier = Modifier.clickable { onEvent() },
+                                    imageVector = Icons.Default.PlayArrow,
+                                    contentDescription = "Play",
+                                    tint = phrase.color
+                                )
+
+
+                            }
                             Text(
                                 text = phrase.example,
                                 style = MaterialTheme.typography.bodyMedium,
@@ -164,7 +177,7 @@ fun LanguagePhraseCard(
 fun LanguagePhraseCardLandscape(
     phrase: PhraseUi,
     modifier: Modifier = Modifier,
-    onEdit : () -> Unit = {}
+    onEvent : () -> Unit = {}
 ) {
     var isTranslationVisible by remember { mutableStateOf(false) }
 
@@ -188,19 +201,6 @@ fun LanguagePhraseCardLandscape(
                 .padding(20.dp),
             contentAlignment = Alignment.Center
         ) {
-
-            IconButton(
-                onClick = { onEdit() },
-                modifier = Modifier.align(Alignment.TopStart),
-                content = {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit",
-                        tint = Color.White
-                    )
-                }
-            )
-
 
             Row(
                 modifier = Modifier.fillMaxSize(),
@@ -279,16 +279,28 @@ fun LanguagePhraseCardLandscape(
                             colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.8f))
                         ) {
                             Column(
-                                modifier = Modifier.padding(12.dp)
+                                modifier = Modifier.fillMaxWidth().padding(12.dp)
                             ) {
-                                Text(
-                                    text = "Example:",
-                                    style = MaterialTheme.typography.bodySmall.copy(
-                                        fontWeight = FontWeight.Bold
-                                    ),
-                                    color = phrase.color,
-                                    modifier = Modifier.padding(bottom = 2.dp)
-                                )
+                                Row {
+                                    Text(
+                                        text = "Example:",
+                                        style = MaterialTheme.typography.titleSmall.copy(
+                                            fontWeight = FontWeight.Bold
+                                        ),
+                                        color = phrase.color
+                                    )
+                                    Spacer(modifier = Modifier.weight(1f))
+
+                                       Icon(
+                                           modifier = Modifier.clickable { onEvent() },
+                                           imageVector = Icons.Default.PlayArrow,
+                                           contentDescription = "Play",
+                                           tint = phrase.color
+                                       )
+
+                                }
+
+
                                 Text(
                                     text = phrase.example,
                                     style = MaterialTheme.typography.bodySmall,
@@ -305,44 +317,15 @@ fun LanguagePhraseCardLandscape(
 
 @Composable
 fun AdaptiveLanguageCard(
+    modifier: Modifier = Modifier,
     phrase: PhraseUi,
     isLandscape: Boolean = false,
-    modifier: Modifier = Modifier,
-    onEdit : () -> Unit = {}
+    onEvent : () -> Unit = {}
 ) {
     if (isLandscape) {
-        LanguagePhraseCardLandscape(phrase = phrase, modifier = modifier, onEdit = onEdit)
+        LanguagePhraseCardLandscape(phrase = phrase, modifier = modifier, onEvent = onEvent)
     } else {
-        LanguagePhraseCard(phrase = phrase, modifier = modifier, onEdit = onEdit)
+        LanguagePhraseCard(phrase = phrase, modifier = modifier, onEvent = onEvent)
     }
 }
 
-// Preview for portrait
-@Preview(showBackground = true)
-@Composable
-fun LanguagePhraseCardPreview() {
-    val samplePhrase = PhraseUi(
-        id = 0,
-        targetLanguage = "Bonjour",
-        translation = "Hello",
-        example = "Bonjour, comment allez-vous?",
-        color = Color(0xFF2196F3)
-    )
-
-    LanguagePhraseCard(phrase = samplePhrase)
-}
-
-// Preview for landscape
-@Preview(showBackground = true, widthDp = 800, heightDp = 300)
-@Composable
-fun LanguagePhraseCardLandscapePreview() {
-    val samplePhrase = PhraseUi(
-        id = 0,
-        targetLanguage = "Hola",
-        translation = "Hello",
-        example = "¡Hola! ¿Cómo estás?",
-        color = Color(0xFF4CAF50)
-    )
-
-    LanguagePhraseCardLandscape(phrase = samplePhrase)
-}

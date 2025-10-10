@@ -62,7 +62,7 @@ fun CardDeck(
     totalCards: Int,
     icon: ImageVector = Icons.Default.Star,
     badgeType: DeckBadgeType = DeckBadgeType.NONE,
-    onClick: () -> Unit,
+    onClick: () -> Unit = {},
     onClickToTest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -160,7 +160,7 @@ fun CardDeck(
                 }
 
                 // Arrow
-                DeckArrow(onClick = onClick)
+              //  DeckArrow(onClick = onClick)
             }
         }
     }

@@ -1,10 +1,12 @@
 package com.nayibit.phrasalito_presentation.screens.phraseScreen
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.common.util.Resource
 import com.nayibit.common.util.UiText
+import com.nayibit.common.util.UiText.*
 import com.nayibit.common.util.normalizeSpaces
 import com.nayibit.phrasalito_domain.model.Phrase
 import com.nayibit.phrasalito_domain.useCases.phrases.DeletebyIdPhraseUseCase
@@ -14,6 +16,7 @@ import com.nayibit.phrasalito_domain.useCases.phrases.UpdatePhraseByIdUseCase
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.mappers.toPhrase
 import com.nayibit.phrasalito_presentation.mappers.toPhraseUi
+import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUiEvent.*
 import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUiEvent.UploadCurrentIndexCard
 import com.nayibit.phrasalito_presentation.utils.ValidateExampleResult
 import com.nayibit.phrasalito_presentation.utils.validateExample
@@ -39,7 +42,9 @@ class PhraseViewModel
 
     val idDeck = savedStateHandle.get<Int>("idDeck")
 
-    private val _state = MutableStateFlow(PhraseStateUi())
+    private val _state = MutableStateFlow(PhraseStateUi(
+        idDeck = idDeck ?: 0
+    ))
     val state: StateFlow<PhraseStateUi> = _state.asStateFlow()
 
     private val _eventFlow = MutableSharedFlow< PhraseUiEvent>()
@@ -79,14 +84,14 @@ class PhraseViewModel
 
                     ValidateExampleResult.EXAMPLE_NOT_CONTAINS_PHRASE -> {
                         _eventFlow.emit(
-                            PhraseUiEvent.ShowToast(UiText.StringResource(R.string.error_example_not_contains_phrase))
+                            ShowToast(StringResource(R.string.error_example_not_contains_phrase))
                         )
 
                     }
 
                     ValidateExampleResult.EXAMPLE_IS_NOT_LONGER_THAN_PHRASE -> {
                         _eventFlow.emit(
-                            PhraseUiEvent.ShowToast(UiText.StringResource(R.string.error_example_is_not_longer_than_phrase))
+                            ShowToast(StringResource(R.string.error_example_is_not_longer_than_phrase))
                         )
                     }
                 }
@@ -154,13 +159,13 @@ class PhraseViewModel
                     }
                     ValidateExampleResult.EXAMPLE_NOT_CONTAINS_PHRASE -> {
                             _eventFlow.emit(
-                                PhraseUiEvent.ShowToast(UiText.StringResource(R.string.error_example_not_contains_phrase))
+                                ShowToast(StringResource(R.string.error_example_not_contains_phrase))
                             )
 
                     }
                     ValidateExampleResult.EXAMPLE_IS_NOT_LONGER_THAN_PHRASE -> {
                             _eventFlow.emit(
-                                PhraseUiEvent.ShowToast(UiText.StringResource(R.string.error_example_is_not_longer_than_phrase))
+                                ShowToast(StringResource(R.string.error_example_is_not_longer_than_phrase))
                             )
                         }
                     }
@@ -184,7 +189,11 @@ class PhraseViewModel
                    _state.update { it.copy(curentCardPhrase = 0) }
             }
 
-
+            is PhraseUiEvent.Navigation -> {
+                viewModelScope.launch {
+                    _eventFlow.emit(event)
+                }
+            }
         }
     }
 
@@ -245,13 +254,15 @@ class PhraseViewModel
                 .collect { result ->
                     when (result) {
                         is Resource.Loading -> _state.update { it.copy(isLoading = true) }
-                        is Resource.Success -> _state.update {
+                        is Resource.Success -> {
+                            _state.update {
                             it.copy(
                                 isLoading = false,
                                 phrases = result.data.map { phrase ->
                                     phrase.toPhraseUi()
                                 }
                             )
+                        }
                         }
                         is Resource.Error -> {
                             _state.update { it.copy(isLoading = false) }

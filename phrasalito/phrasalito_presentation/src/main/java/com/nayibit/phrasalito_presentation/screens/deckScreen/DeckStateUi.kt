@@ -17,6 +17,5 @@ data class DeckStateUi (
 
 
 enum class BodyDeckModalEnum() {
-    BODY_INSERT_DECK,
-    BODY_START_EXERCISE
+    BODY_INSERT_DECK
 }

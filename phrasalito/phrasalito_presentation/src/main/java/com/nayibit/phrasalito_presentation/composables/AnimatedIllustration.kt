@@ -189,16 +189,6 @@ fun AnimatedIllustration(
     }
 }
 
-@Preview
-@Composable
-fun OnboardingScreenPreview() {
-    MaterialTheme {
-        AnimatedIllustration(
-            colors = OnboardingColors()
-        )
-    }
-}
-
 
 
 

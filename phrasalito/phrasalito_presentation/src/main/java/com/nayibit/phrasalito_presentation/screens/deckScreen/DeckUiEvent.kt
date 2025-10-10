@@ -9,6 +9,5 @@ sealed class DeckUiEvent {
     object InsertDeck : DeckUiEvent()
     data class OpenPrompt(val url: String = "", val prompt: String = "") : DeckUiEvent()
     data class NavigationToPhrases(val id: Int) : DeckUiEvent()
-    data class NavigationToExercise(val id: Int) : DeckUiEvent()
     data class UpdateTextFirstPhrase(val text: String) : DeckUiEvent()
 }

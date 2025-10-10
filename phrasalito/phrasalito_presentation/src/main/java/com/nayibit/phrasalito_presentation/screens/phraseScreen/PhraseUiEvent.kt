@@ -15,4 +15,5 @@ sealed class PhraseUiEvent {
     data class DeletePhrase(val id: Int) : PhraseUiEvent()
     data class UpdatePhrase(val phraseUi: PhraseUi) : PhraseUiEvent()
     data class UploadCurrentIndexCard(val index: Int , val reset: Boolean = false ) : PhraseUiEvent()
+    object Navigation : PhraseUiEvent()
 }

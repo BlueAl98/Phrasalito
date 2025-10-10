@@ -108,18 +108,3 @@ private fun FaceCard(
     }
 }
 
-// --- Preview / usage example ---
-@Composable
-@Preview
-fun FlashcardPreview() {
-    MaterialTheme {
-        Column (Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-            FlipCard(
-                phrase = "Hello, my name is najib bukele and my age is 27",
-                translation = "Hola, mi nombre es najib bukele y mi edad es 27",
-                frontGradient = listOf(Color(0xFF56CCF2), Color(0xFF2F80ED)),
-                backGradient = listOf(Color(0xFFF2994A), Color(0xFFF2C94C))
-            )
-        }
-    }
-}
