@@ -25,16 +25,19 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.nayibit.common.util.Constants.NUM_CARDS_FOR_EXAM
 import com.nayibit.common.util.UiText
 import com.nayibit.common.util.asString
 import com.nayibit.phrasalito_presentation.R
@@ -60,6 +63,8 @@ fun PhraseScreen(
     navigation: (id: Int) -> Unit
 ) {
     val context = LocalContext.current
+    val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
+
 
     LaunchedEffect(Unit) {
         eventFlow.collect { event ->
@@ -72,6 +77,9 @@ fun PhraseScreen(
                 is PhraseUiEvent.Navigation -> {
                     navigation(state.idDeck)
                 }
+                is PhraseUiEvent.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(event.message.asString(context))
+                }
 
                 else -> {}
             }
@@ -79,6 +87,9 @@ fun PhraseScreen(
     }
 
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        },
         content = { padding ->
             Box(
                 modifier
@@ -92,8 +103,7 @@ fun PhraseScreen(
                         }
                     }
 
-                    state.phrases.isNotEmpty() -> {
-
+                   else -> {
                         key(state.phrases) {
                             AnimatedVisibility(
                                 visible = true,
@@ -108,11 +118,6 @@ fun PhraseScreen(
                             }
                         }
                     }
-
-                    else -> Text(
-                        text = stringResource(R.string.label_dont_have_phrases),
-                        modifier.align(Alignment.Center)
-                    )
                 }
 
                 BaseDialog(
@@ -323,6 +328,7 @@ fun AreaStudyCards(
     state: PhraseStateUi,
     onEvent: (PhraseUiEvent) -> Unit
 ) {
+
     val icons = listOf(
         IconItem(Icons.Default.AddCircle, "Agregar", Color(0xFFE91E63), onClick = {
             onEvent(PhraseUiEvent.ShowModal(BodyModalEnum.BODY_INSERT_PHRASE))
@@ -334,7 +340,8 @@ fun AreaStudyCards(
                     state.phrases[state.curentCardPhrase]
                 )
             )
-        }),
+        }, enabled = state.phrases.isNotEmpty()),
+
         IconItem(Icons.Default.Delete, "Eliminar", Color(0xFF2196F3), onClick = {
             onEvent(
                 PhraseUiEvent.ShowModal(
@@ -342,13 +349,16 @@ fun AreaStudyCards(
                     state.phrases[state.curentCardPhrase]
                 )
             )
-        }),
+        },enabled = state.phrases.isNotEmpty()),
         IconItem(Icons.Default.Description, "Examen", Color(0xFFFF9800), onClick = {
+            if (state.phrases.size >= NUM_CARDS_FOR_EXAM)
             onEvent(
                 PhraseUiEvent.ShowModal(
                     BodyModalEnum.BODY_START_EXERCISE
                 )
             )
+            else
+                onEvent(PhraseUiEvent.ShowSnackbar(UiText.StringResource(R.string.label_dont_cards_enough)))
         })
     )
 
@@ -382,7 +392,13 @@ fun AreaStudyCards(
             ) {
                 Text(
                     modifier = modifier.padding(5.dp),
-                    text = "Cards: ${state.curentCardPhrase + 1} /  ${state.phrases.size}",
+                    text = "Cards: ${
+                       when{
+                           state.phrases.isNotEmpty() && state.curentCardPhrase < state.phrases.size -> state.curentCardPhrase + 1
+                           else -> state.curentCardPhrase
+                       }
+                    
+                    } /  ${state.phrases.size}",
                     style = MaterialTheme.typography.titleLarge
                 )
 
@@ -408,11 +424,11 @@ fun AreaStudyCards(
                     onSwipe = { phrase, direction ->
                         when (direction) {
                             SwipeableCardDirection.Right -> {
-                                onEvent(PhraseUiEvent.UploadCurrentIndexCard(stateCard.currentCardIndex))
+                                 onEvent(PhraseUiEvent.UploadCurrentIndexCard(stateCard.currentCardIndex))
                             }
 
                             SwipeableCardDirection.Left -> { /* Handle left swipe */
-                                onEvent(PhraseUiEvent.UploadCurrentIndexCard(stateCard.currentCardIndex))
+                                   onEvent(PhraseUiEvent.UploadCurrentIndexCard(stateCard.currentCardIndex))
                             }
                         }
                     }
@@ -471,7 +487,11 @@ fun AreaStudyCards(
                         )
                         Text(
                             modifier = modifier.padding(5.dp),
-                            text = "${state.curentCardPhrase + 1} /  ${state.phrases.size}",
+                            text = "${  when{
+                                state.phrases.isNotEmpty() && state.curentCardPhrase < state.phrases.size -> state.curentCardPhrase + 1
+                                else -> state.curentCardPhrase
+                            }
+                            } /  ${state.phrases.size}",
                             style = MaterialTheme.typography.titleLarge,
                         )
 

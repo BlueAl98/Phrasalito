@@ -10,19 +10,14 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nayibit.phrasalito_presentation.model.IconItem
@@ -73,15 +68,20 @@ fun IconWithTitle(item: IconItem) {
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.padding(8.dp)
     ) {
-        Icon(
-            imageVector = item.icon,
-            contentDescription = item.title,
-            tint = item.color,
-            modifier = Modifier
-                .size(48.dp)
-                .padding(bottom = 4.dp)
-                .clickable { item.onClick() }
-        )
+        IconButton(
+            onClick = item.onClick,
+            enabled = item.enabled
+        ) {
+            Icon(
+                imageVector = item.icon,
+                contentDescription = item.title,
+                tint = if (item.enabled) item.color else Color.Gray,
+                modifier = Modifier
+                    .size(48.dp)
+                    .padding(bottom = 4.dp)
+            )
+        }
+
         Text(
             text = item.title,
             fontSize = 14.sp,

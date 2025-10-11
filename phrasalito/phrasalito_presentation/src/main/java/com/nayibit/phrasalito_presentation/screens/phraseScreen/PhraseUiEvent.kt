@@ -5,6 +5,7 @@ import com.nayibit.common.util.UiText
 sealed class PhraseUiEvent {
     data class ShowToast(val message: UiText) : PhraseUiEvent()
     data class ShowModal(val type: BodyModalEnum, val phraseUi: PhraseUi? = null): PhraseUiEvent()
+    data class ShowSnackbar(val message: UiText) : PhraseUiEvent()
     object DismissModal : PhraseUiEvent()
     object InsertPhrase : PhraseUiEvent()
     data class UpdateTextFirstPhrase(val text: String) : PhraseUiEvent()

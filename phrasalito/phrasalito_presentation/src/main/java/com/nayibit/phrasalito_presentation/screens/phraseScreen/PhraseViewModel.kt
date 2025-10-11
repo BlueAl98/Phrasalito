@@ -1,12 +1,11 @@
 package com.nayibit.phrasalito_presentation.screens.phraseScreen
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.common.util.Resource
-import com.nayibit.common.util.UiText
-import com.nayibit.common.util.UiText.*
+import com.nayibit.common.util.UiText.DynamicString
+import com.nayibit.common.util.UiText.StringResource
 import com.nayibit.common.util.normalizeSpaces
 import com.nayibit.phrasalito_domain.model.Phrase
 import com.nayibit.phrasalito_domain.useCases.phrases.DeletebyIdPhraseUseCase
@@ -16,7 +15,19 @@ import com.nayibit.phrasalito_domain.useCases.phrases.UpdatePhraseByIdUseCase
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.mappers.toPhrase
 import com.nayibit.phrasalito_presentation.mappers.toPhraseUi
-import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUiEvent.*
+import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUiEvent.CollapsedItem
+import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUiEvent.DeletePhrase
+import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUiEvent.DismissModal
+import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUiEvent.ExpandItem
+import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUiEvent.InsertPhrase
+import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUiEvent.Navigation
+import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUiEvent.ShowModal
+import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUiEvent.ShowSnackbar
+import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUiEvent.ShowToast
+import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUiEvent.UpdatePhrase
+import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUiEvent.UpdateTextExample
+import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUiEvent.UpdateTextFirstPhrase
+import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUiEvent.UpdateTextTraslation
 import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUiEvent.UploadCurrentIndexCard
 import com.nayibit.phrasalito_presentation.utils.ValidateExampleResult
 import com.nayibit.phrasalito_presentation.utils.validateExample
@@ -56,7 +67,7 @@ class PhraseViewModel
 
     fun onEvent(event: PhraseUiEvent) {
         when (event) {
-            PhraseUiEvent.DismissModal -> {
+            DismissModal -> {
                 _state.value = _state.value.copy(
                     showModal = false,
                     isLoadingButton = false,
@@ -67,7 +78,7 @@ class PhraseViewModel
                 )
             }
 
-            PhraseUiEvent.InsertPhrase -> { viewModelScope.launch {
+            InsertPhrase -> { viewModelScope.launch {
                 _state.update { it.copy(bodyModal = BodyModalEnum.BODY_INSERT_PHRASE) }
 
                 val result = validateExample(_state.value.firstPhrase, _state.value.example)
@@ -99,24 +110,24 @@ class PhraseViewModel
 
 
             }
-            is PhraseUiEvent.ShowToast -> {
+            is ShowToast -> {
                 viewModelScope.launch {
                     _eventFlow.emit(event)
                 }
             }
 
-            is PhraseUiEvent.UpdateTextFirstPhrase -> {
+            is UpdateTextFirstPhrase -> {
                 _state.update { it.copy(firstPhrase = event.text) }
             }
-            is PhraseUiEvent.UpdateTextTraslation -> {
+            is UpdateTextTraslation -> {
                 _state.update { it.copy(translation = event.text) }
             }
 
-            is PhraseUiEvent.UpdateTextExample -> {
+            is UpdateTextExample -> {
                 _state.update { it.copy(example = event.text) }
             }
 
-            is PhraseUiEvent.ExpandItem -> {
+            is ExpandItem -> {
                 _state.update { state ->
                     state.copy(
                         phrases = state.phrases.map { phrase ->
@@ -127,7 +138,7 @@ class PhraseViewModel
                     )
                 }
              }
-            is PhraseUiEvent.CollapsedItem -> {
+            is CollapsedItem -> {
                 _state.update { state ->
                     state.copy(
                         phrases = state.phrases.map { phrase ->
@@ -139,11 +150,11 @@ class PhraseViewModel
                 }
             }
 
-            is PhraseUiEvent.DeletePhrase -> {
+            is DeletePhrase -> {
                 deletePhrase(event.id)
             }
 
-            is PhraseUiEvent.UpdatePhrase -> { viewModelScope.launch {
+            is UpdatePhrase -> { viewModelScope.launch {
 
                 val result = validateExample(_state.value.firstPhrase, _state.value.example)
 
@@ -173,7 +184,7 @@ class PhraseViewModel
 
             }
 
-            is PhraseUiEvent.ShowModal -> {
+            is ShowModal -> {
                 _state.update { it.copy(showModal = true,
                     bodyModal = event.type,
                     firstPhrase = event.phraseUi?.targetLanguage ?: "",
@@ -189,7 +200,13 @@ class PhraseViewModel
                    _state.update { it.copy(curentCardPhrase = 0) }
             }
 
-            is PhraseUiEvent.Navigation -> {
+            is Navigation -> {
+                viewModelScope.launch {
+                    _eventFlow.emit(event)
+                }
+            }
+
+            is ShowSnackbar -> {
                 viewModelScope.launch {
                     _eventFlow.emit(event)
                 }
@@ -207,7 +224,7 @@ class PhraseViewModel
                         it.copy(isLoadingButton = false, showModal = false,
                             firstPhrase = "", translation = "")
                     }
-                    _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.DynamicString(result.message)))
+                    _eventFlow.emit(ShowSnackbar(DynamicString(result.message)))
                 }
                 Resource.Loading -> {
                     _state.update { it.copy(isLoadingButton = true) }
@@ -218,7 +235,7 @@ class PhraseViewModel
                             firstPhrase = "", translation = "")
 
                     }
-                    _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.StringResource(R.string.label_phrase_inserted_success)))
+                    _eventFlow.emit(ShowSnackbar(StringResource(R.string.label_phrase_inserted_success)))
                 }
             }
 
@@ -235,11 +252,11 @@ class PhraseViewModel
                    }
                    is Resource.Error -> {
                        _state.update { it.copy(isLoadingButton = false, showModal = false, phraseToUpdate = null) }
-                       _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.DynamicString(result.message)))
+                       _eventFlow.emit(ShowSnackbar(DynamicString(result.message)))
                    }
                    is Resource.Success<*> -> {
                        _state.update { it.copy(isLoadingButton = false,  showModal = false, phraseToUpdate = null) }
-                       _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.StringResource(R.string.label_phrase_updated_success)))
+                       _eventFlow.emit(ShowSnackbar(StringResource(R.string.label_phrase_updated_success)))
                    }
                }
            }
@@ -266,7 +283,7 @@ class PhraseViewModel
                         }
                         is Resource.Error -> {
                             _state.update { it.copy(isLoading = false) }
-                            _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.DynamicString(result.message)))
+                            _eventFlow.emit(ShowSnackbar(DynamicString(result.message)))
                         }
                     }
                 }
@@ -279,14 +296,14 @@ class PhraseViewModel
                 when (it) {
                     is Resource.Error -> {
                         _state.update { it.copy(isLoadingButton = false, showModal = false, phraseToUpdate = null) }
-                        _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.DynamicString(it.message)))
+                        _eventFlow.emit(ShowSnackbar(DynamicString(it.message)))
                     }
                     Resource.Loading -> {
                       _state.update { it.copy(isLoadingButton = true) }
                     }
                     is Resource.Success<*> -> {
                         _state.update { it.copy(isLoadingButton = false, showModal = false, phraseToUpdate = null) }
-                        _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.StringResource(R.string.phrase_deleted_successfully)))
+                        _eventFlow.emit(ShowSnackbar(StringResource(R.string.phrase_deleted_successfully)))
                     }
               }
          }

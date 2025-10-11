@@ -7,5 +7,6 @@ data class IconItem(
     val icon: ImageVector,
     val title: String,
     val color: Color,
-    val onClick: () -> Unit = {}
+    val onClick: () -> Unit = {},
+    val enabled: Boolean = true
 )
