@@ -77,7 +77,7 @@ class ExerciseViewModel @Inject constructor(
 
             is OnStartClicked -> {
                 viewModelScope.launch {
-                    _eventChannel.send(ExerciseUiEvent.ShowSnackBar("Exercise Started!"))
+                    _eventChannel.send(ShowSnackBar("Exercise Started!"))
                 }
             }
             is OnNextPhrase -> {
@@ -87,6 +87,7 @@ class ExerciseViewModel @Inject constructor(
                 if (event.currentIndex == _state.value.phrases.size - 1) {
                     viewModelScope.launch {
                         _state.update { it.copy(
+                            isBottomSheetExpanded = true,
                             testCompleted = true,
                             testProgressCorrectAnswers = calculateProgressPercentage(
                                 total = it.totalItems ,
@@ -100,6 +101,7 @@ class ExerciseViewModel @Inject constructor(
 
                 _state.update { currentState ->
                    currentState.copy(
+                       isBottomSheetExpanded = false,
                        inputAnswer = "",
                        currentIndex = currentState.currentIndex + 1,
                        testProgressCorrectAnswers = calculateProgressPercentage(
@@ -117,7 +119,7 @@ class ExerciseViewModel @Inject constructor(
                     speakTextUseCase(event.text)
                 else
                     viewModelScope.launch {
-                        _eventChannel.send(ExerciseUiEvent.ShowSnackBar("TTS is not ready"))
+                        _eventChannel.send(ShowSnackBar("TTS is not ready"))
                     }
             }
 
@@ -149,6 +151,7 @@ class ExerciseViewModel @Inject constructor(
                     _eventChannel.send(ShowSnackBar(event.message))
                 }
             }
+
         }
 
 

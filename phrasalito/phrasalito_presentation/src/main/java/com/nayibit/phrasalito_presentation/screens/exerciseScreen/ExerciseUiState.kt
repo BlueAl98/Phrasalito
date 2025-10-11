@@ -13,7 +13,8 @@ data class ExerciseUiState (
     val testCompleted : Boolean = false,
     val showDialog : Boolean = false,
     val testProgressCorrectAnswers : Float = 0f,
-    val bodyModalExercise : BodyModalExercise = BodyModalExercise.BODY_SKIP_QUESTION
+    val bodyModalExercise : BodyModalExercise = BodyModalExercise.BODY_SKIP_QUESTION,
+    val isBottomSheetExpanded : Boolean = false
 )
 
 data class ExercisePhrases(

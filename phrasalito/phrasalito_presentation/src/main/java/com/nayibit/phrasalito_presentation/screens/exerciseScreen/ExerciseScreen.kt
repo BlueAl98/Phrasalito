@@ -67,6 +67,14 @@ fun ExerciseScreen(
     val orientation = LocalConfiguration.current.orientation
 
 
+    LaunchedEffect(state.isBottomSheetExpanded) {
+        if (state.isBottomSheetExpanded) {
+            sheetState.bottomSheetState.expand()
+        } else {
+            sheetState.bottomSheetState.partialExpand()
+        }
+    }
+
     val pagerState = rememberPagerState(
         initialPage = state.currentIndex,
         pageCount = { state.phrases.size }
@@ -115,10 +123,6 @@ fun ExerciseScreen(
 
                 is ExerciseUiEvent.NavigateNext -> {
                     navigation()
-                }
-
-                is ExerciseUiEvent.OnNextPhrase -> {
-                    sheetState.bottomSheetState.expand()
                 }
 
                 else -> Unit
@@ -223,13 +227,13 @@ fun PortaitContent(
             verticalArrangement = Arrangement.Center,
         ) {
             TextFieldBase(
-                enabled = state.phrases[pagerState.currentPage].phraseState == PhraseState.NOT_STARTED,
+                enabled = state.phrases[state.currentIndex].phraseState == PhraseState.NOT_STARTED,
                 value = state.inputAnswer,
                 onValueChange = {
                     onEvent(
                         ExerciseUiEvent.OnInputChanged(
                             it,
-                            pagerState.currentPage
+                            state.currentIndex
                         )
                     )
                 },
@@ -240,9 +244,9 @@ fun PortaitContent(
 
 
             ButtonBase(
-                enabled = state.phrases[pagerState.currentPage].phraseState != PhraseState.NOT_STARTED,
+                enabled = state.phrases[state.currentIndex].phraseState != PhraseState.NOT_STARTED,
                 onClick = {
-                    onEvent(ExerciseUiEvent.OnNextPhrase(pagerState.currentPage))
+                    onEvent(ExerciseUiEvent.OnNextPhrase(state.currentIndex))
                 },
                 text = stringResource(R.string.btn_next_phrase)
             )
@@ -278,13 +282,13 @@ fun LandscapeContent(
 
             Column(modifier.weight(0.85f), verticalArrangement = Arrangement.Center) {
                 TextFieldBase(
-                    enabled = state.phrases[pagerState.currentPage].phraseState == PhraseState.NOT_STARTED,
+                    enabled = state.phrases[state.currentIndex].phraseState == PhraseState.NOT_STARTED,
                     value = state.inputAnswer,
                     onValueChange = {
                         onEvent(
                             ExerciseUiEvent.OnInputChanged(
                                 it,
-                                pagerState.currentPage
+                                state.currentIndex
                             )
                         )
                     },
@@ -295,9 +299,9 @@ fun LandscapeContent(
 
 
                 ButtonBase(
-                    enabled = state.phrases[pagerState.currentPage].phraseState != PhraseState.NOT_STARTED,
+                    enabled = state.phrases[state.currentIndex].phraseState != PhraseState.NOT_STARTED,
                     onClick = {
-                        onEvent(ExerciseUiEvent.OnNextPhrase(pagerState.currentPage))
+                        onEvent(ExerciseUiEvent.OnNextPhrase(state.currentIndex))
                     },
                     text = stringResource(R.string.btn_next_phrase)
                 )
@@ -323,7 +327,7 @@ fun ExercisePager(
     pagerState: PagerState
 ) {
 
-    val colorManager = when (state.phrases[pagerState.currentPage].phraseState) {
+    val colorManager = when (state.phrases[state.currentIndex].phraseState) {
         PhraseState.NOT_STARTED -> Color.Transparent
         PhraseState.ERROR_ANSWER -> Color.Red
         PhraseState.COMPLETED -> Color.Green
@@ -377,13 +381,13 @@ fun ExercisePager(
                                 }
                             ) {
                                 Text(
-                                    state.phrases[page].translation,
+                                    state.phrases[state.currentIndex].translation,
                                     modifier = Modifier.padding(horizontal = 16.dp)
                                 )
                             }
 
                             IconPopover(
-                                enabled = state.phrases[page].phraseState == PhraseState.NOT_STARTED,
+                                enabled = state.phrases[state.currentIndex].phraseState == PhraseState.NOT_STARTED,
                                 icon = Icons.Default.QuestionMark,
                                 onClick = {
                                     onEvent(
@@ -396,12 +400,12 @@ fun ExercisePager(
                             )
                         }
 
-                        if (state.phrases[page].phraseState != PhraseState.NOT_STARTED)
+                        if (state.phrases[state.currentIndex].phraseState != PhraseState.NOT_STARTED)
                             IconPopover(
                                 icon = Icons.Default.PlayArrow,
                                 expandedState = state.popOverState,
                                 onClick = {
-                                    onEvent(ExerciseUiEvent.OnSpeakPhrase(state.phrases[page].correctAnswer))
+                                    onEvent(ExerciseUiEvent.OnSpeakPhrase(state.phrases[state.currentIndex].correctAnswer))
                                 })
                     }
                 }
@@ -413,8 +417,8 @@ fun ExercisePager(
                     contentAlignment = Alignment.Center
                 ) {
                     HighlightedText(
-                        fullText = state.phrases[page].example,
-                        highlightWords = state.phrases[page].targetLanguage.split(" ")
+                        fullText = state.phrases[state.currentIndex].example,
+                        highlightWords = state.phrases[state.currentIndex].targetLanguage.split(" ")
                     )
                 }
             }
