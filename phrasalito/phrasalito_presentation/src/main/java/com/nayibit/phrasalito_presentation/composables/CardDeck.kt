@@ -20,10 +20,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,12 +39,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nayibit.phrasalito_presentation.ui.theme.badgeComplete
 import com.nayibit.phrasalito_presentation.ui.theme.badgeNew
-import com.nayibit.phrasalito_presentation.ui.theme.cardBackground
 import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
 import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientStart
 import com.nayibit.phrasalito_presentation.ui.theme.progressBackground
-import com.nayibit.phrasalito_presentation.ui.theme.textPrimary
-import com.nayibit.phrasalito_presentation.ui.theme.textSecondary
 
 
 enum class DeckBadgeType {
@@ -261,7 +257,7 @@ private fun DeckArrow(onClick: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            imageVector = Icons.Default.KeyboardArrowRight,
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = "Open deck",
             tint = primaryGradientStart,
             modifier = Modifier.size(16.dp)

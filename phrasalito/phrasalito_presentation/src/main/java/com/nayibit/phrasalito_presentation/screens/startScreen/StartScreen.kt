@@ -1,6 +1,5 @@
 package com.nayibit.phrasalito_presentation.screens.startScreen
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -40,9 +39,9 @@ import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.AnimatedIllustration
 import com.nayibit.phrasalito_presentation.composables.DotsIndicator
 import com.nayibit.phrasalito_presentation.composables.LoadingScreen
-import com.nayibit.phrasalito_presentation.composables.OnboardingColors
 import com.nayibit.phrasalito_presentation.composables.isLandscape
 import com.nayibit.phrasalito_presentation.composables.rememberNotificationPermissionHandler
+import com.nayibit.phrasalito_presentation.model.OnboardingColors
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -104,7 +103,6 @@ fun OnboardingScreen(
     LaunchedEffect(state.currentPage) {
         pagerState.animateScrollToPage(state.currentPage)
     }
-
 
 
     Box(
@@ -211,8 +209,8 @@ fun ContentLandscape(
                         lineHeight = 36.sp
                     )
                     Text(
-                        text = stringResource(R.string.notification_description),
-                        fontSize = 16.sp,
+                        text = stringResource(R.string.notifications_text),
+                        fontSize = 18.sp,
                         textAlign = TextAlign.Center,
                         lineHeight = 24.sp
                     )
@@ -225,7 +223,6 @@ fun ContentLandscape(
                 currentDot = state.currentPage,
                 colors = colors
             )
-
 
             Button(
                 onClick = {
@@ -309,7 +306,7 @@ fun ContentPortrait(
         ) { page ->
             when (page) {
                 0 -> WelcomeTab()
-                1 -> PermisionTab(colors = colors)
+                1 -> PermissionTab(colors = colors)
             }
         }
 
@@ -337,7 +334,6 @@ fun ContentPortrait(
                         onEvent(StartUiEvent.NextPage)
                     } else {
                         permissionState.requestPermission()
-                        //  onEvent(StartUiEvent.InsertSkipTutorial)
                     }
                 },
                 modifier = modifier
@@ -383,7 +379,7 @@ fun ContentPortrait(
 
 
 @Composable
-fun PermisionTab(modifier: Modifier = Modifier, colors: OnboardingColors) {
+fun PermissionTab(modifier: Modifier = Modifier, colors: OnboardingColors) {
     val permissionState = rememberNotificationPermissionHandler()
 
     LaunchedEffect(permissionState.shouldShowSettings) {
@@ -403,11 +399,10 @@ fun PermisionTab(modifier: Modifier = Modifier, colors: OnboardingColors) {
         )
 
         Text(
-            text = "Activa el permiso para recibir notificaciones",
-            fontSize = 16.sp,
-            color = colors.textSecondary,
+            text = stringResource(R.string.notifications_text),
+            fontSize = 20.sp,
             textAlign = TextAlign.Center,
-            lineHeight = 24.sp
+            lineHeight = 30.sp
         )
     }
 }
@@ -439,7 +434,6 @@ fun WelcomeTab(
             text = stringResource(R.string.welcome_title),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            color = colors.textPrimary,
             textAlign = TextAlign.Center,
             lineHeight = 36.sp
         )
@@ -447,7 +441,6 @@ fun WelcomeTab(
         Text(
             text = stringResource(R.string.description_welcome),
             fontSize = 16.sp,
-            color = colors.textSecondary,
             textAlign = TextAlign.Center,
             lineHeight = 24.sp
         )

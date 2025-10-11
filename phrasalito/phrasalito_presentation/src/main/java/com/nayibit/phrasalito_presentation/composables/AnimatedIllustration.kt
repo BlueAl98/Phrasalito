@@ -1,7 +1,6 @@
 package com.nayibit.phrasalito_presentation.composables
 
 
-import androidx.compose.animation.core.AnimationVector
 import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -20,7 +19,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,22 +28,10 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.nayibit.phrasalito_presentation.model.OnboardingColors
 import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
 import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientStart
-
-
-data class OnboardingColors(
-    val primaryGradientStart: Color = Color(0xFF667EEA),
-    val primaryGradientEnd: Color = Color(0xFF764BA2),
-    val backgroundColor: Color = Color.White,
-    val textPrimary: Color = Color(0xFF1A1A1A),
-    val textSecondary: Color = Color(0xFF666666),
-    val dotInactive: Color = Color(0xFFE0E0E0),
-    val accentYellow: Color = Color(0xFFFFC107),
-    val buttonBorder: Color = Color(0xFFE0E0E0)
-)
 
 
 @Composable
