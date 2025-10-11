@@ -6,7 +6,7 @@ import com.nayibit.phrasalito_domain.repository.DataStoreRepository
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class InsertSkipTutorialUseCase @Inject constructor(
+class InsertFirstTimeUseCase @Inject constructor(
     private val dataStoreRepository: DataStoreRepository
 ) {
 

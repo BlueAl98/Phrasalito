@@ -1,5 +1,6 @@
 package com.nayibit.phrasalito_presentation.screens.startScreen
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.AnimatedIllustration
 import com.nayibit.phrasalito_presentation.composables.DotsIndicator
+import com.nayibit.phrasalito_presentation.composables.LoadingScreen
 import com.nayibit.phrasalito_presentation.composables.OnboardingColors
 import com.nayibit.phrasalito_presentation.composables.isLandscape
 import com.nayibit.phrasalito_presentation.composables.rememberNotificationPermissionHandler
@@ -71,12 +73,17 @@ fun StartScreen(
         }
     }
     Scaffold {
-        OnboardingScreen(
+        if (state.isLoading) {
+            LoadingScreen()
+        }else{
+        if (!state.isFirstTime)
+           OnboardingScreen(
             state = state,
             onEvent = onEvent,
             modifier = modifier.padding(it)
         )
     }
+}
 
 }
 
@@ -105,7 +112,6 @@ fun OnboardingScreen(
             .fillMaxSize()
             .padding(horizontal = 15.dp, vertical = 15.dp)
     ) {
-
         if (isLandscape())
             ContentLandscape(
                 state = state,
@@ -133,6 +139,19 @@ fun ContentLandscape(
     colors: OnboardingColors,
     pagerState: PagerState
 ) {
+
+    val permissionState = rememberNotificationPermissionHandler(
+        onPermissionResult = { hasPermission ->
+            if (hasPermission)
+                onEvent(StartUiEvent.InsertSkipTutorial)
+        }
+    )
+
+    LaunchedEffect(permissionState.shouldShowSettings) {
+        if (permissionState.shouldShowSettings) {
+            permissionState.openSettings()
+        }
+    }
 
     Row(modifier.fillMaxSize()) {
 
@@ -213,7 +232,7 @@ fun ContentLandscape(
                     if (state.totalpages > state.currentPage + 1) {
                         onEvent(StartUiEvent.NextPage)
                     } else {
-                        onEvent(StartUiEvent.InsertSkipTutorial)
+                        permissionState.requestPermission()
                     }
                 },
                 modifier = Modifier
@@ -266,6 +285,19 @@ fun ContentPortrait(
     pagerState: PagerState
 ) {
 
+    val permissionState = rememberNotificationPermissionHandler(
+        onPermissionResult = {
+            if (it)
+                onEvent(StartUiEvent.InsertSkipTutorial)
+        }
+    )
+
+    LaunchedEffect(permissionState.shouldShowSettings) {
+        if (permissionState.shouldShowSettings) {
+            permissionState.openSettings()
+        }
+    }
+
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -304,8 +336,8 @@ fun ContentPortrait(
                     if (state.totalpages > state.currentPage + 1) {
                         onEvent(StartUiEvent.NextPage)
                     } else {
-                        //     permissionState.requestPermission()
-                        onEvent(StartUiEvent.InsertSkipTutorial)
+                        permissionState.requestPermission()
+                        //  onEvent(StartUiEvent.InsertSkipTutorial)
                     }
                 },
                 modifier = modifier

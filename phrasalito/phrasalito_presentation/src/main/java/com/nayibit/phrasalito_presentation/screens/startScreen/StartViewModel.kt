@@ -3,8 +3,12 @@ package com.nayibit.phrasalito_presentation.screens.startScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.common.util.Resource
-import com.nayibit.phrasalito_domain.useCases.dataStore.InsertSkipTutorialUseCase
-import com.nayibit.phrasalito_presentation.screens.startScreen.StartUiEvent.*
+import com.nayibit.phrasalito_domain.useCases.dataStore.GetFirstTimeUseCase
+import com.nayibit.phrasalito_domain.useCases.dataStore.InsertFirstTimeUseCase
+import com.nayibit.phrasalito_presentation.screens.startScreen.StartUiEvent.InsertSkipTutorial
+import com.nayibit.phrasalito_presentation.screens.startScreen.StartUiEvent.Navigate
+import com.nayibit.phrasalito_presentation.screens.startScreen.StartUiEvent.NextPage
+import com.nayibit.phrasalito_presentation.screens.startScreen.StartUiEvent.ShowToast
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StartViewModel @Inject constructor(
-    private val insertSkipTutorialUseCase: InsertSkipTutorialUseCase,
+    private val insertFirstTimeUseCase: InsertFirstTimeUseCase,
+    private val getFirstTimeUseCase: GetFirstTimeUseCase
 ): ViewModel() {
 
     private val _state = MutableStateFlow(StartStateUi())
@@ -24,14 +29,18 @@ class StartViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<StartUiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
+    init {
+        getFirstTime()
+    }
+
 
     fun onEvent(event: StartUiEvent) {
         when (event) {
             is InsertSkipTutorial -> {
-                skipTutorial()
+                insertFirstTime()
             }
 
-            Navigate -> {
+           is Navigate -> {
                 viewModelScope.launch {
                     _eventFlow.emit(Navigate)
                 }
@@ -40,15 +49,6 @@ class StartViewModel @Inject constructor(
                 viewModelScope.launch {
                     _eventFlow.emit(ShowToast(event.message))
 
-                }
-            }
-
-            is SetHasPermission -> {
-                _state.value = _state.value.copy(
-                    hasPermission = event.hasPermission
-                )
-                if (event.hasPermission){
-                    skipTutorial()
                 }
             }
 
@@ -61,9 +61,29 @@ class StartViewModel @Inject constructor(
         }
 
 
-    fun skipTutorial(){
+    fun getFirstTime(){
         viewModelScope.launch {
-            insertSkipTutorialUseCase().collect { result ->
+            getFirstTimeUseCase().collect { result ->
+             when(result){
+                 is Resource.Error -> _state.value = _state.value.copy(isLoading = false, errorMessage = result.message)
+                 Resource.Loading -> _state.value = _state.value.copy(isLoading = true)
+                 is Resource.Success<Boolean> -> {
+                     _state.value = _state.value.copy(isLoading = false, isFirstTime = result.data)
+                    if (result.data) {
+                        _eventFlow.emit(Navigate)
+                    }
+                 }
+             }
+
+            }
+
+        }
+    }
+
+
+    fun insertFirstTime(){
+        viewModelScope.launch {
+            insertFirstTimeUseCase().collect { result ->
                 when (result) {
                     is Resource.Loading -> {
                         _state.value = _state.value.copy(
@@ -80,7 +100,6 @@ class StartViewModel @Inject constructor(
 
                     }
                     is Resource.Success<*> -> {
-                        println("Success brorrrrrr")
                         _state.value = _state.value.copy(
                             isLoading = false,
                             checkPermissions = true
