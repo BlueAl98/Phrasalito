@@ -9,6 +9,7 @@ import com.nayibit.phrasalito_domain.useCases.decks.DeleteDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.GetAllDecksUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.InsertDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.UpdateDeckUseCase
+import com.nayibit.phrasalito_presentation.mappers.toDeckUI
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import javax.inject.Inject
@@ -103,6 +105,9 @@ class DeckViewModel @Inject
                     nameDeck = event.text
                 )
             }
+            is UpdateDeckList -> {
+                _state.value = state.value.copy(decks = event.decks)
+            }
         }
     }
 
@@ -175,7 +180,7 @@ class DeckViewModel @Inject
                         is Resource.Success -> {
                             _state.value = _state.value.copy(
                                 isLoading = false,
-                                successInsertedDeck = result.data,
+                                successInsertedDeck = result.data.toDeckUI(),
                                 errorMessage = null,
                                 showModal = false,
                                 isLoadingButton = false,
@@ -211,7 +216,9 @@ class DeckViewModel @Inject
                     is Resource.Success -> {
                         _state.value = _state.value.copy(
                             isLoading = false,
-                            decks = result.data
+                            decks = result.data.map{
+                                it.toDeckUI()
+                            }
                         )
                     }
                     is Resource.Error -> {

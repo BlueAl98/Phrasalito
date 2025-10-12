@@ -51,6 +51,7 @@ import androidx.wear.compose.material.FractionalThreshold
 import androidx.wear.compose.material.rememberSwipeableState
 import androidx.wear.compose.material.swipeable
 import com.nayibit.phrasalito_domain.model.Deck
+import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUI
 import com.nayibit.phrasalito_presentation.ui.theme.badgeComplete
 import com.nayibit.phrasalito_presentation.ui.theme.badgeNew
 import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
@@ -70,15 +71,33 @@ enum class DeckBadgeType {
 @Composable
 fun SwipeableDeckItem(
     modifier: Modifier = Modifier,
-    deck: Deck,
-    onEdit: (Deck) -> Unit,
-    onDelete: (Deck) -> Unit,
-    onClick: (Deck) -> Unit,
+    deck: DeckUI,
+    onEdit: (DeckUI) -> Unit,
+    onDelete: (DeckUI) -> Unit,
+    onClick: (DeckUI) -> Unit,
+    isSwiped: Boolean = false,
+    onSwipe: (Boolean) -> Unit
 ) {
-    val swipeableState = rememberSwipeableState(initialValue = 0)
+    val swipeableState = rememberSwipeableState(initialValue = if (isSwiped) 1 else 0)
     val sizePx = with(LocalDensity.current) { 120.dp.toPx() }
     val anchors = mapOf(0f to 0, -sizePx to 1) // 0 = default, 1 = swiped left
 
+    // 🔹 User interaction — detect manual swipe change
+    LaunchedEffect(swipeableState.currentValue) {
+        val currentlySwiped = swipeableState.currentValue == 1
+        if (currentlySwiped != isSwiped) {
+            onSwipe(currentlySwiped)
+        }
+    }
+
+    // 🔹 React to parent updates
+    LaunchedEffect(isSwiped) {
+        if (isSwiped && swipeableState.currentValue != 1) {
+            swipeableState.animateTo(1)
+        } else if (!isSwiped && swipeableState.currentValue != 0) {
+            swipeableState.animateTo(0)
+        }
+    }
 
 
     Box(

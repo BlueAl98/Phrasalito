@@ -45,7 +45,9 @@ import com.nayibit.phrasalito_presentation.composables.LoadingScreen
 import com.nayibit.phrasalito_presentation.composables.SwipeableDeckItem
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
 import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -58,7 +60,6 @@ fun DeckScreen(
 ) {
 
     val context = LocalContext.current
-
 
     LaunchedEffect(Unit) {
         eventFlow.collect { event ->
@@ -100,8 +101,6 @@ fun DeckScreen(
     Scaffold(
         content = { padding ->
 
-            val corutineScope = rememberCoroutineScope()
-
             Box(
                 modifier
                     .fillMaxSize()
@@ -113,8 +112,6 @@ fun DeckScreen(
                     }
 
                     state.decks.isNotEmpty() -> {
-
-                        var swipedDeckId by remember { mutableStateOf<Int?>(null) }
 
                         LazyColumn(
                             modifier = modifier
@@ -134,9 +131,18 @@ fun DeckScreen(
                                         deck = deck,
                                         onEdit = { onEvent(DeckUiEvent.ShowModal(BodyDeckModalEnum.BODY_UPDATE_DECK, it)) },
                                         onDelete = {
-                                          onEvent(DeckUiEvent.ShowModal(BodyDeckModalEnum.BODY_DELETE_DECK, it))
+                                         onEvent(DeckUiEvent.ShowModal(BodyDeckModalEnum.BODY_DELETE_DECK, it))
                                         },
-                                        onClick = { onEvent(DeckUiEvent.NavigationToPhrases(it.id)) }
+                                        onClick = { onEvent(DeckUiEvent.NavigationToPhrases(it.id))},
+                                        isSwiped = deck.isSwiped,
+                                        onSwipe = {isSwiped ->
+                                            // 👇 when one deck is swiped, update the list so only that one is true
+                                            val updatedDecks = state.decks.map {
+                                                if (it.id == deck.id) it.copy(isSwiped = isSwiped)
+                                                else it.copy(isSwiped = false)
+                                            }
+                                            onEvent(DeckUiEvent.UpdateDeckList(updatedDecks))
+                                        }
                                     )
                                 }
                             }
