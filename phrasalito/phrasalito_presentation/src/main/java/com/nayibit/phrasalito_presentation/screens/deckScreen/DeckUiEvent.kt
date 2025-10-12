@@ -14,7 +14,8 @@ sealed class DeckUiEvent {
     data class UpdateTextFieldUpdate(val text: String) : DeckUiEvent()
     data class DeleteDeck(val id: Int) : DeckUiEvent()
     data class UpdateDeck(val id: Int, val nameDeck: String = ""): DeckUiEvent()
-    data class UpdateDeckList(val decks: List<DeckUI>): DeckUiEvent()
+    data class UpdateDeckList(val idDeck: Int, val isSwiped: Boolean): DeckUiEvent()
+    object ResetAllSwiped : DeckUiEvent()
 }
 
 

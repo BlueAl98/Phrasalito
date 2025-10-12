@@ -135,13 +135,8 @@ fun DeckScreen(
                                         },
                                         onClick = { onEvent(DeckUiEvent.NavigationToPhrases(it.id))},
                                         isSwiped = deck.isSwiped,
-                                        onSwipe = {isSwiped ->
-                                            // 👇 when one deck is swiped, update the list so only that one is true
-                                            val updatedDecks = state.decks.map {
-                                                if (it.id == deck.id) it.copy(isSwiped = isSwiped)
-                                                else it.copy(isSwiped = false)
-                                            }
-                                            onEvent(DeckUiEvent.UpdateDeckList(updatedDecks))
+                                        onSwipe = { isSwiped ->
+                                            onEvent(DeckUiEvent.UpdateDeckList(deck.id, isSwiped))
                                         }
                                     )
                                 }
@@ -253,7 +248,7 @@ fun BodyModalDeleteDeck(
     state: DeckStateUi,
     onEvent: (DeckUiEvent) -> Unit
 ) {
-    Text(text = stringResource(R.string.title_delete_deck))
+    Text(text = stringResource(R.string.title_delete_deck) + " ${state.currentDeck.name} ?")
 
     ButtonBase(
         text = stringResource(R.string.btn_delete),

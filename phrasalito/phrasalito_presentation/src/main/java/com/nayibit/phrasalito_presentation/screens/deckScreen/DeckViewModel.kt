@@ -10,14 +10,24 @@ import com.nayibit.phrasalito_domain.useCases.decks.GetAllDecksUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.InsertDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.UpdateDeckUseCase
 import com.nayibit.phrasalito_presentation.mappers.toDeckUI
-import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.*
+import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.DeleteDeck
+import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.DismissModal
+import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.InsertDeck
+import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.NavigationToPhrases
+import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.OpenPrompt
+import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.ResetAllSwiped
+import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.ShowModal
+import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.ShowToast
+import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.UpdateDeck
+import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.UpdateDeckList
+import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.UpdateTextFieldInsert
+import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.UpdateTextFieldUpdate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import javax.inject.Inject
@@ -59,7 +69,8 @@ class DeckViewModel @Inject
                 _state.value = _state.value.copy(
                     showModal = false,
                     isLoadingButton = false,
-                    nameDeck = ""
+                    nameDeck = "",
+                    decks = _state.value.decks.map { it.copy(isSwiped = false) }
                 )
             }
             is  ShowToast -> {
@@ -81,6 +92,9 @@ class DeckViewModel @Inject
             }
             is NavigationToPhrases -> {
                 viewModelScope.launch {
+                 _state.value = _state.value.copy(
+                     decks = _state.value.decks.map { it.copy(isSwiped = false) }
+                 )
                 _eventFlow.emit(NavigationToPhrases(event.id))
               }
             }
@@ -106,7 +120,17 @@ class DeckViewModel @Inject
                 )
             }
             is UpdateDeckList -> {
-                _state.value = state.value.copy(decks = event.decks)
+                val listDecks = _state.value.decks.map{
+                    if (it.id == event.idDeck) it.copy(isSwiped = event.isSwiped)
+                    else it.copy(isSwiped = false)
+                }
+                _state.value = state.value.copy(decks = listDecks)
+            }
+
+           is ResetAllSwiped -> {
+                _state.value = _state.value.copy(
+                    decks = _state.value.decks.map { it.copy(isSwiped = false) }
+                )
             }
         }
     }
@@ -166,7 +190,6 @@ class DeckViewModel @Inject
 
     fun insertDeck(deck: Deck) {
             viewModelScope.launch {
-
                insertDeckUseCase(deck).collect { result ->
                     when (result) {
                         is Resource.Loading -> {
