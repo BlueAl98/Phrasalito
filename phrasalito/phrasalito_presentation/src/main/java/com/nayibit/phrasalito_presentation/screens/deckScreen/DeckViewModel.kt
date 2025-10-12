@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.nayibit.common.util.Resource
 import com.nayibit.common.util.UiText
 import com.nayibit.phrasalito_domain.model.Deck
+import com.nayibit.phrasalito_domain.useCases.decks.DeleteDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.GetAllDecksUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.InsertDeckUseCase
+import com.nayibit.phrasalito_domain.useCases.decks.UpdateDeckUseCase
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,7 +24,11 @@ import javax.inject.Inject
 class DeckViewModel @Inject
      constructor(
     private val insertDeckUseCase: InsertDeckUseCase,
-    private val getDecksUseCase : GetAllDecksUseCase): ViewModel()  {
+    private val getDecksUseCase : GetAllDecksUseCase,
+    private val deleteDeckUseCase: DeleteDeckUseCase,
+    private val updateDeckUseCase: UpdateDeckUseCase
+         )
+    : ViewModel()  {
 
     private val _state = MutableStateFlow(DeckStateUi()) // Initial default state
     val state: StateFlow<DeckStateUi> = _state.asStateFlow()
@@ -40,11 +46,11 @@ class DeckViewModel @Inject
     fun onEvent(event: DeckUiEvent) {
         when (event) {
             is ShowModal -> {
-
                 _state.value = _state.value.copy(
                     showModal = true,
                     bodyModal = event.type,
-                    currentIdDeck = event.id
+                    currentDeck = event.deck,
+                    nameDeck = event.deck.name
                 )
             }
             is DismissModal -> {
@@ -59,7 +65,7 @@ class DeckViewModel @Inject
                     _eventFlow.emit(event)
                 }
             }
-            is UpdateTextFirstPhrase -> {
+            is UpdateTextFieldInsert -> {
                 _state.value = _state.value.copy(
                     nameDeck = event.text
                 )
@@ -89,6 +95,14 @@ class DeckViewModel @Inject
                 }
             }
 
+            is DeleteDeck -> deleteDeck(event.id)
+
+            is UpdateDeck -> updateDeck(event.id, event.nameDeck)
+            is UpdateTextFieldUpdate -> {
+                _state.value = _state.value.copy(
+                    nameDeck = event.text
+                )
+            }
         }
     }
 
@@ -98,6 +112,48 @@ class DeckViewModel @Inject
             append("Translate these phrases into casual English:\n")
             phrases.forEachIndexed { i, phrase ->
                 append("${i+1}. $phrase\n")
+            }
+        }
+    }
+
+    fun updateDeck(id: Int, name: String){
+        viewModelScope.launch {
+            val result = updateDeckUseCase(id, name)
+            when(result){
+                is Resource.Error -> {
+                    _state.value = _state.value.copy(
+                        showModal = false
+                    )
+                    _eventFlow.emit(ShowToast(UiText.DynamicString("Error: ${result.message}")))
+                }
+                is Resource.Success<*> -> {
+                    _state.value = _state.value.copy(
+                       showModal = false
+                    )
+                    _eventFlow.emit(ShowToast(UiText.DynamicString("Deck actualizado")))
+                }
+                else -> {}
+            }
+        }
+    }
+
+    fun deleteDeck(id : Int){
+        viewModelScope.launch {
+         val result = deleteDeckUseCase(id)
+            when(result){
+                is Resource.Error -> {
+                    _state.value = _state.value.copy(
+                        showModal = false
+                    )
+                    _eventFlow.emit(ShowToast(UiText.DynamicString("Error: ${result.message}")))
+                }
+                is Resource.Success<*> -> {
+                    _state.value = _state.value.copy(
+                        showModal = false
+                    )
+                    _eventFlow.emit(ShowToast(UiText.DynamicString("Deck eliminado")))
+                }
+                else -> {}
             }
         }
     }

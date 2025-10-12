@@ -6,35 +6,43 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.nayibit.common.util.UiText
 import com.nayibit.common.util.asString
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.BaseDialog
 import com.nayibit.phrasalito_presentation.composables.ButtonBase
-import com.nayibit.phrasalito_presentation.composables.CardDeck
-import com.nayibit.phrasalito_presentation.composables.DeckBadgeType
 import com.nayibit.phrasalito_presentation.composables.LoadingScreen
+import com.nayibit.phrasalito_presentation.composables.SwipeableDeckItem
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
 import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
 import kotlinx.coroutines.flow.Flow
@@ -91,6 +99,9 @@ fun DeckScreen(
 
     Scaffold(
         content = { padding ->
+
+            val corutineScope = rememberCoroutineScope()
+
             Box(
                 modifier
                     .fillMaxSize()
@@ -102,31 +113,32 @@ fun DeckScreen(
                     }
 
                     state.decks.isNotEmpty() -> {
+
+                        var swipedDeckId by remember { mutableStateOf<Int?>(null) }
+
                         LazyColumn(
                             modifier = modifier
                                 .fillMaxSize()
                                 .testTag("deck_list")
                         ) {
-                            items(state.decks, key = { it.id }) { phrase ->
-                                Row(modifier.padding(3.dp)) {
-                                    CardDeck(
-                                        modifier = modifier.padding(5.dp),
-                                        title = phrase.name,
-                                        currentCards = phrase.maxCards,
-                                        totalCards = 10,
-                                        icon = Icons.Default.Star,
-                                        badgeType = DeckBadgeType.NONE,
-                                        onClickToTest = {
-                                            onEvent(
-                                                DeckUiEvent.NavigationToPhrases(
-                                                    phrase.id
-                                                )
-                                            )
+                            items(state.decks, key = { it.id }) { deck ->
+
+                                var visible by remember { mutableStateOf(true) }
+
+                                AnimatedVisibility(
+                                    visible = visible,
+                                    enter = fadeIn(animationSpec = tween(300)) + expandVertically(),
+                                    exit = fadeOut(animationSpec = tween(300)) + shrinkVertically(),
+                                ) {
+                                    SwipeableDeckItem(
+                                        deck = deck,
+                                        onEdit = { onEvent(DeckUiEvent.ShowModal(BodyDeckModalEnum.BODY_UPDATE_DECK, it)) },
+                                        onDelete = {
+                                          onEvent(DeckUiEvent.ShowModal(BodyDeckModalEnum.BODY_DELETE_DECK, it))
                                         },
+                                        onClick = { onEvent(DeckUiEvent.NavigationToPhrases(it.id)) }
                                     )
-
                                 }
-
                             }
                         }
                     }
@@ -140,6 +152,15 @@ fun DeckScreen(
                 ) {
                     when (state.bodyModal) {
                         BodyDeckModalEnum.BODY_INSERT_DECK -> BodyModalInsertDeck(
+                            state = state,
+                            onEvent = onEvent
+                        )
+
+                        BodyDeckModalEnum.BODY_UPDATE_DECK -> BodyModalUpdateDeck(
+                            state = state,
+                            onEvent = onEvent)
+
+                        BodyDeckModalEnum.BODY_DELETE_DECK -> BodyModalDeleteDeck(
                             state = state,
                             onEvent = onEvent
                         )
@@ -172,7 +193,7 @@ fun BodyModalInsertDeck(
 
     TextFieldBase(
         value = state.nameDeck,
-        onValueChange = { onEvent(DeckUiEvent.UpdateTextFirstPhrase(it)) },
+        onValueChange = { onEvent(DeckUiEvent.UpdateTextFieldInsert(it)) },
         label = stringResource(R.string.label_learn_phrase)
     )
 
@@ -191,5 +212,52 @@ fun BodyModalInsertDeck(
         enabled = !state.isLoadingButton
     )
 
+}
+
+@Composable
+fun BodyModalUpdateDeck(
+    state: DeckStateUi,
+    onEvent: (DeckUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+
+    Text(text = stringResource(R.string.title_update_deck))
+
+    TextFieldBase(
+        value = state.nameDeck,
+        onValueChange = { onEvent(DeckUiEvent.UpdateTextFieldUpdate(it))},
+        label = stringResource(R.string.label_deck)
+    )
+
+    ButtonBase(
+        text = stringResource(R.string.btn_update),
+        onClick = { onEvent(DeckUiEvent.UpdateDeck(state.currentDeck.id, state.nameDeck))},
+        loading = state.isLoadingButton
+    )
+    ButtonBase(
+        text = stringResource(R.string.btn_cancel),
+        onClick = { onEvent(DeckUiEvent.DismissModal) },
+        enabled = !state.isLoadingButton
+    )
+
+}
+
+@Composable
+fun BodyModalDeleteDeck(
+    state: DeckStateUi,
+    onEvent: (DeckUiEvent) -> Unit
+) {
+    Text(text = stringResource(R.string.title_delete_deck))
+
+    ButtonBase(
+        text = stringResource(R.string.btn_delete),
+        onClick = { onEvent(DeckUiEvent.DeleteDeck(state.currentDeck.id))},
+        loading = state.isLoadingButton
+    )
+    ButtonBase(
+        text = stringResource(R.string.btn_cancel),
+        onClick = { onEvent(DeckUiEvent.DismissModal) },
+        enabled = !state.isLoadingButton
+    )
 }
 

@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.material3.window.size.class1.android)
+    implementation(libs.androidx.compose.material)
 
     //Dagger hilt
     ksp(libs.hilt.android.compiler)
@@ -87,7 +88,9 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-   // implementation(libs.androidx.constraintlayout)
+    implementation(libs.material3)
+
+    // implementation(libs.androidx.constraintlayout)
    // implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
 

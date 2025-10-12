@@ -20,7 +20,6 @@ class GetFirstTimeUseCase @Inject constructor(
                     emit(Resource.Success(value ?: false))
                 }
         } catch (e: Exception) {
-            Log.d("NAJIB", e.message.toString())
             emit(Resource.Error(e.message ?: "Unknown error"))
         }
     }

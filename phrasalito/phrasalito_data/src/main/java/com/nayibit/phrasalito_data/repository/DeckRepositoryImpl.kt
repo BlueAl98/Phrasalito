@@ -38,4 +38,23 @@ class DeckRepositoryImpl
             emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
         }
     }
+
+    override suspend fun deleteDeck(id: Int): Resource<Unit> {
+        try {
+            val deck = deckDao.findDeckById(id)
+            deckDao.deleteDeck(deck)
+            return Resource.Success(Unit)
+        }catch (e : Exception){
+            return Resource.Error(e.localizedMessage ?: "Unknown error")
+        }
+    }
+
+    override suspend fun updateDeck(deck: Deck): Resource<Unit> {
+        try {
+            deckDao.updateDeck(deck.toEntity())
+            return Resource.Success(Unit)
+        }catch (e : Exception){
+            return Resource.Error(e.localizedMessage ?: "Unknown error")
+        }
+    }
 }
