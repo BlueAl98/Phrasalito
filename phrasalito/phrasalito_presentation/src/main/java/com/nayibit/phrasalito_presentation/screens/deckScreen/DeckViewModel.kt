@@ -17,6 +17,7 @@ import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.Naviga
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.OpenPrompt
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.ResetAllSwiped
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.ShowModal
+import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.ShowSnackbar
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.ShowToast
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.UpdateDeck
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.UpdateDeckList
@@ -132,6 +133,12 @@ class DeckViewModel @Inject
                     decks = _state.value.decks.map { it.copy(isSwiped = false) }
                 )
             }
+
+            is DeckUiEvent.ShowSnackbar -> {
+                viewModelScope.launch {
+                    _eventFlow.emit(event)
+                }
+            }
         }
     }
 
@@ -153,13 +160,13 @@ class DeckViewModel @Inject
                     _state.value = _state.value.copy(
                         showModal = false
                     )
-                    _eventFlow.emit(ShowToast(UiText.DynamicString("Error: ${result.message}")))
+                    _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Error: ${result.message}")))
                 }
                 is Resource.Success<*> -> {
                     _state.value = _state.value.copy(
                        showModal = false
                     )
-                    _eventFlow.emit(ShowToast(UiText.DynamicString("Deck actualizado")))
+                    _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Deck actualizado")))
                 }
                 else -> {}
             }
@@ -174,13 +181,13 @@ class DeckViewModel @Inject
                     _state.value = _state.value.copy(
                         showModal = false
                     )
-                    _eventFlow.emit(ShowToast(UiText.DynamicString("Error: ${result.message}")))
+                    _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Error: ${result.message}")))
                 }
                 is Resource.Success<*> -> {
                     _state.value = _state.value.copy(
                         showModal = false
                     )
-                    _eventFlow.emit(ShowToast(UiText.DynamicString("Deck eliminado")))
+                    _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Deck eliminado")))
                 }
                 else -> {}
             }
@@ -209,7 +216,7 @@ class DeckViewModel @Inject
                                 isLoadingButton = false,
                                 nameDeck = ""
                             )
-                           _eventFlow.emit(ShowToast(UiText.DynamicString("Deck inserted successfully")))
+                           _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Deck inserted successfully")))
                         }
                         is Resource.Error -> {
                             _state.value = _state.value.copy(
@@ -219,7 +226,7 @@ class DeckViewModel @Inject
                                 isLoadingButton = false,
                                 nameDeck = ""
                             )
-                            _eventFlow.emit(ShowToast(UiText.DynamicString("Error: ${result.message}")))
+                            _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Error: ${result.message}")))
                         }
 
                     }
@@ -249,7 +256,7 @@ class DeckViewModel @Inject
                             isLoading = false,
                             errorMessage = result.message
                         )
-                        _eventFlow.emit(ShowToast(UiText.DynamicString("Error: ${result.message}")))
+                        _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Error: ${result.message}")))
                     }
                 }
             }

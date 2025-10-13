@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,6 +61,8 @@ fun DeckScreen(
 ) {
 
     val context = LocalContext.current
+    val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
+
 
     LaunchedEffect(Unit) {
         eventFlow.collect { event ->
@@ -71,6 +74,10 @@ fun DeckScreen(
 
                 is DeckUiEvent.NavigationToPhrases -> {
                     navigationToPhrases(event.id)
+                }
+
+                is DeckUiEvent.ShowSnackbar ->{
+                    snackbarHostState.showSnackbar(event.message.asString(context))
                 }
 
                 is DeckUiEvent.OpenPrompt -> {
@@ -99,6 +106,9 @@ fun DeckScreen(
     }
 
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        },
         content = { padding ->
 
             Box(
@@ -202,7 +212,7 @@ fun BodyModalInsertDeck(
         text = stringResource(id = R.string.btn_save),
         onClick = {
             if (state.nameDeck.isNotEmpty()) onEvent(DeckUiEvent.InsertDeck) else onEvent(
-                DeckUiEvent.ShowToast(UiText.StringResource(R.string.label_emty_fields))
+                DeckUiEvent.ShowSnackbar(UiText.StringResource(R.string.label_emty_fields))
             )
         },
         loading = state.isLoadingButton

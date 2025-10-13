@@ -1,7 +1,6 @@
 package com.nayibit.phrasalito_presentation.screens.deckScreen
 
 import com.nayibit.common.util.UiText
-import com.nayibit.phrasalito_domain.model.Deck
 
 sealed class DeckUiEvent {
     data class ShowToast(val message: UiText) : DeckUiEvent()
@@ -16,6 +15,7 @@ sealed class DeckUiEvent {
     data class UpdateDeck(val id: Int, val nameDeck: String = ""): DeckUiEvent()
     data class UpdateDeckList(val idDeck: Int, val isSwiped: Boolean): DeckUiEvent()
     object ResetAllSwiped : DeckUiEvent()
+    data class ShowSnackbar(val message: UiText) : DeckUiEvent()
 }
 
 
