@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.AnimatedIllustration
 import com.nayibit.phrasalito_presentation.composables.DotsIndicator
+import com.nayibit.phrasalito_presentation.composables.LanguageSelectionTap
 import com.nayibit.phrasalito_presentation.composables.LoadingScreen
 import com.nayibit.phrasalito_presentation.composables.isLandscape
 import com.nayibit.phrasalito_presentation.composables.rememberNotificationPermissionHandler
@@ -168,6 +169,7 @@ fun ContentLandscape(
                         colors = colors,
                         mainImageVector = Icons.Filled.NotificationsActive
                     )
+                    2 -> AnimatedIllustration(colors = colors)
                 }
             }
         }
@@ -213,6 +215,12 @@ fun ContentLandscape(
                         fontSize = 18.sp,
                         textAlign = TextAlign.Center,
                         lineHeight = 24.sp
+                    )
+                }
+
+                2 -> {
+                    LanguageSelectionTap(
+                        modifier = modifier.fillMaxHeight(0.70f)
                     )
                 }
             }
@@ -266,6 +274,7 @@ fun ContentLandscape(
                     )
                 }
             }
+
         }
 
     }
@@ -307,6 +316,7 @@ fun ContentPortrait(
             when (page) {
                 0 -> WelcomeTab()
                 1 -> PermissionTab(colors = colors)
+                2 -> LanguageSelectionTap()
             }
         }
 
@@ -406,6 +416,7 @@ fun PermissionTab(modifier: Modifier = Modifier, colors: OnboardingColors) {
         )
     }
 }
+
 
 
 @Composable
