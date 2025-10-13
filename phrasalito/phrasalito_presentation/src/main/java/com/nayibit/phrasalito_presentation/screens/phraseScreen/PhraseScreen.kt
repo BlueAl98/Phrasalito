@@ -441,9 +441,8 @@ fun AreaStudyCards(
                                 isLandscape = isLandscape(),
                                 onEvent = {
                                     onEvent(
-                                        PhraseUiEvent.ShowModal(
-                                            BodyModalEnum.BODY_UPDATE_PHRASE,
-                                            phrase
+                                        PhraseUiEvent.SpeakText(
+                                            phrase.example
                                         )
                                     )
                                 }
@@ -533,9 +532,8 @@ fun AreaStudyCards(
                                 isLandscape = isLandscape(),
                                 onEvent = {
                                     onEvent(
-                                        PhraseUiEvent.ShowModal(
-                                            BodyModalEnum.BODY_UPDATE_PHRASE,
-                                            phrase
+                                        PhraseUiEvent.SpeakText(
+                                            phrase.example
                                         )
                                     )
                                 }

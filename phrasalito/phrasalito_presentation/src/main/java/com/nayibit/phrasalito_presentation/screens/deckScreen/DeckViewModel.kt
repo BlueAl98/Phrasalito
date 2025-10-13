@@ -9,6 +9,8 @@ import com.nayibit.phrasalito_domain.useCases.decks.DeleteDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.GetAllDecksUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.InsertDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.UpdateDeckUseCase
+import com.nayibit.phrasalito_domain.useCases.tts.GetAvailableLanguagesUseCase
+import com.nayibit.phrasalito_domain.useCases.tts.IsTextSpeechReadyUseCase
 import com.nayibit.phrasalito_presentation.mappers.toDeckUI
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.DeleteDeck
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.DismissModal
@@ -39,8 +41,9 @@ class DeckViewModel @Inject
     private val insertDeckUseCase: InsertDeckUseCase,
     private val getDecksUseCase : GetAllDecksUseCase,
     private val deleteDeckUseCase: DeleteDeckUseCase,
-    private val updateDeckUseCase: UpdateDeckUseCase
-         )
+    private val updateDeckUseCase: UpdateDeckUseCase,
+    private val getAvailableLanguagesUseCase: GetAvailableLanguagesUseCase,
+    private val isTextSpeechReadyUseCase: IsTextSpeechReadyUseCase)
     : ViewModel()  {
 
     private val _state = MutableStateFlow(DeckStateUi()) // Initial default state

@@ -5,6 +5,7 @@ import com.nayibit.phrasalito_data.tts.TextToSpeechManager
 import com.nayibit.phrasalito_domain.repository.TextSpeechRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import java.util.Locale
 import javax.inject.Inject
 
 class TextSpeechRepositoryImpl
@@ -20,5 +21,10 @@ class TextSpeechRepositoryImpl
 
     override fun isTtsReady(): Flow<Resource<Boolean>> =
         tts.isReady
+
+    override fun getLanguagesSuported(): List<Locale> {
+        println("LANGUAGES "+tts.getAvailableLanguages())
+        return tts.getAvailableLanguages()
+    }
 
 }

@@ -12,6 +12,7 @@ import com.nayibit.phrasalito_domain.useCases.phrases.DeletebyIdPhraseUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesByDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.InsertPhraseUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.UpdatePhraseByIdUseCase
+import com.nayibit.phrasalito_domain.useCases.tts.SpeakTextUseCase
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.mappers.toPhrase
 import com.nayibit.phrasalito_presentation.mappers.toPhraseUi
@@ -48,6 +49,7 @@ class PhraseViewModel
         private val insertPhraseUseCase: InsertPhraseUseCase,
         private val deletePhraseUseCase: DeletebyIdPhraseUseCase,
         private val updatePhraseByIdUseCase: UpdatePhraseByIdUseCase,
+        private val speakTextUseCase: SpeakTextUseCase,
         savedStateHandle: SavedStateHandle
     ) : ViewModel()  {
 
@@ -210,6 +212,10 @@ class PhraseViewModel
                 viewModelScope.launch {
                     _eventFlow.emit(event)
                 }
+            }
+
+            is PhraseUiEvent.SpeakText -> {
+                speakTextUseCase(event.text)
             }
         }
     }
