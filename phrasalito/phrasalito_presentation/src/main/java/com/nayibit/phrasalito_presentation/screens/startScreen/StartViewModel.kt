@@ -7,6 +7,7 @@ import com.nayibit.phrasalito_domain.useCases.dataStore.GetFirstTimeUseCase
 import com.nayibit.phrasalito_domain.useCases.dataStore.InsertFirstTimeUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.GetAvailableLanguagesUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.IsTextSpeechReadyUseCase
+import com.nayibit.phrasalito_presentation.mappers.toLanguage
 import com.nayibit.phrasalito_presentation.screens.startScreen.StartUiEvent.InsertSkipTutorial
 import com.nayibit.phrasalito_presentation.screens.startScreen.StartUiEvent.Navigate
 import com.nayibit.phrasalito_presentation.screens.startScreen.StartUiEvent.NextPage
@@ -63,6 +64,21 @@ class StartViewModel @Inject constructor(
                     currentPage = _state.value.currentPage + 1
                 )
             }
+
+            is StartUiEvent.SetLanguage -> {
+                updateState{
+                    it.copy(currentLanguage = event.language)
+                }
+            }
+
+            is StartUiEvent.SetScrollPosition -> {
+                updateState {
+                    it.copy(
+                        languageListScrollIndex = event.index,
+                        languageListScrollOffset = event.offset
+                    )
+                }
+            }
         }
         }
 
@@ -116,7 +132,7 @@ class StartViewModel @Inject constructor(
                         is Resource.Error -> _state.value =
                             _state.value.copy(isLoading = false, errorMessage = it.message)
                         is Resource.Success -> {
-                            _state.value = _state.value.copy(isLoading = false, languages = it.data)
+                            _state.value = _state.value.copy(isLoading = false, languages = it.data.map{it.toLanguage()})
                         }
                     }
                 }

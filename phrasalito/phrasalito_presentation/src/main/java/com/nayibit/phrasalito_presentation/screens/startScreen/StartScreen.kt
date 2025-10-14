@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -205,8 +206,9 @@ fun ContentLandscape(
                 1 -> {
                     LanguageSelectionTap(
                         modifier = modifier.fillMaxHeight(0.70f),
-                        onLanguageSelected = {onEvent(StartUiEvent.ShowToast(it))},
-                        languages = state.languages
+                        onLanguageSelected = {onEvent(StartUiEvent.SetLanguage(it))},
+                        state = state,
+                        onEvent = onEvent
                     )
                 }
 
@@ -294,6 +296,10 @@ fun ContentPortrait(
     colors: OnboardingColors,
     pagerState: PagerState
 ) {
+    val listState = rememberLazyListState(
+        initialFirstVisibleItemIndex = state.languageListScrollIndex,
+        initialFirstVisibleItemScrollOffset = state.languageListScrollOffset
+    )
 
     val permissionState = rememberNotificationPermissionHandler(
         onPermissionResult = {
@@ -320,9 +326,9 @@ fun ContentPortrait(
             when (page) {
                 0 -> WelcomeTab()
                 1 -> LanguageSelectionTap(
-                    modifier = modifier.fillMaxHeight(0.70f),
-                    onLanguageSelected = {onEvent(StartUiEvent.ShowToast(it))},
-                    languages = state.languages
+                    onLanguageSelected = {onEvent(StartUiEvent.SetLanguage(it))},
+                    state = state,
+                    onEvent = onEvent
                 )
                 2 -> PermissionTab(colors = colors)
 

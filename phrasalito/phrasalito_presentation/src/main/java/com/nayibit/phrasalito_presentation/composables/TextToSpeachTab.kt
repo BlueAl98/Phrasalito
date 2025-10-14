@@ -1,6 +1,5 @@
 package com.nayibit.phrasalito_presentation.composables
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
@@ -22,10 +22,8 @@ import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,18 +32,33 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nayibit.phrasalito_presentation.screens.startScreen.Language
+import com.nayibit.phrasalito_presentation.screens.startScreen.StartStateUi
+import com.nayibit.phrasalito_presentation.screens.startScreen.StartUiEvent
 import com.nayibit.phrasalito_presentation.ui.theme.BlueOnPrimary
 import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientStart
-import java.util.Locale
 
 
 @Composable
 fun LanguageSelectionTap(
     modifier: Modifier = Modifier,
-    onLanguageSelected: (String) -> Unit = {},
-    languages: List<Locale> = emptyList()
+    onLanguageSelected: (Language) -> Unit = {},
+    state: StartStateUi,
+    onEvent: (StartUiEvent) -> Unit
 ) {
-    var selectedLanguage by remember { mutableStateOf("en") }
+
+    val listState = rememberLazyListState(
+        initialFirstVisibleItemIndex = state.languageListScrollIndex,
+        initialFirstVisibleItemScrollOffset = state.languageListScrollOffset
+    )
+
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            Pair(listState.firstVisibleItemIndex, listState.firstVisibleItemScrollOffset)
+        }.collect { (index, offset) ->
+            onEvent(StartUiEvent.SetScrollPosition(index, offset))
+        }
+    }
 
     Column(
         modifier = modifier
@@ -62,12 +75,17 @@ fun LanguageSelectionTap(
                 .padding(horizontal = 16.dp)
                 .padding(top = 16.dp, bottom = 16.dp)
         ) {
-            LazyColumn  {
-                items (languages, key = {it}){ language ->
+            LazyColumn (
+                state = listState
+            ) {
+                items (state.languages, key = {it.id}){ language ->
                     LanguageRadioItem(
                         language = language,
-                        isSelected = selectedLanguage == language.language,
-                        onSelect = { selectedLanguage = it },
+                        isSelected = state.currentLanguage == language,
+                        onSelect = {
+                       //     state.currentLanguage = language
+                            onLanguageSelected(language)
+                        },
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
                 }
@@ -97,9 +115,9 @@ private fun TopAppBar() {
 
 @Composable
 private fun LanguageRadioItem(
-    language: Locale,
+    language: Language,
     isSelected: Boolean,
-    onSelect: (String) -> Unit,
+    onSelect: (Language) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -108,7 +126,7 @@ private fun LanguageRadioItem(
             .clip(RoundedCornerShape(4.dp))
             .selectable(
                 selected = isSelected,
-                onClick = { onSelect(language.language) },
+                onClick = { onSelect(language) },
                 role = Role.RadioButton
             ),
         //color = ,
@@ -128,7 +146,7 @@ private fun LanguageRadioItem(
             // Radio Button
             RadioButton(
                 selected = isSelected,
-                onClick = { onSelect(language.language) },
+                onClick = { onSelect(language) },
                 colors = RadioButtonDefaults.colors(
                     selectedColor = primaryGradientStart,
                     unselectedColor = Color(0xFFD1D5DB)
@@ -138,7 +156,7 @@ private fun LanguageRadioItem(
 
             // Language Name
             Text(
-                text = language.displayName,
+                text = language.language,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium
             )

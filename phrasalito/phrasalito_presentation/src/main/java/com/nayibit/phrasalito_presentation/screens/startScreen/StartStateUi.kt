@@ -9,6 +9,15 @@ data class StartStateUi(
     val totalpages: Int = 3,
     val currentPage: Int = 0,
     val isFirstTime : Boolean = false,
-    val languages: List<Locale> = emptyList()
+    val languages: List<Language> = emptyList(),
+    val currentLanguage: Language? = null,
+    val languageListScrollIndex: Int = 0,
+    val languageListScrollOffset: Int = 0
+)
+
+data class Language(
+    val id: Int = 0,
+    val language: String = "",
+    val alias : String = ""
 )
 
