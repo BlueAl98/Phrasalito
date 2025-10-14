@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -206,7 +205,6 @@ fun ContentLandscape(
                 1 -> {
                     LanguageSelectionTap(
                         modifier = modifier.fillMaxHeight(0.70f),
-                        onLanguageSelected = {onEvent(StartUiEvent.SetLanguage(it))},
                         state = state,
                         onEvent = onEvent
                     )
@@ -239,6 +237,7 @@ fun ContentLandscape(
             )
 
             Button(
+                enabled = !(state.currentPage == 1 && state.currentLanguage == null),
                 onClick = {
                     if (state.totalpages > state.currentPage + 1) {
                         onEvent(StartUiEvent.NextPage)
@@ -264,10 +263,15 @@ fun ContentLandscape(
                         .fillMaxSize()
                         .background(
                             brush = Brush.horizontalGradient(
-                                colors = listOf(
-                                    colors.primaryGradientStart,
-                                    colors.primaryGradientEnd
-                                )
+                                colors =
+                                    if (state.currentPage == 1 && state.currentLanguage == null) listOf(
+                                    Color.Gray,
+                                    Color.Gray
+                                )else
+                                    listOf(
+                                        colors.primaryGradientStart,
+                                        colors.primaryGradientEnd
+                                    )
                             )
                         ),
                     contentAlignment = Alignment.Center
@@ -296,10 +300,6 @@ fun ContentPortrait(
     colors: OnboardingColors,
     pagerState: PagerState
 ) {
-    val listState = rememberLazyListState(
-        initialFirstVisibleItemIndex = state.languageListScrollIndex,
-        initialFirstVisibleItemScrollOffset = state.languageListScrollOffset
-    )
 
     val permissionState = rememberNotificationPermissionHandler(
         onPermissionResult = {
@@ -326,7 +326,6 @@ fun ContentPortrait(
             when (page) {
                 0 -> WelcomeTab()
                 1 -> LanguageSelectionTap(
-                    onLanguageSelected = {onEvent(StartUiEvent.SetLanguage(it))},
                     state = state,
                     onEvent = onEvent
                 )
@@ -354,6 +353,7 @@ fun ContentPortrait(
 
             // Primary Button
             Button(
+                enabled = !(state.currentPage == 1 && state.currentLanguage == null),
                 onClick = {
                     if (state.totalpages > state.currentPage + 1) {
                         onEvent(StartUiEvent.NextPage)
@@ -379,7 +379,12 @@ fun ContentPortrait(
                         .fillMaxSize()
                         .background(
                             brush = Brush.horizontalGradient(
-                                colors = listOf(
+                                colors =
+                            if (state.currentPage == 1 && state.currentLanguage == null) listOf(
+                                    Color.Gray,
+                                    Color.Gray
+                            )else
+                                    listOf(
                                     colors.primaryGradientStart,
                                     colors.primaryGradientEnd
                                 )

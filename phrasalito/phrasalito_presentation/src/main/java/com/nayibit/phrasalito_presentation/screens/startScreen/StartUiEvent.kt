@@ -7,5 +7,6 @@ sealed class StartUiEvent {
     object NextPage: StartUiEvent()
     data class SetLanguage(val language: Language): StartUiEvent()
     data class SetScrollPosition(val index: Int, val offset: Int): StartUiEvent()
+    object InsertLanguage : StartUiEvent()
    // data class ShowSnackbar(val message: String): StartUiEvent()
 }

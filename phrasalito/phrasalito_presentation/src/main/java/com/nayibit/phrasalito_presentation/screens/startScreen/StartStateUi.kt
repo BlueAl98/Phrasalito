@@ -1,6 +1,5 @@
 package com.nayibit.phrasalito_presentation.screens.startScreen
 
-import java.util.Locale
 
 data class StartStateUi(
     val isLoading: Boolean = false,
@@ -20,4 +19,6 @@ data class Language(
     val language: String = "",
     val alias : String = ""
 )
+
+
 

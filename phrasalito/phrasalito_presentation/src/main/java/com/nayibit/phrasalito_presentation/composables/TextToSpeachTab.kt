@@ -42,7 +42,6 @@ import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientStart
 @Composable
 fun LanguageSelectionTap(
     modifier: Modifier = Modifier,
-    onLanguageSelected: (Language) -> Unit = {},
     state: StartStateUi,
     onEvent: (StartUiEvent) -> Unit
 ) {
@@ -83,8 +82,7 @@ fun LanguageSelectionTap(
                         language = language,
                         isSelected = state.currentLanguage == language,
                         onSelect = {
-                       //     state.currentLanguage = language
-                            onLanguageSelected(language)
+                            onEvent(StartUiEvent.SetLanguage(it))
                         },
                         modifier = Modifier.padding(bottom = 12.dp)
                     )

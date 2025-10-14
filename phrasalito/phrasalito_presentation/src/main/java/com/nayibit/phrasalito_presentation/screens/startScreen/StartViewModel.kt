@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.nayibit.common.util.Resource
 import com.nayibit.phrasalito_domain.useCases.dataStore.GetFirstTimeUseCase
 import com.nayibit.phrasalito_domain.useCases.dataStore.InsertFirstTimeUseCase
+import com.nayibit.phrasalito_domain.useCases.dataStore.InsertLanguageUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.GetAvailableLanguagesUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.IsTextSpeechReadyUseCase
 import com.nayibit.phrasalito_presentation.mappers.toLanguage
@@ -27,7 +28,8 @@ class StartViewModel @Inject constructor(
     private val insertFirstTimeUseCase: InsertFirstTimeUseCase,
     private val getFirstTimeUseCase: GetFirstTimeUseCase,
     private val getAvailableLanguagesUseCase: GetAvailableLanguagesUseCase,
-    private val isTtsReadyUseCase: IsTextSpeechReadyUseCase
+    private val isTtsReadyUseCase: IsTextSpeechReadyUseCase,
+    private val insertLanguageUseCase: InsertLanguageUseCase
 ): ViewModel() {
 
     private val _state = MutableStateFlow(StartStateUi())
@@ -60,6 +62,12 @@ class StartViewModel @Inject constructor(
             }
 
             NextPage -> {
+
+                if (_state.value.currentPage == 1){
+                    insertLanguage()
+                    return
+                }
+
                 _state.value = _state.value.copy(
                     currentPage = _state.value.currentPage + 1
                 )
@@ -79,8 +87,35 @@ class StartViewModel @Inject constructor(
                     )
                 }
             }
+
+            StartUiEvent.InsertLanguage -> {
+                insertLanguage()
+            }
         }
+     }
+
+
+
+    fun insertLanguage(){
+        viewModelScope.launch {
+            if (_state.value.currentLanguage != null){
+                insertLanguageUseCase(_state.value.currentLanguage!!.alias).collect{
+                    when(it){
+                        is Resource.Error -> {
+                            updateState { it.copy(isLoading = false) }
+                            _eventFlow.emit(ShowToast(it.message))
+                        }
+                        Resource.Loading -> {updateState { it.copy(isLoading = true) }}
+                        is Resource.Success<*> -> {
+                            updateState { it.copy(isLoading = false, currentPage = _state.value.currentPage + 1) }
+                        }
+                    }
+                }
+            }else{
+                _eventFlow.emit(ShowToast("No language selected"))
+            }
         }
+    }
 
 
     fun getConfiguration() {

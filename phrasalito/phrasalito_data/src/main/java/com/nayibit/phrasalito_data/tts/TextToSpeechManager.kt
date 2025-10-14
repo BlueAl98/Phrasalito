@@ -4,6 +4,8 @@ import android.content.Context
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import com.nayibit.common.util.Constants.LANGUAGE
+import com.nayibit.common.util.Constants.LIST_OF_LANGUAGES
+import com.nayibit.common.util.Constants.NUM_OF_LANGUAGES
 import com.nayibit.common.util.Resource
 import com.nayibit.phrasalito_data.dataStore.GenericDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -94,7 +96,7 @@ class TextToSpeechManager @Inject constructor(
         }*/
     }
   */
-
+/*
 fun getAvailableLanguages(): Flow<Resource<List<Locale>>> = flow {
     try {
         emit(Resource.Loading)
@@ -110,6 +112,30 @@ fun getAvailableLanguages(): Flow<Resource<List<Locale>>> = flow {
         emit(Resource.Error(e.message ?: "Unknown error"))
     }
 }
+*/
+    fun getAvailableLanguages(): Flow<Resource<List<Locale>>> = flow {
+        try {
+            emit(Resource.Loading)
 
+            // All available TTS languages
+            val allLanguages = tts.availableLanguages
+                ?.filter { tts.isLanguageAvailable(it) >= TextToSpeech.LANG_AVAILABLE }
+                ?.distinctBy { it.language } // avoid duplicates
+                ?: emptyList()
 
+            // Separate priority languages that exist on the device
+            val prioritized = allLanguages.filter { LIST_OF_LANGUAGES.contains(it.language) }
+
+            // Remaining languages not in priority
+            val remaining = allLanguages.filter { !LIST_OF_LANGUAGES.contains(it.language) }
+
+            // Combine prioritized + remaining and take up to 10
+            val finalList = (prioritized + remaining).take(NUM_OF_LANGUAGES)
+
+            emit(Resource.Success(finalList))
+        } catch (e: Exception) {
+            Log.e("TTS", "Error fetching languages: ${e.message}")
+            emit(Resource.Error(e.message ?: "Unknown error"))
+        }
+    }
 }
