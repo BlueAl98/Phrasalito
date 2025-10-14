@@ -203,6 +203,14 @@ fun ContentLandscape(
                 }
 
                 1 -> {
+                    LanguageSelectionTap(
+                        modifier = modifier.fillMaxHeight(0.70f),
+                        onLanguageSelected = {onEvent(StartUiEvent.ShowToast(it))},
+                        languages = state.languages
+                    )
+                }
+
+                2 -> {
                     Text(
                         text = stringResource(R.string.notification_title),
                         fontSize = 28.sp,
@@ -218,11 +226,7 @@ fun ContentLandscape(
                     )
                 }
 
-                2 -> {
-                    LanguageSelectionTap(
-                        modifier = modifier.fillMaxHeight(0.70f)
-                    )
-                }
+
             }
 
 
@@ -315,8 +319,13 @@ fun ContentPortrait(
         ) { page ->
             when (page) {
                 0 -> WelcomeTab()
-                1 -> PermissionTab(colors = colors)
-                2 -> LanguageSelectionTap()
+                1 -> LanguageSelectionTap(
+                    modifier = modifier.fillMaxHeight(0.70f),
+                    onLanguageSelected = {onEvent(StartUiEvent.ShowToast(it))},
+                    languages = state.languages
+                )
+                2 -> PermissionTab(colors = colors)
+
             }
         }
 

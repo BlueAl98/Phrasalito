@@ -1,5 +1,6 @@
 package com.nayibit.phrasalito_presentation.composables
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,10 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -31,31 +32,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nayibit.phrasalito_presentation.ui.theme.BlueOnPrimary
 import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientStart
+import java.util.Locale
 
-data class LanguageOption(
-    val id: String,
-    val displayName: String
-)
-
-val languages = listOf(
-    LanguageOption("en", "English"),
-    LanguageOption("es", "Español"),
-    LanguageOption("fr", "Français"),
-    LanguageOption("de", "Deutsch"),
-    LanguageOption("ja", "日本語"),
-    LanguageOption("it", "Italiano"),
-    LanguageOption("pt", "Português")
-)
 
 @Composable
 fun LanguageSelectionTap(
     modifier: Modifier = Modifier,
-    onLanguageSelected: (String) -> Unit = {}
+    onLanguageSelected: (String) -> Unit = {},
+    languages: List<Locale> = emptyList()
 ) {
     var selectedLanguage by remember { mutableStateOf("en") }
 
@@ -71,18 +59,21 @@ fun LanguageSelectionTap(
         Column(
             modifier = modifier
                 .weight(1f)
-                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
                 .padding(top = 16.dp, bottom = 16.dp)
         ) {
-            languages.forEach { language ->
-                LanguageRadioItem(
-                    language = language,
-                    isSelected = selectedLanguage == language.id,
-                    onSelect = { selectedLanguage = it },
-                    modifier = Modifier.padding(bottom = 12.dp)
-                )
+            LazyColumn  {
+                items (languages, key = {it}){ language ->
+                    LanguageRadioItem(
+                        language = language,
+                        isSelected = selectedLanguage == language.language,
+                        onSelect = { selectedLanguage = it },
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                }
+
             }
+
         }
     }
 }
@@ -106,7 +97,7 @@ private fun TopAppBar() {
 
 @Composable
 private fun LanguageRadioItem(
-    language: LanguageOption,
+    language: Locale,
     isSelected: Boolean,
     onSelect: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -117,7 +108,7 @@ private fun LanguageRadioItem(
             .clip(RoundedCornerShape(4.dp))
             .selectable(
                 selected = isSelected,
-                onClick = { onSelect(language.id) },
+                onClick = { onSelect(language.language) },
                 role = Role.RadioButton
             ),
         //color = ,
@@ -137,7 +128,7 @@ private fun LanguageRadioItem(
             // Radio Button
             RadioButton(
                 selected = isSelected,
-                onClick = { onSelect(language.id) },
+                onClick = { onSelect(language.language) },
                 colors = RadioButtonDefaults.colors(
                     selectedColor = primaryGradientStart,
                     unselectedColor = Color(0xFFD1D5DB)

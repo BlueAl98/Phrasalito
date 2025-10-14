@@ -11,7 +11,7 @@ import javax.inject.Inject
 class TextSpeechRepositoryImpl
 @Inject constructor(private val tts: TextToSpeechManager) : TextSpeechRepository {
 
-    override fun SpeakText(text: String) {
+    override fun speakText(text: String) {
         tts.speak(text)
     }
 
@@ -22,8 +22,7 @@ class TextSpeechRepositoryImpl
     override fun isTtsReady(): Flow<Resource<Boolean>> =
         tts.isReady
 
-    override fun getLanguagesSuported(): List<Locale> {
-        println("LANGUAGES "+tts.getAvailableLanguages())
+    override suspend fun getLanguagesSuported() : Flow<Resource<List<Locale>>>  {
         return tts.getAvailableLanguages()
     }
 

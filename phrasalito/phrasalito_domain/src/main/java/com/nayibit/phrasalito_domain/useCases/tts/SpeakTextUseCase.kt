@@ -5,5 +5,5 @@ import javax.inject.Inject
 
 class SpeakTextUseCase
 @Inject constructor(private val textToSpeechRepository: TextSpeechRepository) {
-    operator fun invoke(text: String) = textToSpeechRepository.SpeakText(text)
+    operator fun invoke(text: String) = textToSpeechRepository.speakText(text)
 }

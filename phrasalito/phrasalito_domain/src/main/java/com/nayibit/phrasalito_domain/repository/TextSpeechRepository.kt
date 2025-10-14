@@ -2,17 +2,16 @@ package com.nayibit.phrasalito_domain.repository
 
 import com.nayibit.common.util.Resource
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 import java.util.Locale
 
 interface TextSpeechRepository {
 
-    fun SpeakText(text: String)
+    fun speakText(text: String)
 
     fun shutdownTts()
 
     fun isTtsReady(): Flow<Resource<Boolean>>
 
-    fun getLanguagesSuported(): List<Locale>
+   suspend fun getLanguagesSuported(): Flow<Resource<List<Locale>>>
 
 }

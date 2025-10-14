@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
@@ -71,8 +72,18 @@ class TextToSpeechManager @Inject constructor(
         tts.shutdown()
     }
 
-    fun getAvailableLanguages(): List<Locale> {
+    /*
+    fun getAvailableLanguages(): Flow<Resource<List<Locale>>> = flow {
+
         return try {
+            tts.availableLanguages
+                ?.filter { tts.isLanguageAvailable(it) >= TextToSpeech.LANG_AVAILABLE }
+                ?.sortedBy { it.displayName }
+                ?: emptyList()
+
+        }
+
+      /*  return try {
             tts.availableLanguages
                 ?.filter { tts.isLanguageAvailable(it) >= TextToSpeech.LANG_AVAILABLE }
                 ?.sortedBy { it.displayName }
@@ -80,9 +91,25 @@ class TextToSpeechManager @Inject constructor(
         } catch (e: Exception) {
             Log.e("TTS", "Error fetching languages: ${e.message}")
             emptyList()
-        }
+        }*/
     }
+  */
 
+fun getAvailableLanguages(): Flow<Resource<List<Locale>>> = flow {
+    try {
+        emit(Resource.Loading)
+
+        val availableLanguages = tts.availableLanguages
+            ?.filter { tts.isLanguageAvailable(it) >= TextToSpeech.LANG_AVAILABLE }
+            ?.sortedBy { it.displayName }
+            ?: emptyList()
+
+        emit(Resource.Success(availableLanguages))
+    } catch (e: Exception) {
+        Log.e("TTS", "Error fetching languages: ${e.message}")
+        emit(Resource.Error(e.message ?: "Unknown error"))
+    }
+}
 
 
 }
