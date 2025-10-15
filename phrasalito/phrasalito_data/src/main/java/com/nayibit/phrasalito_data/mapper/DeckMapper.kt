@@ -8,19 +8,28 @@ fun DeckEntity.toDomain(): Deck {
     return Deck(
             id = id,
             name = name,
-            maxCards = maxCards)
+            maxCards = maxCards,
+            lngCode = lngCode ,
+            languageName = languageName
+        )
 }
 
 fun Deck.toEntity(): DeckEntity {
     return DeckEntity(
         id = id,
         name = name,
-        maxCards = maxCards)
+        maxCards = maxCards,
+        lngCode = lngCode ,
+        languageName = languageName
+        )
 }
 
 fun DeckWithPhrases.toDomain(): Deck {
    return Deck(
         id = deck.id,
         name = deck.name,
-        maxCards = phrases.size)
+        maxCards = phrases.size,
+       lngCode = deck.lngCode ,
+       languageName = deck.languageName
+       )
 }

@@ -7,6 +7,8 @@ fun Deck.toDeckUI(): DeckUI{
     return DeckUI(
         id = this.id,
         name = this.name,
-        maxCards = this.maxCards
+        maxCards = this.maxCards,
+        lngCode = this.lngCode,
+        languageName = this.languageName
     )
 }

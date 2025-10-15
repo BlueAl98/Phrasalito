@@ -55,7 +55,7 @@ fun DeckScreen(
     state: DeckStateUi,
     eventFlow: Flow<DeckUiEvent>,
     onEvent: (DeckUiEvent) -> Unit,
-    navigationToPhrases: (id: Int) -> Unit
+    navigationToPhrases: (id: Int, lngCode: String) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -71,7 +71,7 @@ fun DeckScreen(
                 }
 
                 is DeckUiEvent.NavigationToPhrases -> {
-                    navigationToPhrases(event.id)
+                    navigationToPhrases(event.id, event.lngCode)
                 }
 
                 is DeckUiEvent.ShowSnackbar ->{
@@ -141,7 +141,7 @@ fun DeckScreen(
                                         onDelete = {
                                          onEvent(DeckUiEvent.ShowModal(BodyDeckModalEnum.BODY_DELETE_DECK, it))
                                         },
-                                        onClick = { onEvent(DeckUiEvent.NavigationToPhrases(it.id))},
+                                        onClick = { onEvent(DeckUiEvent.NavigationToPhrases(it.id, it.lngCode))},
                                         isSwiped = deck.isSwiped,
                                         onSwipe = { isSwiped ->
                                             onEvent(DeckUiEvent.UpdateDeckList(deck.id, isSwiped))
@@ -210,12 +210,11 @@ fun BodyModalInsertDeck(
         languages = state.listLanguages,
         selectedLanguage = state.selectedLanguage,
         onLanguageSelected = { language ->
-            //onEvent(YourScreenEvent.OnLanguageSelected(language))
+           onEvent(DeckUiEvent.OnLanguageSelected(language))
         },
         label = "Choose Language",
         showAlias = true
     )
-
 
 
     ButtonBase(

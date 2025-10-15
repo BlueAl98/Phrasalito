@@ -54,6 +54,7 @@ class PhraseViewModel
     ) : ViewModel()  {
 
     val idDeck = savedStateHandle.get<Int>("idDeck")
+    val lngCode = savedStateHandle.get<String>("lngCode") ?: "en_US"
 
     private val _state = MutableStateFlow(PhraseStateUi(
         idDeck = idDeck ?: 0
@@ -215,7 +216,7 @@ class PhraseViewModel
             }
 
             is PhraseUiEvent.SpeakText -> {
-                speakTextUseCase(event.text, "it")
+                speakTextUseCase(event.text, lngCode)
             }
         }
     }

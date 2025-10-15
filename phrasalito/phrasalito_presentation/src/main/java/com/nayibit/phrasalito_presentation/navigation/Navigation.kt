@@ -24,7 +24,7 @@ import kotlinx.serialization.Serializable
 object DeckScreen
 
 @Serializable
-data class PhraseScreenNav(val idDeck: Int)
+data class PhraseScreenNav(val idDeck: Int, val lngCode: String)
 
 @Serializable
 data class ExerciseScreenNav(val idDeck: Int)
@@ -68,8 +68,8 @@ fun Navigation() {
              state = state,
              eventFlow = viewModel.eventFlow,
              onEvent = viewModel::onEvent,
-             navigationToPhrases = { idDeck ->
-                 navController.navigate(PhraseScreenNav(idDeck))
+             navigationToPhrases = { idDeck, lngCode ->
+                 navController.navigate(PhraseScreenNav(idDeck, lngCode))
              }
          )
 }

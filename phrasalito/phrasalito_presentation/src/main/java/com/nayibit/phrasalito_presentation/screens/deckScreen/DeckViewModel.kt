@@ -1,5 +1,6 @@
 package com.nayibit.phrasalito_presentation.screens.deckScreen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.common.util.Resource
@@ -12,6 +13,7 @@ import com.nayibit.phrasalito_domain.useCases.decks.UpdateDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.GetAvailableLanguagesUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.IsTextSpeechReadyUseCase
 import com.nayibit.phrasalito_presentation.mappers.toDeckUI
+import com.nayibit.phrasalito_presentation.mappers.toLanguage
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.DeleteDeck
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.DismissModal
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.InsertDeck
@@ -31,6 +33,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import javax.inject.Inject
@@ -44,7 +49,7 @@ class DeckViewModel @Inject
     private val updateDeckUseCase: UpdateDeckUseCase,
     private val getAvailableLanguagesUseCase: GetAvailableLanguagesUseCase,
     private val isTextSpeechReadyUseCase: IsTextSpeechReadyUseCase)
-    : ViewModel()  {
+    : ViewModel() {
 
     private val _state = MutableStateFlow(DeckStateUi()) // Initial default state
     val state: StateFlow<DeckStateUi> = _state.asStateFlow()
@@ -54,7 +59,7 @@ class DeckViewModel @Inject
     val eventFlow = _eventFlow.asSharedFlow()
 
 
-   init {
+    init {
         getAllDecks()
     }
 
@@ -69,6 +74,7 @@ class DeckViewModel @Inject
                     nameDeck = event.deck.name
                 )
             }
+
             is DismissModal -> {
                 _state.value = _state.value.copy(
                     showModal = false,
@@ -77,30 +83,36 @@ class DeckViewModel @Inject
                     decks = _state.value.decks.map { it.copy(isSwiped = false) }
                 )
             }
-            is  ShowToast -> {
+
+            is ShowToast -> {
                 viewModelScope.launch {
                     _eventFlow.emit(event)
                 }
             }
+
             is UpdateTextFieldInsert -> {
                 _state.value = _state.value.copy(
                     nameDeck = event.text
                 )
             }
+
             is InsertDeck -> {
                 val deck = Deck(
                     name = _state.value.nameDeck,
-                    maxCards = 0
+                    maxCards = 0,
+                    lngCode = _state.value.selectedLanguage?.alias ?: "en_US",
+                    languageName = _state.value.selectedLanguage?.language ?: "english"
                 )
                 insertDeck(deck)
             }
+
             is NavigationToPhrases -> {
                 viewModelScope.launch {
-                 _state.value = _state.value.copy(
-                     decks = _state.value.decks.map { it.copy(isSwiped = false) }
-                 )
-                _eventFlow.emit(NavigationToPhrases(event.id))
-              }
+                    _state.value = _state.value.copy(
+                        decks = _state.value.decks.map { it.copy(isSwiped = false) }
+                    )
+                    _eventFlow.emit(NavigationToPhrases(event.id, event.lngCode))
+                }
             }
 
 
@@ -123,24 +135,31 @@ class DeckViewModel @Inject
                     nameDeck = event.text
                 )
             }
+
             is UpdateDeckList -> {
-                val listDecks = _state.value.decks.map{
+                val listDecks = _state.value.decks.map {
                     if (it.id == event.idDeck) it.copy(isSwiped = event.isSwiped)
                     else it.copy(isSwiped = false)
                 }
                 _state.value = state.value.copy(decks = listDecks)
             }
 
-           is ResetAllSwiped -> {
+            is ResetAllSwiped -> {
                 _state.value = _state.value.copy(
                     decks = _state.value.decks.map { it.copy(isSwiped = false) }
                 )
             }
 
-            is DeckUiEvent.ShowSnackbar -> {
+            is ShowSnackbar -> {
                 viewModelScope.launch {
                     _eventFlow.emit(event)
                 }
+            }
+
+            is DeckUiEvent.OnLanguageSelected -> {
+                _state.value = _state.value.copy(
+                    selectedLanguage = event.language
+                )
             }
         }
     }
@@ -150,48 +169,57 @@ class DeckViewModel @Inject
         return buildString {
             append("Translate these phrases into casual English:\n")
             phrases.forEachIndexed { i, phrase ->
-                append("${i+1}. $phrase\n")
+                append("${i + 1}. $phrase\n")
             }
         }
     }
 
-    fun updateDeck(id: Int, name: String){
+    fun updateDeck(
+        id: Int,
+        name: String,
+        lngCode: String = "en_US",
+        languageName: String = "english"
+    ) {
         viewModelScope.launch {
-            val result = updateDeckUseCase(id, name)
-            when(result){
+            val result = updateDeckUseCase(id, name, lngCode, languageName)
+            when (result) {
                 is Resource.Error -> {
                     _state.value = _state.value.copy(
                         showModal = false
                     )
                     _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Error: ${result.message}")))
                 }
+
                 is Resource.Success<*> -> {
                     _state.value = _state.value.copy(
-                       showModal = false
+                        showModal = false
                     )
                     _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Deck actualizado")))
                 }
+
                 else -> {}
             }
         }
     }
 
-    fun deleteDeck(id : Int){
+    fun deleteDeck(id: Int) {
         viewModelScope.launch {
-         val result = deleteDeckUseCase(id)
-            when(result){
+            val result = deleteDeckUseCase(id)
+            when (result) {
                 is Resource.Error -> {
                     _state.value = _state.value.copy(
                         showModal = false
                     )
                     _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Error: ${result.message}")))
                 }
+
                 is Resource.Success<*> -> {
                     _state.value = _state.value.copy(
                         showModal = false
                     )
                     _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Deck eliminado")))
                 }
+
                 else -> {}
             }
         }
@@ -199,44 +227,46 @@ class DeckViewModel @Inject
 
 
     fun insertDeck(deck: Deck) {
-            viewModelScope.launch {
-               insertDeckUseCase(deck).collect { result ->
-                    when (result) {
-                        is Resource.Loading -> {
-                            _state.value = _state.value.copy(
-                                isLoading = false,
-                                successInsertedDeck = null,
-                                errorMessage = null,
-                                isLoadingButton = true
-                                )
-                        }
-                        is Resource.Success -> {
-                            _state.value = _state.value.copy(
-                                isLoading = false,
-                                successInsertedDeck = result.data.toDeckUI(),
-                                errorMessage = null,
-                                showModal = false,
-                                isLoadingButton = false,
-                                nameDeck = ""
-                            )
-                           _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Deck inserted successfully")))
-                        }
-                        is Resource.Error -> {
-                            _state.value = _state.value.copy(
-                                isLoading = false,
-                                errorMessage = result.message,
-                                showModal = false,
-                                isLoadingButton = false,
-                                nameDeck = ""
-                            )
-                            _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Error: ${result.message}")))
-                        }
+        viewModelScope.launch {
+            insertDeckUseCase(deck).collect { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                            successInsertedDeck = null,
+                            errorMessage = null,
+                            isLoadingButton = true
+                        )
+                    }
 
+                    is Resource.Success -> {
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                            successInsertedDeck = result.data.toDeckUI(),
+                            errorMessage = null,
+                            showModal = false,
+                            isLoadingButton = false,
+                            nameDeck = ""
+                        )
+                        _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Deck inserted successfully")))
+                    }
+
+                    is Resource.Error -> {
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                            errorMessage = result.message,
+                            showModal = false,
+                            isLoadingButton = false,
+                            nameDeck = ""
+                        )
+                        _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Error: ${result.message}")))
                     }
 
                 }
+
             }
         }
+    }
 
     fun getAllDecks() {
         viewModelScope.launch {
@@ -244,16 +274,16 @@ class DeckViewModel @Inject
                 when (result) {
                     is Resource.Loading -> {
                         _state.value = _state.value.copy(
-                            isLoading = true)
-                    }
-                    is Resource.Success -> {
-                        _state.value = _state.value.copy(
-                            isLoading = false,
-                            decks = result.data.map{
-                                it.toDeckUI()
-                            }
+                            isLoading = true
                         )
                     }
+
+                    is Resource.Success -> {
+                        _state.value = _state.value.copy(
+                            decks = result.data.map { it.toDeckUI() })
+                        getAvailableLanguages()
+                    }
+
                     is Resource.Error -> {
                         _state.value = _state.value.copy(
                             isLoading = false,
@@ -267,7 +297,46 @@ class DeckViewModel @Inject
 
     }
 
+    fun getAvailableLanguages() {
+        viewModelScope.launch {
+            isTextSpeechReadyUseCase()
+                .flatMapLatest { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            // Only proceed if TTS is ready
+                            getAvailableLanguagesUseCase()
+                        }
+                        is Resource.Error -> {
+                            // Emit an error flow instead of calling getAvailableLanguagesUseCase
+                            flowOf(Resource.Error(result.message ?: "TTS not ready"))
+                        }
+                        else -> {
+                            flowOf(Resource.Loading)
+                        }
+                    }
+                }
+                .collect { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                listLanguages = result.data.map { it.toLanguage() }
+                            )
+                        }
 
+                        is Resource.Error -> {
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                errorMessage = result.message
+                            )
+                            _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Error: ${result.message}")))
+                        }
 
+                        is Resource.Loading -> {
+                            _state.value = _state.value.copy(isLoading = true)
+                        }
+                    }
+                }
+        }
+    }
 }
-

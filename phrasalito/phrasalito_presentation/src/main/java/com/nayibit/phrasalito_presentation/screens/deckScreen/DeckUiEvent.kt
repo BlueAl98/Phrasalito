@@ -1,6 +1,7 @@
 package com.nayibit.phrasalito_presentation.screens.deckScreen
 
 import com.nayibit.common.util.UiText
+import com.nayibit.phrasalito_presentation.model.Language
 
 sealed class DeckUiEvent {
     data class ShowToast(val message: UiText) : DeckUiEvent()
@@ -8,7 +9,7 @@ sealed class DeckUiEvent {
     object DismissModal : DeckUiEvent()
     object InsertDeck : DeckUiEvent()
     data class OpenPrompt(val url: String = "", val prompt: String = "") : DeckUiEvent()
-    data class NavigationToPhrases(val id: Int) : DeckUiEvent()
+    data class NavigationToPhrases(val id: Int, val lngCode: String) : DeckUiEvent()
     data class UpdateTextFieldInsert(val text: String) : DeckUiEvent()
     data class UpdateTextFieldUpdate(val text: String) : DeckUiEvent()
     data class DeleteDeck(val id: Int) : DeckUiEvent()
@@ -16,6 +17,7 @@ sealed class DeckUiEvent {
     data class UpdateDeckList(val idDeck: Int, val isSwiped: Boolean): DeckUiEvent()
     object ResetAllSwiped : DeckUiEvent()
     data class ShowSnackbar(val message: UiText) : DeckUiEvent()
+    data class OnLanguageSelected(val language: Language): DeckUiEvent()
 }
 
 

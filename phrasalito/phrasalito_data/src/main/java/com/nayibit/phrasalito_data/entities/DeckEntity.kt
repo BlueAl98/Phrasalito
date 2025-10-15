@@ -9,7 +9,9 @@ data class DeckEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val name: String,
-    val maxCards: Int
+    val maxCards: Int,
+    val lngCode: String,
+    val languageName: String
 )
 
 
