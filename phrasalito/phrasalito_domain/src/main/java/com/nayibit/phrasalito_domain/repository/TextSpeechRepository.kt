@@ -6,7 +6,7 @@ import java.util.Locale
 
 interface TextSpeechRepository {
 
-    fun speakText(text: String)
+    fun speakText(text: String, langCode: String)
 
     fun shutdownTts()
 

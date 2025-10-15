@@ -32,7 +32,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.nayibit.phrasalito_presentation.screens.startScreen.Language
+import com.nayibit.phrasalito_presentation.model.Language
 import com.nayibit.phrasalito_presentation.screens.startScreen.StartStateUi
 import com.nayibit.phrasalito_presentation.screens.startScreen.StartUiEvent
 import com.nayibit.phrasalito_presentation.ui.theme.BlueOnPrimary

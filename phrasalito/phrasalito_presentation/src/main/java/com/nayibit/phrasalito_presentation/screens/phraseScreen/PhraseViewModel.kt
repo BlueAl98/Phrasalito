@@ -215,7 +215,7 @@ class PhraseViewModel
             }
 
             is PhraseUiEvent.SpeakText -> {
-                speakTextUseCase(event.text)
+                speakTextUseCase(event.text, "it")
             }
         }
     }

@@ -11,8 +11,8 @@ import javax.inject.Inject
 class TextSpeechRepositoryImpl
 @Inject constructor(private val tts: TextToSpeechManager) : TextSpeechRepository {
 
-    override fun speakText(text: String) {
-        tts.speak(text)
+    override fun speakText(text: String, langCode: String) {
+        tts.speak(text, langCode)
     }
 
     override fun shutdownTts() {

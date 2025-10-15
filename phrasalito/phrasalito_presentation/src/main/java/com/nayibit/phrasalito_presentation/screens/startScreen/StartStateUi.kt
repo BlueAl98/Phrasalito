@@ -1,5 +1,7 @@
 package com.nayibit.phrasalito_presentation.screens.startScreen
 
+import com.nayibit.phrasalito_presentation.model.Language
+
 
 data class StartStateUi(
     val isLoading: Boolean = false,
@@ -14,11 +16,7 @@ data class StartStateUi(
     val languageListScrollOffset: Int = 0
 )
 
-data class Language(
-    val id: Int = 0,
-    val language: String = "",
-    val alias : String = ""
-)
+
 
 
 

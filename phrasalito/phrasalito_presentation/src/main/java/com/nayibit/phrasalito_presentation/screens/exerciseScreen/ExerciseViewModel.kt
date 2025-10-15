@@ -116,7 +116,7 @@ class ExerciseViewModel @Inject constructor(
 
             is OnSpeakPhrase -> {
                 if (_state.value.ttsState)
-                    speakTextUseCase(event.text)
+                    speakTextUseCase(event.text, "en_US")
                 else
                     viewModelScope.launch {
                         _eventChannel.send(ShowSnackBar("TTS is not ready"))

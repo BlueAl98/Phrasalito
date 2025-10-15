@@ -29,7 +29,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,13 +41,12 @@ import com.nayibit.common.util.asString
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.BaseDialog
 import com.nayibit.phrasalito_presentation.composables.ButtonBase
+import com.nayibit.phrasalito_presentation.composables.LanguageDropdownMenu
 import com.nayibit.phrasalito_presentation.composables.LoadingScreen
 import com.nayibit.phrasalito_presentation.composables.SwipeableDeckItem
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
 import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 
 
 @Composable
@@ -207,6 +205,18 @@ fun BodyModalInsertDeck(
         onValueChange = { onEvent(DeckUiEvent.UpdateTextFieldInsert(it)) },
         label = stringResource(R.string.label_learn_phrase)
     )
+
+    LanguageDropdownMenu(
+        languages = state.listLanguages,
+        selectedLanguage = state.selectedLanguage,
+        onLanguageSelected = { language ->
+            //onEvent(YourScreenEvent.OnLanguageSelected(language))
+        },
+        label = "Choose Language",
+        showAlias = true
+    )
+
+
 
     ButtonBase(
         text = stringResource(id = R.string.btn_save),
