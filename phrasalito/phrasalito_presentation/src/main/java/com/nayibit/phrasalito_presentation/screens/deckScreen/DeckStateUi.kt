@@ -14,8 +14,7 @@ data class DeckStateUi (
     val isLoadingButton: Boolean = false,
     val bodyModal: BodyDeckModalEnum = BodyDeckModalEnum.BODY_INSERT_DECK,
     val currentDeck: DeckUI = DeckUI(name = "", maxCards = 0),
-    val listLanguages : List<Language> = emptyList(),
-    val selectedLanguage: Language? = null
+    val listLanguages : List<Language> = emptyList()
 )
 
 data class DeckUI(
@@ -23,9 +22,8 @@ data class DeckUI(
     val name: String = "",
     val maxCards: Int = 0,
     val isSwiped: Boolean = false,
-    val lngCode: String = "en_US",
-    val languageName: String = "english",
-    val isNotified: Boolean = false
+    val isNotified: Boolean = false,
+    val selectedLanguage: Language? = null
 )
 
 enum class BodyDeckModalEnum() {

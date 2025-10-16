@@ -79,7 +79,8 @@ class DeckViewModel @Inject
                     showModal = false,
                     isLoadingButton = false,
                     nameDeck = "",
-                    decks = _state.value.decks.map { it.copy(isSwiped = false) }
+                    decks = _state.value.decks.map { it.copy(isSwiped = false) },
+                    currentDeck = DeckUI()
                 )
             }
 
@@ -91,18 +92,12 @@ class DeckViewModel @Inject
 
             is UpdateTextFieldInsert -> {
                 _state.value = _state.value.copy(
-                    nameDeck = event.text
+                    currentDeck = _state.value.currentDeck.copy(name = event.text)
                 )
             }
 
             is InsertDeck -> {
-                val deck = Deck(
-                    name = _state.value.nameDeck,
-                    maxCards = 0,
-                    lngCode = _state.value.selectedLanguage?.alias ?: "en_US",
-                    languageName = _state.value.selectedLanguage?.language ?: "english"
-                )
-                insertDeck(deck)
+                insertDeck(_state.value.currentDeck.toDeck())
             }
 
             is NavigationToPhrases -> {
@@ -159,7 +154,7 @@ class DeckViewModel @Inject
 
             is DeckUiEvent.OnLanguageSelected -> {
                 _state.value = _state.value.copy(
-                    selectedLanguage = event.language
+                    currentDeck = _state.value.currentDeck.copy(selectedLanguage = event.language)
                 )
             }
 

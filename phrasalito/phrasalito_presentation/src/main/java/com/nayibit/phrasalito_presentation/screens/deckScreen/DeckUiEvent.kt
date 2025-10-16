@@ -9,7 +9,7 @@ sealed class DeckUiEvent {
     object DismissModal : DeckUiEvent()
     object InsertDeck : DeckUiEvent()
     data class OpenPrompt(val url: String = "", val prompt: String = "") : DeckUiEvent()
-    data class NavigationToPhrases(val id: Int, val lngCode: String) : DeckUiEvent()
+    data class NavigationToPhrases(val id: Int, val lngCode: String?) : DeckUiEvent()
     data class UpdateTextFieldInsert(val text: String) : DeckUiEvent()
     data class UpdateTextFieldUpdate(val text: String) : DeckUiEvent()
     data class DeleteDeck(val id: Int) : DeckUiEvent()

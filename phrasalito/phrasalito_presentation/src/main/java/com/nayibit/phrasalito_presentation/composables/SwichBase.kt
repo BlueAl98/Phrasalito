@@ -17,19 +17,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientStart
 
 @Composable
 fun SwitchBase(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    activeColor: Color = Color(0xFF4CAF50),      // ✅ Active background
+    activeColor: Color = primaryGradientStart,      // ✅ Active background
     inactiveColor: Color = Color(0xFFCFD8DC),    // ✅ Inactive background
-    iconColor: Color = Color(0xFF4CAF50)         // ✅ Icon tint inside knob
+    iconColor: Color = primaryGradientStart         // ✅ Icon tint inside knob
 ) {
     // Animated track color
     val trackColor by animateColorAsState(
-        targetValue = if (checked) activeColor.copy(alpha = 0.3f) else inactiveColor.copy(alpha = 0.6f),
+        targetValue = if (checked) activeColor else inactiveColor.copy(alpha = 0.6f),
         label = "trackColor"
     )
 

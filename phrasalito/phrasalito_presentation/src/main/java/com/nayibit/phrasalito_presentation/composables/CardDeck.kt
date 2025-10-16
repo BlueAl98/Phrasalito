@@ -141,7 +141,7 @@ fun SwipeableDeckItem(
             totalCards = 10,
             onClickToTest = { onClick(deck) },
             isNotified = deck.isNotified,
-            bottomRightText = deck.languageName
+            bottomRightText = deck.selectedLanguage?.language
         )
     }
 
@@ -260,6 +260,7 @@ fun CardDeck(
                         totalCards = totalCards,
                         progress = progress
                     )
+                    Spacer(modifier.size(3.dp))
                 }
             }
 
@@ -271,7 +272,7 @@ fun CardDeck(
                     color = Color.Gray,
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .padding(end = 12.dp, bottom = 8.dp)
+                        .padding(top = 5.dp, end = 12.dp, bottom = 8.dp)
                 )
             }
         }

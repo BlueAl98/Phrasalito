@@ -78,7 +78,7 @@ fun DeckScreen(
                 }
 
                 is DeckUiEvent.NavigationToPhrases -> {
-                    navigationToPhrases(event.id, event.lngCode)
+                    navigationToPhrases(event.id, event.lngCode ?: "en_US")
                 }
 
                 is DeckUiEvent.ShowSnackbar ->{
@@ -148,7 +148,8 @@ fun DeckScreen(
                                         onDelete = {
                                          onEvent(DeckUiEvent.ShowModal(BodyDeckModalEnum.BODY_DELETE_DECK, it))
                                         },
-                                        onClick = { onEvent(DeckUiEvent.NavigationToPhrases(it.id, it.lngCode))},
+                                        onClick = { onEvent(DeckUiEvent.NavigationToPhrases(it.id, it.selectedLanguage?.alias
+                                        ))},
                                         isSwiped = deck.isSwiped,
                                         onSwipe = { isSwiped ->
                                             onEvent(DeckUiEvent.UpdateDeckList(deck.id, isSwiped))
@@ -203,19 +204,20 @@ fun DeckScreen(
 
 @Composable
 fun BodyModalInsertDeck(
+    modifier: Modifier = Modifier,
     state: DeckStateUi,
     onEvent: (DeckUiEvent) -> Unit
 ) {
 
     TextFieldBase(
-        value = state.nameDeck,
+        value = state.currentDeck.name,
         onValueChange = { onEvent(DeckUiEvent.UpdateTextFieldInsert(it)) },
         label = stringResource(R.string.label_learn_phrase)
     )
 
     LanguageDropdownMenu(
         languages = state.listLanguages,
-        selectedLanguage = state.selectedLanguage,
+        selectedLanguage = state.currentDeck.selectedLanguage,
         onLanguageSelected = { language ->
            onEvent(DeckUiEvent.OnLanguageSelected(language))
         },
@@ -223,11 +225,24 @@ fun BodyModalInsertDeck(
         showAlias = true
     )
 
+    Row (modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        SwitchBase(
+            checked = state.currentDeck.isNotified,
+            onCheckedChange = { onEvent(DeckUiEvent.UpdateNotificationState(it))}
+        )
+
+        Spacer(modifier = modifier.size(6.dp))
+
+        Text(text = "Activar notificationes")
+    }
+
 
     ButtonBase(
         text = stringResource(id = R.string.btn_save),
         onClick = {
-            if (state.nameDeck.isNotEmpty()) onEvent(DeckUiEvent.InsertDeck) else onEvent(
+            if (state.currentDeck.name.isNotEmpty()) onEvent(DeckUiEvent.InsertDeck) else onEvent(
                 DeckUiEvent.ShowSnackbar(UiText.StringResource(R.string.label_emty_fields))
             )
         },

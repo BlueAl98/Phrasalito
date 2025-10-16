@@ -1,6 +1,7 @@
 package com.nayibit.phrasalito_presentation.mappers
 
 import com.nayibit.phrasalito_domain.model.Deck
+import com.nayibit.phrasalito_presentation.model.Language
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUI
 
 fun Deck.toDeckUI(): DeckUI{
@@ -8,9 +9,8 @@ fun Deck.toDeckUI(): DeckUI{
         id = this.id,
         name = this.name,
         maxCards = this.maxCards,
-        lngCode = this.lngCode,
-        languageName = this.languageName,
-        isNotified = this.isNotified
+        isNotified = this.isNotified,
+        selectedLanguage = Language(this.id,this.languageName, this.lngCode)
     )
 }
 
@@ -19,8 +19,8 @@ fun DeckUI.toDeck(): Deck{
         id = this.id,
         name = this.name,
         maxCards = this.maxCards,
-        lngCode = this.lngCode,
-        languageName = this.languageName,
+        lngCode = this.selectedLanguage?.alias ?: "en_US",
+        languageName = this.selectedLanguage?.language ?: "english",
         isNotified = this.isNotified
     )
 }
