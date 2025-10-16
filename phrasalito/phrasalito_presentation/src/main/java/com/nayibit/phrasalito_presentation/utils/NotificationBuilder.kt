@@ -6,16 +6,22 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.nayibit.phrasalito_presentation.R
 
 object NotificationBuilder {
 
-    fun showNotification(context: Context, title: String, message: String) {
-        val notificationId = 1
-
-        val channelId = "worker_channel"
+    fun showNotification(
+        context: Context,
+        phrase: String,
+        translation: String,
+        example: String? = null
+    ) {
+        val notificationId = System.currentTimeMillis().toInt() // Unique ID for each notification
+        val channelId = "phrasal_channel"
 
         // On Android 13+ check POST_NOTIFICATIONS permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -24,7 +30,6 @@ object NotificationBuilder {
                     android.Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                // Permission not granted, skip showing notification
                 Log.w("NotificationBuilder", "Notification permission not granted")
                 return
             }
@@ -33,26 +38,61 @@ object NotificationBuilder {
         // Create notification channel (API 26+)
         val channel = NotificationChannel(
             channelId,
-            "Worker Notifications",
+            "Phrasal Notifications",
             NotificationManager.IMPORTANCE_DEFAULT
         ).apply {
-            description = "Channel for worker notifications"
+            description = "Daily phrase notifications"
+            enableVibration(true)
+            setShowBadge(true)
         }
 
         val notificationManager = context.getSystemService(NotificationManager::class.java)
         notificationManager.createNotificationChannel(channel)
 
-        // Build notification
+        // Create custom layout
+        val customLayout = RemoteViews(context.packageName, R.layout.notification_custom)
+
+        // Set the content
+        customLayout.setTextViewText(R.id.title, phrase)
+        customLayout.setTextViewText(R.id.message, translation)
+
+        // Hide example hint if no example provided
+        if (example.isNullOrEmpty()) {
+            customLayout.setViewVisibility(R.id.example_hint, android.view.View.GONE)
+        }
+
+        // Create an intent for when notification is tapped (optional)
+        // Replace MainActivity::class.java with your actual main activity
+        // val intent = Intent(context, MainActivity::class.java).apply {
+        //     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        //     putExtra("phrase", phrase)
+        //     putExtra("translation", translation)
+        //     putExtra("example", example)
+        // }
+        //
+        // val pendingIntent = PendingIntent.getActivity(
+        //     context,
+        //     notificationId,
+        //     intent,
+        //     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        // )
+
         val builder = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(android.R.drawable.ic_dialog_info) // Replace with app icon
-            .setContentTitle(title)
-            .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setSmallIcon(R.drawable.ic_noti)
+            .setCustomContentView(customLayout)
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+        // .setContentIntent(pendingIntent) // Uncomment if you want to handle taps
 
         // Show notification
         with(NotificationManagerCompat.from(context)) {
             notify(notificationId, builder.build())
         }
+    }
+
+    // Convenience method with your old signature
+    fun showNotification(context: Context, title: String, message: String) {
+        showNotification(context, title, message, null)
     }
 }
