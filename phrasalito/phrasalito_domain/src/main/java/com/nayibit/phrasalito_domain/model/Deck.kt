@@ -5,5 +5,7 @@ data class Deck(
     val name: String,
     val maxCards: Int,
     val lngCode: String,
-    val languageName: String
+    val languageName: String,
+    val isNotified: Boolean = false
 )
+

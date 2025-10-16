@@ -2,7 +2,7 @@ package com.nayibit.phrasalito_data.repository
 
 import com.nayibit.common.util.Resource
 import com.nayibit.phrasalito_data.dao.PhraseDao
-import com.nayibit.phrasalito_data.mapper.toDomain
+import com.nayibit.phrasalito_data.mapper.toPhrase
 import com.nayibit.phrasalito_data.mapper.toEntity
 import com.nayibit.phrasalito_domain.model.Phrase
 import com.nayibit.phrasalito_domain.repository.PhraseRepository
@@ -50,7 +50,7 @@ class PhraseRepositoryImpl @Inject
     }
 
     override suspend fun getById(id: Int): Phrase? {
-        return phraseDao.getById(id)?.toDomain()
+        return phraseDao.getById(id)?.toPhrase()
     }
 
     override suspend fun getAllPhrasesByDeckId(idDeck: Int): Flow<Resource<List<Phrase>>> = flow {
@@ -59,7 +59,7 @@ class PhraseRepositoryImpl @Inject
         try {
             phraseDao.getAllByDeckId(idDeck)
                 .collect { entities ->
-                    val phrases = entities.map { it.toDomain() }
+                    val phrases = entities.map { it.toPhrase() }
                     emit(Resource.Success(phrases))
                 }
 
@@ -68,11 +68,11 @@ class PhraseRepositoryImpl @Inject
     }
 
     override suspend fun getRandomPhrase(): Phrase? {
-        return phraseDao.getAll().map { it.toDomain() }.randomOrNull()
+        return phraseDao.getAll().map { it.toPhrase() }.randomOrNull()
     }
 
     override suspend fun getPhrasesToNotify(): List<Phrase> {
-        return phraseDao.getPhrasesToNotify().map { it.toDomain() }
+        return phraseDao.getPhrasesToNotify().map { it.toPhrase() }
     }
 
     override suspend fun updateIsNotifiedById(id: Int) {
@@ -80,7 +80,7 @@ class PhraseRepositoryImpl @Inject
     }
 
     override suspend fun getAllPhrases(): List<Phrase> {
-        return phraseDao.getAll().map { it.toDomain() }
+        return phraseDao.getAll().map { it.toPhrase() }
     }
 
     override suspend fun resetAllPhrasesToNotify() {

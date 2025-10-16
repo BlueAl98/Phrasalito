@@ -4,9 +4,10 @@ import app.cash.turbine.test
 import com.nayibit.common.util.Resource
 import com.nayibit.phrasalito_data.dao.DeckDao
 import com.nayibit.phrasalito_data.entities.DeckEntity
-import com.nayibit.phrasalito_data.mapper.toDomain
+import com.nayibit.phrasalito_data.mapper.toDeck
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.`when`
@@ -29,7 +30,7 @@ class DeckRepositoryImplTest {
 
         //given
         val deckEntity = DeckEntity(name = "Test", maxCards = 10, lngCode = "en", languageName = "English")
-        val deckDomain = deckEntity.toDomain()
+        val deckDomain = deckEntity.toDeck()
 
         `when`(deckDao.insert(deckEntity)).thenReturn(Unit)
 
@@ -54,7 +55,7 @@ class DeckRepositoryImplTest {
 
         //given
         val deckEntity = DeckEntity(name = "Test", maxCards = 10, lngCode = "en", languageName = "English")
-        val deckDomain = deckEntity.toDomain()
+        val deckDomain = deckEntity.toDeck()
         val errorExpected = "Error to insert"
 
         `when`(deckDao.insert(deckEntity)).thenThrow(RuntimeException(errorExpected))

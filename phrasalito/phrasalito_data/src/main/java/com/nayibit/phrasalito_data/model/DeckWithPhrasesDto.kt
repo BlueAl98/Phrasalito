@@ -4,9 +4,8 @@ import androidx.room.Embedded
 import androidx.room.Relation
 import com.nayibit.phrasalito_data.entities.DeckEntity
 import com.nayibit.phrasalito_data.entities.PhraseEntity
-import com.nayibit.phrasalito_domain.model.Deck
 
-data class DeckWithPhrases(
+data class DeckWithPhrasesDto(
     @Embedded val deck: DeckEntity,
     @Relation(
         parentColumn = "id",

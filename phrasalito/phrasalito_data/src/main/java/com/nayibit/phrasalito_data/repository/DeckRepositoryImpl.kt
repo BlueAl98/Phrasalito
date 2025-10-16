@@ -3,8 +3,10 @@ package com.nayibit.phrasalito_data.repository
 import com.nayibit.common.util.Resource
 import com.nayibit.phrasalito_data.dao.DeckDao
 import com.nayibit.phrasalito_data.mapper.toDomain
+import com.nayibit.phrasalito_data.mapper.toPhrase
 import com.nayibit.phrasalito_data.mapper.toEntity
 import com.nayibit.phrasalito_domain.model.Deck
+import com.nayibit.phrasalito_domain.model.DeckWithPhrases
 import com.nayibit.phrasalito_domain.repository.DeckRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -31,7 +33,7 @@ class DeckRepositoryImpl
         try {
             deckDao.getDecksWithPhrases()
                 .collect { entities ->
-                    val decks = entities.map { it.toDomain() }
+                    val decks = entities.map { it.toPhrase() }
                     emit(Resource.Success(decks))
                 }
         }catch (e: Exception){
@@ -54,6 +56,15 @@ class DeckRepositoryImpl
             deckDao.updateDeck(deck.toEntity())
             return Resource.Success(Unit)
         }catch (e : Exception){
+            return Resource.Error(e.localizedMessage ?: "Unknown error")
+        }
+    }
+
+    override suspend fun getPhrasesForNotification(): Resource<List<DeckWithPhrases?>> {
+        try {
+           val deckWithPhrases = deckDao.getPhrasesForNotification().map { it?.toDomain() }
+            return Resource.Success(deckWithPhrases)
+        }catch (e: Exception){
             return Resource.Error(e.localizedMessage ?: "Unknown error")
         }
     }

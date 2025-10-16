@@ -8,7 +8,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.nayibit.phrasalito_data.entities.DeckEntity
-import com.nayibit.phrasalito_data.model.DeckWithPhrases
+import com.nayibit.phrasalito_data.model.DeckWithPhrasesDto
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -22,9 +22,13 @@ interface DeckDao {
 
      @Transaction
      @Query("SELECT * FROM decks")
-      fun getDecksWithPhrases(): Flow<List<DeckWithPhrases>>
+      fun getDecksWithPhrases(): Flow<List<DeckWithPhrasesDto>>
 
-      @Delete
+      @Transaction
+      @Query("SELECT * FROM decks WHERE isNotified = 1")
+       fun getPhrasesForNotification(): List<DeckWithPhrasesDto?>
+
+     @Delete
      suspend fun deleteDeck(deck: DeckEntity)
 
       @Update

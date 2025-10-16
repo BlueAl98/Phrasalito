@@ -2,7 +2,6 @@ package com.nayibit.phrasalito_data.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.nayibit.phrasalito_domain.model.Deck
 
 @Entity(tableName = "decks")
 data class DeckEntity(
@@ -11,7 +10,8 @@ data class DeckEntity(
     val name: String,
     val maxCards: Int,
     val lngCode: String,
-    val languageName: String
+    val languageName: String,
+    val isNotified: Boolean = false
 )
 
 
