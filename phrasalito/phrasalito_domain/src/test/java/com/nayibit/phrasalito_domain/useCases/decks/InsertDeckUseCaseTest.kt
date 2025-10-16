@@ -27,7 +27,7 @@ class InsertDeckUseCaseTest {
     @Test
     fun `insert deck successfully`()  = runBlocking {
 
-        val deck = Deck(name = "Test", maxCards = 10)
+        val deck = Deck(name = "Test", maxCards = 10, lngCode = "en", languageName = "English")
 
         `when`(deckRepository.insert(deck)).thenReturn(flowOf(Resource.Success(deck)))
 
@@ -40,7 +40,7 @@ class InsertDeckUseCaseTest {
     }
   @Test
   fun `insert deck failure`()  = runBlocking {
-      val deck = Deck(name = "Test", maxCards = 10)
+      val deck = Deck(name = "Test", maxCards = 10, lngCode = "en", languageName = "English")
       val errorExpected = "Error to insert"
 
       `when`(deckRepository.insert(deck)).thenReturn(flowOf(Resource.Error(errorExpected)))

@@ -28,7 +28,7 @@ class DeckRepositoryImplTest {
     fun `insert deck successfully`() = runBlocking  {
 
         //given
-        val deckEntity = DeckEntity(name = "Test", maxCards = 10)
+        val deckEntity = DeckEntity(name = "Test", maxCards = 10, lngCode = "en", languageName = "English")
         val deckDomain = deckEntity.toDomain()
 
         `when`(deckDao.insert(deckEntity)).thenReturn(Unit)
@@ -53,7 +53,7 @@ class DeckRepositoryImplTest {
     fun `insert deck failure`() = runBlocking  {
 
         //given
-        val deckEntity = DeckEntity(name = "Test", maxCards = 10)
+        val deckEntity = DeckEntity(name = "Test", maxCards = 10, lngCode = "en", languageName = "English")
         val deckDomain = deckEntity.toDomain()
         val errorExpected = "Error to insert"
 
