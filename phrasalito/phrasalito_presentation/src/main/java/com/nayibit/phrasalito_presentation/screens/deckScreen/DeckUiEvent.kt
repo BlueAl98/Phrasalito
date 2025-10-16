@@ -13,11 +13,12 @@ sealed class DeckUiEvent {
     data class UpdateTextFieldInsert(val text: String) : DeckUiEvent()
     data class UpdateTextFieldUpdate(val text: String) : DeckUiEvent()
     data class DeleteDeck(val id: Int) : DeckUiEvent()
-    data class UpdateDeck(val id: Int, val nameDeck: String = ""): DeckUiEvent()
+    object  UpdateDeck: DeckUiEvent()
     data class UpdateDeckList(val idDeck: Int, val isSwiped: Boolean): DeckUiEvent()
     object ResetAllSwiped : DeckUiEvent()
     data class ShowSnackbar(val message: UiText) : DeckUiEvent()
     data class OnLanguageSelected(val language: Language): DeckUiEvent()
+    data class UpdateNotificationState(val isNotified: Boolean): DeckUiEvent()
 }
 
 

@@ -1,6 +1,5 @@
 package com.nayibit.phrasalito_presentation.screens.deckScreen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.common.util.Resource
@@ -12,6 +11,7 @@ import com.nayibit.phrasalito_domain.useCases.decks.InsertDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.UpdateDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.GetAvailableLanguagesUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.IsTextSpeechReadyUseCase
+import com.nayibit.phrasalito_presentation.mappers.toDeck
 import com.nayibit.phrasalito_presentation.mappers.toDeckUI
 import com.nayibit.phrasalito_presentation.mappers.toLanguage
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.DeleteDeck
@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -129,10 +128,12 @@ class DeckViewModel @Inject
 
             is DeleteDeck -> deleteDeck(event.id)
 
-            is UpdateDeck -> updateDeck(event.id, event.nameDeck)
+            is UpdateDeck ->{
+                updateDeck(_state.value.currentDeck)
+            }
             is UpdateTextFieldUpdate -> {
                 _state.value = _state.value.copy(
-                    nameDeck = event.text
+                    currentDeck  = _state.value.currentDeck.copy(name = event.text)
                 )
             }
 
@@ -161,6 +162,12 @@ class DeckViewModel @Inject
                     selectedLanguage = event.language
                 )
             }
+
+            is DeckUiEvent.UpdateNotificationState -> {
+                _state.value = _state.value.copy(
+                    currentDeck = _state.value.currentDeck.copy(isNotified = event.isNotified)
+                )
+            }
         }
     }
 
@@ -175,13 +182,10 @@ class DeckViewModel @Inject
     }
 
     fun updateDeck(
-        id: Int,
-        name: String,
-        lngCode: String = "en_US",
-        languageName: String = "english"
+       deckUI: DeckUI
     ) {
         viewModelScope.launch {
-            val result = updateDeckUseCase(id, name, lngCode, languageName)
+            val result = updateDeckUseCase(deckUI.toDeck())
             when (result) {
                 is Resource.Error -> {
                     _state.value = _state.value.copy(

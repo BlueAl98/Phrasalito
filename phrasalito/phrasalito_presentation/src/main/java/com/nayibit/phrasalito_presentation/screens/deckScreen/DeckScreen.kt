@@ -13,8 +13,12 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -30,11 +34,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.nayibit.common.util.UiText
 import com.nayibit.common.util.asString
@@ -44,6 +50,7 @@ import com.nayibit.phrasalito_presentation.composables.ButtonBase
 import com.nayibit.phrasalito_presentation.composables.LanguageDropdownMenu
 import com.nayibit.phrasalito_presentation.composables.LoadingScreen
 import com.nayibit.phrasalito_presentation.composables.SwipeableDeckItem
+import com.nayibit.phrasalito_presentation.composables.SwitchBase
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
 import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
 import kotlinx.coroutines.flow.Flow
@@ -244,14 +251,27 @@ fun BodyModalUpdateDeck(
     Text(text = stringResource(R.string.title_update_deck))
 
     TextFieldBase(
-        value = state.nameDeck,
+        value = state.currentDeck.name,
         onValueChange = { onEvent(DeckUiEvent.UpdateTextFieldUpdate(it))},
         label = stringResource(R.string.label_deck)
     )
 
+    Row (modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+        ){
+        SwitchBase(
+            checked = state.currentDeck.isNotified,
+            onCheckedChange = { onEvent(DeckUiEvent.UpdateNotificationState(it))}
+        )
+
+        Spacer(modifier = modifier.size(6.dp))
+
+        Text(text = "Activar notificationes")
+    }
+
     ButtonBase(
         text = stringResource(R.string.btn_update),
-        onClick = { onEvent(DeckUiEvent.UpdateDeck(state.currentDeck.id, state.nameDeck))},
+        onClick = { onEvent(DeckUiEvent.UpdateDeck)},
         loading = state.isLoadingButton
     )
     ButtonBase(

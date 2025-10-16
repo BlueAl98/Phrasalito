@@ -24,7 +24,8 @@ data class DeckUI(
     val maxCards: Int = 0,
     val isSwiped: Boolean = false,
     val lngCode: String = "en_US",
-    val languageName: String = "english"
+    val languageName: String = "english",
+    val isNotified: Boolean = false
 )
 
 enum class BodyDeckModalEnum() {

@@ -9,6 +9,18 @@ fun Deck.toDeckUI(): DeckUI{
         name = this.name,
         maxCards = this.maxCards,
         lngCode = this.lngCode,
-        languageName = this.languageName
+        languageName = this.languageName,
+        isNotified = this.isNotified
+    )
+}
+
+fun DeckUI.toDeck(): Deck{
+    return Deck(
+        id = this.id,
+        name = this.name,
+        maxCards = this.maxCards,
+        lngCode = this.lngCode,
+        languageName = this.languageName,
+        isNotified = this.isNotified
     )
 }

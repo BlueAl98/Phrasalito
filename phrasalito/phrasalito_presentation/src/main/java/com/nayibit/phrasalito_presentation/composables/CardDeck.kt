@@ -27,6 +27,8 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -50,7 +52,6 @@ import androidx.wear.compose.material.ExperimentalWearMaterialApi
 import androidx.wear.compose.material.FractionalThreshold
 import androidx.wear.compose.material.rememberSwipeableState
 import androidx.wear.compose.material.swipeable
-import com.nayibit.phrasalito_domain.model.Deck
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUI
 import com.nayibit.phrasalito_presentation.ui.theme.badgeComplete
 import com.nayibit.phrasalito_presentation.ui.theme.badgeNew
@@ -138,11 +139,14 @@ fun SwipeableDeckItem(
             title = deck.name,
             currentCards = deck.maxCards,
             totalCards = 10,
-            onClickToTest = { onClick(deck) }
+            onClickToTest = { onClick(deck) },
+            isNotified = deck.isNotified,
+            bottomRightText = deck.languageName
         )
     }
 
 }
+
 
 
 @Composable
@@ -153,7 +157,9 @@ fun CardDeck(
     totalCards: Int,
     icon: ImageVector = Icons.Default.Star,
     badgeType: DeckBadgeType = DeckBadgeType.NONE,
-    onClickToTest: () -> Unit
+    onClickToTest: () -> Unit,
+    isNotified: Boolean = false,
+    bottomRightText: String? = null,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -187,9 +193,9 @@ fun CardDeck(
                 onClick = onClickToTest
             ),
         shape = RoundedCornerShape(20.dp)
-
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
+
             // Left gradient border
             Box(
                 modifier = Modifier
@@ -206,7 +212,7 @@ fun CardDeck(
                     .align(Alignment.CenterStart)
             )
 
-            // Badge
+            // Existing badge (unchanged)
             if (badgeType != DeckBadgeType.NONE) {
                 DeckBadge(
                     type = badgeType,
@@ -215,6 +221,16 @@ fun CardDeck(
                         .padding(12.dp)
                 )
             }
+
+                Icon(
+                    imageVector = if (isNotified) Icons.Outlined.Notifications else Icons.Outlined.NotificationsOff,
+                    contentDescription = if (isNotified) "Notifications On" else "Notifications Off",
+                    tint = if (isNotified) primaryGradientStart else Color.Gray.copy(alpha = 0.7f),
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 12.dp, end = 12.dp)
+                        .size(22.dp))
+
 
             // Card content
             Row(
@@ -225,9 +241,7 @@ fun CardDeck(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // Icon
-                DeckIcon(
-                    icon = icon
-                )
+                DeckIcon(icon = icon)
 
                 // Content
                 Column(
@@ -248,9 +262,23 @@ fun CardDeck(
                     )
                 }
             }
+
+            // 🆕 Small text bottom-right
+            if (!bottomRightText.isNullOrEmpty()) {
+                Text(
+                    text = bottomRightText,
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(end = 12.dp, bottom = 8.dp)
+                )
+            }
         }
     }
 }
+
+
 
 @Composable
 private fun DeckIcon(
