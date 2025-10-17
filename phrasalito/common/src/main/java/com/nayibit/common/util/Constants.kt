@@ -8,4 +8,5 @@ object Constants {
     val LIST_OF_LANGUAGES = listOf<String>(
        "en", "es", "fr", "de", "zh", "ja", "ru", "pt", "ar","hi", "it")
     const val NUM_OF_LANGUAGES = 11
+    const val MAX_NUMBER_OF_CARDS_PER_DECK = 50
 }

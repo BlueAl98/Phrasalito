@@ -5,7 +5,7 @@ import com.nayibit.phrasalito_presentation.model.Language
 
 sealed class DeckUiEvent {
     data class ShowToast(val message: UiText) : DeckUiEvent()
-    data class ShowModal(val type: BodyDeckModalEnum,val deck: DeckUI = DeckUI(name = "", maxCards = 0)) : DeckUiEvent()
+    data class ShowModal(val type: BodyDeckModalEnum,val deck: DeckUI = DeckUI(name = "", numCards = 0)) : DeckUiEvent()
     object DismissModal : DeckUiEvent()
     object InsertDeck : DeckUiEvent()
     data class OpenPrompt(val url: String = "", val prompt: String = "") : DeckUiEvent()

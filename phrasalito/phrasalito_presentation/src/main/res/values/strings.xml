@@ -17,6 +17,10 @@
     <string name="label_deck">Deck</string>
     <string name="title_update_deck">Estas seguro de actualizar este deck?</string>
     <string name="title_delete_deck">Estas seguro de eliminar </string>
+    <string name="label_empty_deck_name">Ingrese un nombre para el deck</string>
+    <string name="label_choose_language">Elige un idioma</string>
+
+
 
 
     <!-- PhraseScreen Strings -->

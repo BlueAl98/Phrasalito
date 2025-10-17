@@ -20,7 +20,7 @@ fun Deck.toEntity(): DeckEntity {
     return DeckEntity(
         id = id,
         name = name,
-        maxCards = maxCards,
+     //   maxCards = maxCards,
         lngCode = lngCode ,
         languageName = languageName,
         isNotified = isNotified
@@ -31,10 +31,11 @@ fun DeckWithPhrasesDto.toPhrase(): Deck {
    return Deck(
         id = deck.id,
         name = deck.name,
-        maxCards = phrases.size,
+        maxCards = deck.maxCards,
         lngCode = deck.lngCode ,
         languageName = deck.languageName,
-        isNotified = deck.isNotified
+        isNotified = deck.isNotified,
+        currentCards = phrases.size
        )
 }
 

@@ -42,7 +42,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import com.nayibit.common.util.UiText
 import com.nayibit.common.util.asString
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.BaseDialog
@@ -52,6 +51,7 @@ import com.nayibit.phrasalito_presentation.composables.LoadingScreen
 import com.nayibit.phrasalito_presentation.composables.SwipeableDeckItem
 import com.nayibit.phrasalito_presentation.composables.SwitchBase
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
+import com.nayibit.phrasalito_presentation.composables.isLandscape
 import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
 import kotlinx.coroutines.flow.Flow
 
@@ -221,7 +221,7 @@ fun BodyModalInsertDeck(
         onLanguageSelected = { language ->
            onEvent(DeckUiEvent.OnLanguageSelected(language))
         },
-        label = "Choose Language",
+        label = "Idiomas disponibles voz",
         showAlias = true
     )
 
@@ -238,23 +238,40 @@ fun BodyModalInsertDeck(
         Text(text = "Activar notificationes")
     }
 
-
-    ButtonBase(
-        text = stringResource(id = R.string.btn_save),
-        onClick = {
-            if (state.currentDeck.name.isNotEmpty()) onEvent(DeckUiEvent.InsertDeck) else onEvent(
-                DeckUiEvent.ShowSnackbar(UiText.StringResource(R.string.label_emty_fields))
-            )
-        },
-        loading = state.isLoadingButton
-    )
-    ButtonBase(
-        text = stringResource(id = R.string.btn_cancel),
-        onClick = { onEvent(DeckUiEvent.DismissModal) },
-        enabled = !state.isLoadingButton
-    )
-
+ if (isLandscape()){
+     Row  {
+         ButtonBase(
+             modifier = modifier.weight(0.45f),
+             text = stringResource(id = R.string.btn_save),
+             onClick = {
+                 onEvent(DeckUiEvent.InsertDeck)
+             },
+             loading = state.isLoadingButton
+         )
+         Spacer(modifier.weight(0.05f))
+         ButtonBase(
+             modifier = modifier.weight(0.45f),
+             text = stringResource(id = R.string.btn_cancel),
+             onClick = { onEvent(DeckUiEvent.DismissModal) },
+             enabled = !state.isLoadingButton
+         )
+     }
+ }else {
+     ButtonBase(
+         text = stringResource(id = R.string.btn_save),
+         onClick = {
+             onEvent(DeckUiEvent.InsertDeck)
+         },
+         loading = state.isLoadingButton
+     )
+     ButtonBase(
+         text = stringResource(id = R.string.btn_cancel),
+         onClick = { onEvent(DeckUiEvent.DismissModal) },
+         enabled = !state.isLoadingButton
+     )
+ }
 }
+
 
 @Composable
 fun BodyModalUpdateDeck(
@@ -271,6 +288,16 @@ fun BodyModalUpdateDeck(
         label = stringResource(R.string.label_deck)
     )
 
+    LanguageDropdownMenu(
+        languages = state.listLanguages,
+        selectedLanguage = state.currentDeck.selectedLanguage,
+        onLanguageSelected = { language ->
+            onEvent(DeckUiEvent.OnLanguageSelected(language))
+        },
+        label = "Idiomas disponibles voz",
+        showAlias = true
+    )
+
     Row (modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
         ){
@@ -284,16 +311,35 @@ fun BodyModalUpdateDeck(
         Text(text = "Activar notificationes")
     }
 
-    ButtonBase(
-        text = stringResource(R.string.btn_update),
-        onClick = { onEvent(DeckUiEvent.UpdateDeck)},
-        loading = state.isLoadingButton
-    )
-    ButtonBase(
-        text = stringResource(R.string.btn_cancel),
-        onClick = { onEvent(DeckUiEvent.DismissModal) },
-        enabled = !state.isLoadingButton
-    )
+    if (isLandscape()) {
+        Row {
+            ButtonBase(
+                modifier = modifier.weight(0.45f),
+                text = stringResource(R.string.btn_update),
+                onClick = { onEvent(DeckUiEvent.UpdateDeck) },
+                loading = state.isLoadingButton
+            )
+            Spacer(modifier.weight(0.05f))
+            ButtonBase(
+                modifier = modifier.weight(0.45f),
+                text = stringResource(R.string.btn_cancel),
+                onClick = { onEvent(DeckUiEvent.DismissModal) },
+                enabled = !state.isLoadingButton
+            )
+
+        }
+    }else {
+        ButtonBase(
+            text = stringResource(R.string.btn_update),
+            onClick = { onEvent(DeckUiEvent.UpdateDeck) },
+            loading = state.isLoadingButton
+        )
+        ButtonBase(
+            text = stringResource(R.string.btn_cancel),
+            onClick = { onEvent(DeckUiEvent.DismissModal) },
+            enabled = !state.isLoadingButton
+        )
+    }
 
 }
 

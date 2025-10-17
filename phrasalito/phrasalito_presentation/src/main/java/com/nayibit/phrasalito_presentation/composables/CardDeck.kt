@@ -137,8 +137,8 @@ fun SwipeableDeckItem(
                 .padding(10.dp)
             ,
             title = deck.name,
-            currentCards = deck.maxCards,
-            totalCards = 10,
+            currentCards = deck.numCards,
+            totalCards = deck.maxCards,
             onClickToTest = { onClick(deck) },
             isNotified = deck.isNotified,
             bottomRightText = deck.selectedLanguage?.language

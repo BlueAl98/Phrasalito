@@ -11,6 +11,7 @@ import com.nayibit.phrasalito_domain.useCases.decks.InsertDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.UpdateDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.GetAvailableLanguagesUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.IsTextSpeechReadyUseCase
+import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.mappers.toDeck
 import com.nayibit.phrasalito_presentation.mappers.toDeckUI
 import com.nayibit.phrasalito_presentation.mappers.toLanguage
@@ -28,6 +29,7 @@ import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.Update
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.UpdateTextFieldInsert
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.UpdateTextFieldUpdate
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -69,16 +71,13 @@ class DeckViewModel @Inject
                 _state.value = _state.value.copy(
                     showModal = true,
                     bodyModal = event.type,
-                    currentDeck = event.deck,
-                    nameDeck = event.deck.name
-                )
+                    currentDeck = event.deck)
             }
 
             is DismissModal -> {
                 _state.value = _state.value.copy(
                     showModal = false,
                     isLoadingButton = false,
-                    nameDeck = "",
                     decks = _state.value.decks.map { it.copy(isSwiped = false) },
                     currentDeck = DeckUI()
                 )
@@ -97,7 +96,22 @@ class DeckViewModel @Inject
             }
 
             is InsertDeck -> {
-                insertDeck(_state.value.currentDeck.toDeck())
+                when{
+                    _state.value.currentDeck.name.isEmpty() -> {
+                        viewModelScope.launch {
+                            _eventFlow.emit(ShowSnackbar(UiText.StringResource(R.string.label_empty_deck_name)))
+                        }
+                    }
+                    _state.value.currentDeck.selectedLanguage == null -> {
+                        viewModelScope.launch {
+                            _eventFlow.emit(ShowSnackbar(UiText.StringResource(R.string.label_choose_language)))
+                        }
+                    }
+                    else -> {
+                        insertDeck(_state.value.currentDeck.toDeck())
+                    }
+                }
+
             }
 
             is NavigationToPhrases -> {
@@ -124,7 +138,22 @@ class DeckViewModel @Inject
             is DeleteDeck -> deleteDeck(event.id)
 
             is UpdateDeck ->{
-                updateDeck(_state.value.currentDeck)
+
+                when{
+                    _state.value.currentDeck.name.isEmpty() -> {
+                        viewModelScope.launch {
+                            _eventFlow.emit(ShowSnackbar(UiText.StringResource(R.string.label_empty_deck_name)))
+                        }
+                    }
+                    _state.value.currentDeck.selectedLanguage == null -> {
+                        viewModelScope.launch {
+                            _eventFlow.emit(ShowSnackbar(UiText.StringResource(R.string.label_choose_language)))
+                        }
+                    }
+                    else -> {
+                        updateDeck(_state.value.currentDeck)
+                    }
+                }
             }
             is UpdateTextFieldUpdate -> {
                 _state.value = _state.value.copy(
@@ -244,9 +273,7 @@ class DeckViewModel @Inject
                             successInsertedDeck = result.data.toDeckUI(),
                             errorMessage = null,
                             showModal = false,
-                            isLoadingButton = false,
-                            nameDeck = ""
-                        )
+                            isLoadingButton = false)
                         _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Deck inserted successfully")))
                     }
 
@@ -255,8 +282,7 @@ class DeckViewModel @Inject
                             isLoading = false,
                             errorMessage = result.message,
                             showModal = false,
-                            isLoadingButton = false,
-                            nameDeck = ""
+                            isLoadingButton = false
                         )
                         _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Error: ${result.message}")))
                     }
@@ -296,6 +322,7 @@ class DeckViewModel @Inject
 
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun getAvailableLanguages() {
         viewModelScope.launch {
             isTextSpeechReadyUseCase()
@@ -307,7 +334,7 @@ class DeckViewModel @Inject
                         }
                         is Resource.Error -> {
                             // Emit an error flow instead of calling getAvailableLanguagesUseCase
-                            flowOf(Resource.Error(result.message ?: "TTS not ready"))
+                            flowOf(Resource.Error(result.message))
                         }
                         else -> {
                             flowOf(Resource.Loading)
