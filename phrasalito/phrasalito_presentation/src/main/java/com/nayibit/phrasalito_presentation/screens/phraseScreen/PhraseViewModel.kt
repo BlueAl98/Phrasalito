@@ -7,6 +7,7 @@ import com.nayibit.common.util.Resource
 import com.nayibit.common.util.UiText.DynamicString
 import com.nayibit.common.util.UiText.StringResource
 import com.nayibit.common.util.normalizeSpaces
+import com.nayibit.common.util.removeLonelySigns
 import com.nayibit.phrasalito_domain.model.Phrase
 import com.nayibit.phrasalito_domain.useCases.phrases.DeletebyIdPhraseUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesByDeckUseCase
@@ -82,14 +83,15 @@ class PhraseViewModel
             }
 
             InsertPhrase -> { viewModelScope.launch {
-                _state.update { it.copy(bodyModal = BodyModalEnum.BODY_INSERT_PHRASE) }
+                _state.update { it.copy(bodyModal = BodyModalEnum.BODY_INSERT_PHRASE,
+                    firstPhrase = _state.value.firstPhrase.removeLonelySigns()) }
 
                 val result = validateExample(_state.value.firstPhrase, _state.value.example)
 
                 when (result) {
                     ValidateExampleResult.IS_VALID -> {
                         insertPhrase(Phrase(
-                            targetLanguage = _state.value.firstPhrase.normalizeSpaces(),
+                            targetLanguage = _state.value.firstPhrase,
                             translation = _state.value.translation.normalizeSpaces(),
                             deckId = idDeck ?: -1,
                             example = _state.value.example.normalizeSpaces()
@@ -120,6 +122,7 @@ class PhraseViewModel
             }
 
             is UpdateTextFirstPhrase -> {
+
                 _state.update { it.copy(firstPhrase = event.text) }
             }
             is UpdateTextTraslation -> {
@@ -188,6 +191,7 @@ class PhraseViewModel
             }
 
             is ShowModal -> {
+
                 _state.update { it.copy(showModal = true,
                     bodyModal = event.type,
                     firstPhrase = event.phraseUi?.targetLanguage ?: "",
@@ -220,6 +224,10 @@ class PhraseViewModel
             }
         }
     }
+
+
+
+
 
 
     fun insertPhrase(phrase: Phrase){

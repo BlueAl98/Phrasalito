@@ -20,7 +20,7 @@ object NotificationBuilder {
         translation: String,
         example: String? = null
     ) {
-        val notificationId = System.currentTimeMillis().toInt() // Unique ID for each notification
+        val notificationId = 1
         val channelId = "phrasal_channel"
 
         // On Android 13+ check POST_NOTIFICATIONS permission
