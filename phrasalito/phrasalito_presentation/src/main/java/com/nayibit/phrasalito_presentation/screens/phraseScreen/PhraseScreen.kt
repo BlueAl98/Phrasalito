@@ -43,7 +43,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.nayibit.common.util.Constants.NUM_CARDS_FOR_EXAM
 import com.nayibit.common.util.UiText
 import com.nayibit.common.util.asString
 import com.nayibit.phrasalito_presentation.R
@@ -412,7 +411,7 @@ fun AreaStudyCards(
             )
         },enabled = state.phrases.isNotEmpty()),
         IconItem(Icons.Default.Description, "Examen", Color(0xFFFF9800), onClick = {
-            if (state.phrases.size >= NUM_CARDS_FOR_EXAM)
+            if (state.isReadyForTest)
             onEvent(
                 PhraseUiEvent.ShowModal(
                     BodyModalEnum.BODY_START_EXERCISE

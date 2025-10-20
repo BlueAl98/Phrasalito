@@ -54,11 +54,11 @@ class PhraseViewModel
         savedStateHandle: SavedStateHandle
     ) : ViewModel()  {
 
-    val idDeck = savedStateHandle.get<Int>("idDeck")
+    val idDeck = savedStateHandle.get<Int>("idDeck") ?: -1
     val lngCode = savedStateHandle.get<String>("lngCode") ?: "en_US"
 
     private val _state = MutableStateFlow(PhraseStateUi(
-        idDeck = idDeck ?: 0
+        idDeck = idDeck
     ))
     val state: StateFlow<PhraseStateUi> = _state.asStateFlow()
 
@@ -66,7 +66,7 @@ class PhraseViewModel
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-         getAllPhrases(idDeck ?: -1)
+         getAllPhrases(idDeck)
      }
 
     fun onEvent(event: PhraseUiEvent) {
@@ -93,7 +93,7 @@ class PhraseViewModel
                         insertPhrase(Phrase(
                             targetLanguage = _state.value.firstPhrase,
                             translation = _state.value.translation.normalizeSpaces(),
-                            deckId = idDeck ?: -1,
+                            deckId = idDeck,
                             example = _state.value.example.normalizeSpaces()
                         ))
                     }
@@ -171,7 +171,7 @@ class PhraseViewModel
                                 targetLanguage = _state.value.firstPhrase.normalizeSpaces(),
                                 translation = _state.value.translation.normalizeSpaces(),
                                 example = _state.value.example.normalizeSpaces(),
-                                deckId = idDeck ?: -1
+                                deckId = idDeck
                             ))
                     }
                     ValidateExampleResult.EXAMPLE_NOT_CONTAINS_PHRASE -> {

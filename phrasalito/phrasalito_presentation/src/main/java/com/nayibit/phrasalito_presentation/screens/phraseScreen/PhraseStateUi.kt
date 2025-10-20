@@ -1,6 +1,7 @@
 package com.nayibit.phrasalito_presentation.screens.phraseScreen
 
 import androidx.compose.ui.graphics.Color
+import com.nayibit.common.util.Constants.NUM_CARDS_FOR_EXAM
 import com.nayibit.phrasalito_domain.model.Deck
 
 data class PhraseStateUi(
@@ -16,7 +17,12 @@ data class PhraseStateUi(
     val phraseToUpdate: PhraseUi? = null,
     val curentCardPhrase : Int = 0,
     val idDeck: Int = 0
-)
+){
+    val isReadyForTest: Boolean
+        get() = phrases.count {
+            !it.translation.isNullOrBlank() && !it.example.isNullOrBlank()
+        } >= NUM_CARDS_FOR_EXAM
+}
 
 data class PhraseUi(
     val id: Int,
