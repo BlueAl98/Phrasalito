@@ -9,7 +9,7 @@ fun Phrase.toPhraseUi(): PhraseUi {
         targetLanguage = this.targetLanguage,
         translation = this.translation,
         isOptionsRevealed = false,
-        example = this.example ?: ""
+        example = this.example
     )
 }
 

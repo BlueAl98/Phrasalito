@@ -416,11 +416,13 @@ fun ExercisePager(
                         .padding(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
+                    state.phrases[state.currentIndex].targetLanguage?.let {
                     HighlightedText(
                         fullText = state.phrases[state.currentIndex].example,
-                        highlightWords = state.phrases[state.currentIndex].targetLanguage.split(" ")
+                        highlightWords = state.phrases[state.currentIndex].targetLanguage!!.split(" ")
                     )
                 }
+                    }
             }
         }
 

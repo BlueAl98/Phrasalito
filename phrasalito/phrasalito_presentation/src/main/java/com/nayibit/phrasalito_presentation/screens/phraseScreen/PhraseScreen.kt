@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Delete
@@ -33,11 +35,14 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.nayibit.common.util.Constants.NUM_CARDS_FOR_EXAM
 import com.nayibit.common.util.UiText
 import com.nayibit.common.util.asString
 import com.nayibit.phrasalito_presentation.R
@@ -162,33 +167,61 @@ fun BodyModalInsertPhrase(
     modifier: Modifier = Modifier,
 ) {
 
+    val focusRequesterPhrase = remember { FocusRequester() }
+    val focusRequesterTranslation = remember { FocusRequester() }
+    val focusRequesterExample = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
+
     TextFieldBase(
         value = state.firstPhrase,
         onValueChange = { onEvent(PhraseUiEvent.UpdateTextFirstPhrase(it)) },
-        label = stringResource(R.string.label_phrase)
+        label = stringResource(R.string.label_phrase),
+        maxChar = 30,
+        textRestriction = true,
+        showCharCounter = true,
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+        keyboardActions = KeyboardActions(
+            onNext = { focusRequesterTranslation.requestFocus() } // 👈 pasa al siguiente
+        ),
+        modifier = modifier
+            .fillMaxWidth()
+            .focusRequester(focusRequesterPhrase)
     )
 
     TextFieldBase(
         value = state.translation,
         onValueChange = { onEvent(PhraseUiEvent.UpdateTextTraslation(it)) },
-        label = stringResource(R.string.label_traduction_phrase)
+        label = stringResource(R.string.label_traduction_phrase),
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+        keyboardActions = KeyboardActions(
+            onNext = { focusRequesterExample.requestFocus() }),
+        modifier = modifier
+            .fillMaxWidth()
+            .focusRequester(focusRequesterTranslation)
     )
 
     TextFieldBase(
         value = state.example,
         onValueChange = { onEvent(PhraseUiEvent.UpdateTextExample(it)) },
-        label = stringResource(R.string.label_example_phrase)
+        label = stringResource(R.string.label_example_phrase),
+        textRestriction = true,
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+        keyboardActions = KeyboardActions(
+            onNext = { focusManager.clearFocus() }),
+        modifier = modifier
+            .fillMaxWidth()
+            .focusRequester(focusRequesterExample)
     )
 
     if (!isLandscape()) {
         ButtonBase(
             text = stringResource(id = R.string.btn_save),
             onClick = {
-                if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(
-                    PhraseUiEvent.InsertPhrase
+                if (state.firstPhrase.isNotEmpty()) onEvent(PhraseUiEvent.InsertPhrase
                 ) else onEvent(
                     PhraseUiEvent.ShowToast(
-                        UiText.StringResource(R.string.label_emty_fields)
+                        UiText.StringResource(R.string.label_target_language)
                     )
                 )
             },
@@ -205,11 +238,10 @@ fun BodyModalInsertPhrase(
                 modifier = modifier.weight(0.45f),
                 text = stringResource(id = R.string.btn_save),
                 onClick = {
-                    if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(
-                        PhraseUiEvent.InsertPhrase
+                    if (state.firstPhrase.isNotEmpty()) onEvent(PhraseUiEvent.InsertPhrase
                     ) else onEvent(
                         PhraseUiEvent.ShowToast(
-                            UiText.StringResource(R.string.label_emty_fields)
+                            UiText.StringResource(R.string.label_target_language)
                         )
                     )
                 },
@@ -234,35 +266,61 @@ fun BodyModalUpdatePhrase(
     onEvent: (PhraseUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+
+    val focusRequesterPhrase = remember { FocusRequester() }
+    val focusRequesterTranslation = remember { FocusRequester() }
+    val focusRequesterExample = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
+
     TextFieldBase(
         value = state.firstPhrase,
         onValueChange = { onEvent(PhraseUiEvent.UpdateTextFirstPhrase(it)) },
-        label = stringResource(R.string.label_phrase)
+        label = stringResource(R.string.label_phrase),
+        maxChar = 30,
+        showCharCounter = true,
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+        keyboardActions = KeyboardActions(
+            onNext = { focusRequesterTranslation.requestFocus() } // 👈 pasa al siguiente
+        ),
+        modifier = modifier
+            .fillMaxWidth()
+            .focusRequester(focusRequesterPhrase)
     )
 
     TextFieldBase(
         value = state.translation,
         onValueChange = { onEvent(PhraseUiEvent.UpdateTextTraslation(it)) },
-        label = stringResource(R.string.label_traduction_phrase)
+        label = stringResource(R.string.label_traduction_phrase),
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+        keyboardActions = KeyboardActions(
+            onNext = { focusRequesterExample.requestFocus() }),
+        modifier = modifier
+            .fillMaxWidth()
+            .focusRequester(focusRequesterTranslation)
     )
-
 
     TextFieldBase(
         value = state.example,
         onValueChange = { onEvent(PhraseUiEvent.UpdateTextExample(it)) },
-        label = stringResource(R.string.label_example_phrase)
+        label = stringResource(R.string.label_example_phrase),
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+        keyboardActions = KeyboardActions(
+            onNext = { focusManager.clearFocus() }),
+        modifier = modifier
+            .fillMaxWidth()
+            .focusRequester(focusRequesterExample)
     )
-
 
     if (!isLandscape()) {
         ButtonBase(
             text = stringResource(id = R.string.btn_update),
             onClick = {
-                if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(
+                if (state.firstPhrase.isNotEmpty()) onEvent(
                     PhraseUiEvent.UpdatePhrase(state.phraseToUpdate!!)
                 ) else onEvent(
                     PhraseUiEvent.ShowToast(
-                        UiText.StringResource(R.string.label_emty_fields)
+                        UiText.StringResource(R.string.label_target_language)
                     )
                 )
             },
@@ -279,11 +337,11 @@ fun BodyModalUpdatePhrase(
                 modifier = modifier.weight(0.45f),
                 text = stringResource(id = R.string.btn_update),
                 onClick = {
-                    if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(
+                    if (state.firstPhrase.isNotEmpty()) onEvent(
                         PhraseUiEvent.UpdatePhrase(state.phraseToUpdate!!)
                     ) else onEvent(
                         PhraseUiEvent.ShowToast(
-                            UiText.StringResource(R.string.label_emty_fields)
+                            UiText.StringResource(R.string.label_target_language)
                         )
                     )
                 },
@@ -307,6 +365,8 @@ fun BodyModalDeletePhrase(
     state: PhraseStateUi,
     onEvent: (PhraseUiEvent) -> Unit
 ) {
+
+
     Text(text = stringResource(R.string.title_delete_phrase))
 
     ButtonBase(
@@ -351,7 +411,7 @@ fun AreaStudyCards(
             )
         },enabled = state.phrases.isNotEmpty()),
         IconItem(Icons.Default.Description, "Examen", Color(0xFFFF9800), onClick = {
-            if (state.phrases.size >= NUM_CARDS_FOR_EXAM)
+            if (state.isReadyForTest)
             onEvent(
                 PhraseUiEvent.ShowModal(
                     BodyModalEnum.BODY_START_EXERCISE
@@ -440,11 +500,13 @@ fun AreaStudyCards(
                                 phrase = phrase,
                                 isLandscape = isLandscape(),
                                 onEvent = {
+                                    phrase.example?.let {
                                     onEvent(
                                         PhraseUiEvent.SpeakText(
                                             phrase.example
                                         )
                                     )
+                                }
                                 }
                             )
                         }
@@ -531,11 +593,13 @@ fun AreaStudyCards(
                                 phrase = phrase,
                                 isLandscape = isLandscape(),
                                 onEvent = {
-                                    onEvent(
-                                        PhraseUiEvent.SpeakText(
-                                            phrase.example
+                                    phrase.example?.let {
+                                        onEvent(
+                                            PhraseUiEvent.SpeakText(
+                                                phrase.example
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             )
                         }

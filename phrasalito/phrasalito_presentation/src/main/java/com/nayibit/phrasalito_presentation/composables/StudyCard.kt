@@ -86,84 +86,90 @@ fun LanguagePhraseCard(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Translation with toggle visibility
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .padding(vertical = 8.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f))
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = if (isTranslationVisible) phrase.translation
-                            else "•".repeat(phrase.translation.length.coerceAtLeast(5)),
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Medium
-                            ),
-                            color = Color.DarkGray,
-                            modifier = Modifier.weight(1f)
-                        )
 
-                        IconButton(
-                            onClick = { isTranslationVisible = !isTranslationVisible }
+                phrase.translation?.let {
+                    if (phrase.translation.isNotEmpty()) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth(0.9f)
+                                .padding(vertical = 8.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f))
                         ) {
-                            Icon(
-                                imageVector = if (isTranslationVisible) Icons.Default.Visibility
-                                else Icons.Default.VisibilityOff,
-                                contentDescription = if (isTranslationVisible) "Hide translation"
-                                else "Show translation",
-                                tint = phrase.color
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = if (isTranslationVisible) phrase.translation
+                                    else "•".repeat(phrase.translation.length.coerceAtLeast(5)),
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Medium
+                                    ),
+                                    color = Color.DarkGray,
+                                    modifier = Modifier.weight(1f)
+                                )
+
+                                IconButton(
+                                    onClick = { isTranslationVisible = !isTranslationVisible }
+                                ) {
+                                    Icon(
+                                        imageVector = if (isTranslationVisible) Icons.Default.Visibility
+                                        else Icons.Default.VisibilityOff,
+                                        contentDescription = if (isTranslationVisible) "Hide translation"
+                                        else "Show translation",
+                                        tint = phrase.color
+                                    )
+                                }
+                            }
                         }
                     }
                 }
-
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Example section
-                if (phrase.example.isNotEmpty()) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .padding(vertical = 8.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.8f))
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp)
+                phrase.example?.let {
+                    if (phrase.example.isNotEmpty()) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth(0.9f)
+                                .padding(vertical = 8.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.8f))
                         ) {
-                            Row {
+                            Column(
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Row {
+                                    Text(
+                                        text = "Example:",
+                                        style = MaterialTheme.typography.titleSmall.copy(
+                                            fontWeight = FontWeight.Bold
+                                        ),
+                                        color = phrase.color
+                                    )
+                                    Spacer(modifier = Modifier.weight(1f))
+
+                                    Icon(
+                                        modifier = Modifier.clickable { onEvent() },
+                                        imageVector = Icons.Default.PlayArrow,
+                                        contentDescription = "Play",
+                                        tint = phrase.color
+                                    )
+
+
+                                }
                                 Text(
-                                    text = "Example:",
-                                    style = MaterialTheme.typography.titleSmall.copy(
-                                        fontWeight = FontWeight.Bold
-                                    ),
-                                    color = phrase.color
+                                    text = phrase.example,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.DarkGray,
+                                    textAlign = TextAlign.Start
                                 )
-                                Spacer(modifier = Modifier.weight(1f))
-
-                                Icon(
-                                    modifier = Modifier.clickable { onEvent() },
-                                    imageVector = Icons.Default.PlayArrow,
-                                    contentDescription = "Play",
-                                    tint = phrase.color
-                                )
-
-
                             }
-                            Text(
-                                text = phrase.example,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.DarkGray,
-                                textAlign = TextAlign.Start
-                            )
                         }
                     }
                 }
@@ -233,79 +239,92 @@ fun LanguagePhraseCardLandscape(
                     verticalArrangement = Arrangement.Center
                 ) {
                     // Translation Card
-                    Card(
-                        modifier = Modifier.fillMaxWidth(0.95f),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f))
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = if (isTranslationVisible) phrase.translation
-                                else "•".repeat(phrase.translation.length.coerceAtLeast(5)),
-                                style = MaterialTheme.typography.bodyLarge.copy(
-                                    fontSize = 16.sp
-                                ),
-                                color = Color.DarkGray,
-                                modifier = Modifier.weight(1f)
-                            )
-
-                            IconButton(
-                                onClick = { isTranslationVisible = !isTranslationVisible }
-                            ) {
-                                Icon(
-                                    imageVector = if (isTranslationVisible) Icons.Default.Visibility
-                                    else Icons.Default.VisibilityOff,
-                                    contentDescription = if (isTranslationVisible) "Hide translation"
-                                    else "Show translation",
-                                    tint = phrase.color
+                    phrase.translation?.let {
+                        if (phrase.translation.isNotEmpty()) {
+                            Card(
+                                modifier = Modifier.fillMaxWidth(0.95f),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White.copy(
+                                        alpha = 0.9f
+                                    )
                                 )
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = if (isTranslationVisible) phrase.translation
+                                        else "•".repeat(phrase.translation.length.coerceAtLeast(5)),
+                                        style = MaterialTheme.typography.bodyLarge.copy(
+                                            fontSize = 16.sp
+                                        ),
+                                        color = Color.DarkGray,
+                                        modifier = Modifier.weight(1f)
+                                    )
+
+                                    IconButton(
+                                        onClick = { isTranslationVisible = !isTranslationVisible }
+                                    ) {
+                                        Icon(
+                                            imageVector = if (isTranslationVisible) Icons.Default.Visibility
+                                            else Icons.Default.VisibilityOff,
+                                            contentDescription = if (isTranslationVisible) "Hide translation"
+                                            else "Show translation",
+                                            tint = phrase.color
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
-
                     Spacer(modifier = Modifier.height(12.dp))
 
                     // Example Card
-                    if (phrase.example.isNotEmpty()) {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(0.95f),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.8f))
-                        ) {
-                            Column(
-                                modifier = Modifier.fillMaxWidth().padding(12.dp)
-                            ) {
-                                Row {
-                                    Text(
-                                        text = "Example:",
-                                        style = MaterialTheme.typography.titleSmall.copy(
-                                            fontWeight = FontWeight.Bold
-                                        ),
-                                        color = phrase.color
+                    phrase.example?.let {
+                        if (phrase.example.isNotEmpty()) {
+                            Card(
+                                modifier = Modifier.fillMaxWidth(0.95f),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White.copy(
+                                        alpha = 0.8f
                                     )
-                                    Spacer(modifier = Modifier.weight(1f))
-
-                                       Icon(
-                                           modifier = Modifier.clickable { onEvent() },
-                                           imageVector = Icons.Default.PlayArrow,
-                                           contentDescription = "Play",
-                                           tint = phrase.color
-                                       )
-
-                                }
-
-
-                                Text(
-                                    text = phrase.example,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color.DarkGray
                                 )
+                            ) {
+                                Column(
+                                    modifier = Modifier.fillMaxWidth().padding(12.dp)
+                                ) {
+                                    Row {
+                                        Text(
+                                            text = "Example:",
+                                            style = MaterialTheme.typography.titleSmall.copy(
+                                                fontWeight = FontWeight.Bold
+                                            ),
+                                            color = phrase.color
+                                        )
+                                        Spacer(modifier = Modifier.weight(1f))
+
+                                        Icon(
+                                            modifier = Modifier.clickable { onEvent() },
+                                            imageVector = Icons.Default.PlayArrow,
+                                            contentDescription = "Play",
+                                            tint = phrase.color
+                                        )
+
+                                    }
+
+
+                                    Text(
+                                        text = phrase.example,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.DarkGray
+                                    )
+                                }
                             }
                         }
                     }

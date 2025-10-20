@@ -7,6 +7,7 @@ import com.nayibit.common.util.Resource
 import com.nayibit.common.util.UiText.DynamicString
 import com.nayibit.common.util.UiText.StringResource
 import com.nayibit.common.util.normalizeSpaces
+import com.nayibit.common.util.removeLonelySigns
 import com.nayibit.phrasalito_domain.model.Phrase
 import com.nayibit.phrasalito_domain.useCases.phrases.DeletebyIdPhraseUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesByDeckUseCase
@@ -53,11 +54,11 @@ class PhraseViewModel
         savedStateHandle: SavedStateHandle
     ) : ViewModel()  {
 
-    val idDeck = savedStateHandle.get<Int>("idDeck")
+    val idDeck = savedStateHandle.get<Int>("idDeck") ?: -1
     val lngCode = savedStateHandle.get<String>("lngCode") ?: "en_US"
 
     private val _state = MutableStateFlow(PhraseStateUi(
-        idDeck = idDeck ?: 0
+        idDeck = idDeck
     ))
     val state: StateFlow<PhraseStateUi> = _state.asStateFlow()
 
@@ -65,7 +66,7 @@ class PhraseViewModel
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-         getAllPhrases(idDeck ?: -1)
+         getAllPhrases(idDeck)
      }
 
     fun onEvent(event: PhraseUiEvent) {
@@ -82,16 +83,17 @@ class PhraseViewModel
             }
 
             InsertPhrase -> { viewModelScope.launch {
-                _state.update { it.copy(bodyModal = BodyModalEnum.BODY_INSERT_PHRASE) }
+                _state.update { it.copy(bodyModal = BodyModalEnum.BODY_INSERT_PHRASE,
+                    firstPhrase = _state.value.firstPhrase.removeLonelySigns()) }
 
                 val result = validateExample(_state.value.firstPhrase, _state.value.example)
 
                 when (result) {
                     ValidateExampleResult.IS_VALID -> {
                         insertPhrase(Phrase(
-                            targetLanguage = _state.value.firstPhrase.normalizeSpaces(),
+                            targetLanguage = _state.value.firstPhrase,
                             translation = _state.value.translation.normalizeSpaces(),
-                            deckId = idDeck ?: -1,
+                            deckId = idDeck,
                             example = _state.value.example.normalizeSpaces()
                         ))
                     }
@@ -120,6 +122,7 @@ class PhraseViewModel
             }
 
             is UpdateTextFirstPhrase -> {
+
                 _state.update { it.copy(firstPhrase = event.text) }
             }
             is UpdateTextTraslation -> {
@@ -168,7 +171,7 @@ class PhraseViewModel
                                 targetLanguage = _state.value.firstPhrase.normalizeSpaces(),
                                 translation = _state.value.translation.normalizeSpaces(),
                                 example = _state.value.example.normalizeSpaces(),
-                                deckId = idDeck ?: -1
+                                deckId = idDeck
                             ))
                     }
                     ValidateExampleResult.EXAMPLE_NOT_CONTAINS_PHRASE -> {
@@ -188,6 +191,7 @@ class PhraseViewModel
             }
 
             is ShowModal -> {
+
                 _state.update { it.copy(showModal = true,
                     bodyModal = event.type,
                     firstPhrase = event.phraseUi?.targetLanguage ?: "",
@@ -220,6 +224,10 @@ class PhraseViewModel
             }
         }
     }
+
+
+
+
 
 
     fun insertPhrase(phrase: Phrase){

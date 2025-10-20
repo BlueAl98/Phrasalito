@@ -5,10 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.nayibit.common.util.Resource
 import com.nayibit.phrasalito_domain.useCases.dataStore.GetFirstTimeUseCase
 import com.nayibit.phrasalito_domain.useCases.dataStore.InsertFirstTimeUseCase
-import com.nayibit.phrasalito_domain.useCases.dataStore.InsertLanguageUseCase
-import com.nayibit.phrasalito_domain.useCases.tts.GetAvailableLanguagesUseCase
-import com.nayibit.phrasalito_domain.useCases.tts.IsTextSpeechReadyUseCase
-import com.nayibit.phrasalito_presentation.mappers.toLanguage
 import com.nayibit.phrasalito_presentation.screens.startScreen.StartUiEvent.InsertSkipTutorial
 import com.nayibit.phrasalito_presentation.screens.startScreen.StartUiEvent.Navigate
 import com.nayibit.phrasalito_presentation.screens.startScreen.StartUiEvent.NextPage
@@ -18,18 +14,13 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class StartViewModel @Inject constructor(
     private val insertFirstTimeUseCase: InsertFirstTimeUseCase,
-    private val getFirstTimeUseCase: GetFirstTimeUseCase,
-    private val getAvailableLanguagesUseCase: GetAvailableLanguagesUseCase,
-    private val isTtsReadyUseCase: IsTextSpeechReadyUseCase,
-    private val insertLanguageUseCase: InsertLanguageUseCase
+    private val getFirstTimeUseCase: GetFirstTimeUseCase
 ): ViewModel() {
 
     private val _state = MutableStateFlow(StartStateUi())
@@ -38,9 +29,9 @@ class StartViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<StartUiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    init {
-        getConfiguration()
-    }
+   init {
+       getFirstTime()
+   }
 
 
     fun onEvent(event: StartUiEvent) {
@@ -62,95 +53,37 @@ class StartViewModel @Inject constructor(
             }
 
             NextPage -> {
-
-                if (_state.value.currentPage == 1){
-                    insertLanguage()
-                    return
-                }
-
                 _state.value = _state.value.copy(
                     currentPage = _state.value.currentPage + 1
                 )
-            }
-
-            is StartUiEvent.SetLanguage -> {
-                updateState{
-                    it.copy(currentLanguage = event.language)
-                }
-            }
-
-            is StartUiEvent.SetScrollPosition -> {
-                updateState {
-                    it.copy(
-                        languageListScrollIndex = event.index,
-                        languageListScrollOffset = event.offset
-                    )
-                }
-            }
-
-            StartUiEvent.InsertLanguage -> {
-                insertLanguage()
             }
         }
      }
 
 
 
-    fun insertLanguage(){
-        viewModelScope.launch {
-            if (_state.value.currentLanguage != null){
-                insertLanguageUseCase(_state.value.currentLanguage!!.alias).collect{
-                    when(it){
-                        is Resource.Error -> {
-                            updateState { it.copy(isLoading = false) }
-                            _eventFlow.emit(ShowToast(it.message))
-                        }
-                        Resource.Loading -> {updateState { it.copy(isLoading = true) }}
-                        is Resource.Success<*> -> {
-                            updateState { it.copy(isLoading = false, currentPage = _state.value.currentPage + 1) }
-                        }
-                    }
-                }
-            }else{
-                _eventFlow.emit(ShowToast("No language selected"))
-            }
-        }
-    }
 
 
-    fun getConfiguration() {
+    fun getFirstTime() {
         viewModelScope.launch {
             getFirstTimeUseCase()
-                .flatMapLatest { result ->
+                .collect { result ->
                     when (result) {
                         is Resource.Error -> {
                             updateState { it.copy(isLoading = false, errorMessage = result.message) }
-                            emptyFlow()
                         }
                         Resource.Loading -> {
                             updateState { it.copy(isLoading = true) }
-                            emptyFlow()
                         }
                         is Resource.Success -> {
-                            updateState { it.copy(isFirstTime = result.data) }
+                            updateState { it.copy(isFirstTime = result.data, isLoading = false) }
                             if (result.data) {
                                 viewModelScope.launch { _eventFlow.emit(Navigate) }
-                                emptyFlow()
-                            } else {
-                                isTtsReadyUseCase()
                             }
                         }
                     }
                 }
-                .collect { result ->
-                    when (result) {
-                        is Resource.Error -> updateState { it.copy(isLoading = false) }
-                        Resource.Loading -> {}
-                        is Resource.Success -> {
-                            getAvailableLanguages()
-                        }
-                    }
-                }
+
         }
     }
 
@@ -158,21 +91,6 @@ class StartViewModel @Inject constructor(
     private fun updateState(block: (StartStateUi) -> StartStateUi) {
         _state.value = block(_state.value)
     }
-
-    fun getAvailableLanguages() {
-            viewModelScope.launch {
-                getAvailableLanguagesUseCase().collect {
-                    when (it) {
-                        is Resource.Loading -> {}
-                        is Resource.Error -> _state.value =
-                            _state.value.copy(isLoading = false, errorMessage = it.message)
-                        is Resource.Success -> {
-                            _state.value = _state.value.copy(isLoading = false, languages = it.data.map{it.toLanguage()})
-                        }
-                    }
-                }
-            }
-        }
 
 
         fun insertFirstTime() {
@@ -190,7 +108,7 @@ class StartViewModel @Inject constructor(
                                 isLoading = false,
                                 errorMessage = result.message
                             )
-                            _eventFlow.emit(StartUiEvent.ShowToast("Error: ${result.message}"))
+                            _eventFlow.emit(ShowToast("Error: ${result.message}"))
 
                         }
 
@@ -199,7 +117,7 @@ class StartViewModel @Inject constructor(
                                 isLoading = false,
                                 checkPermissions = true
                             )
-                            _eventFlow.emit(StartUiEvent.Navigate)
+                            _eventFlow.emit(Navigate)
                         }
                     }
                 }

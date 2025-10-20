@@ -19,7 +19,7 @@ data class ExerciseUiState (
 
 data class ExercisePhrases(
     val id: Int,
-    val targetLanguage: String,
+    val targetLanguage: String? = "",
     val translation: String,
     val example: String = "",
     val correctAnswer: String = "",

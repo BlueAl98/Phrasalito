@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.sp
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.AnimatedIllustration
 import com.nayibit.phrasalito_presentation.composables.DotsIndicator
-import com.nayibit.phrasalito_presentation.composables.LanguageSelectionTap
 import com.nayibit.phrasalito_presentation.composables.LoadingScreen
 import com.nayibit.phrasalito_presentation.composables.isLandscape
 import com.nayibit.phrasalito_presentation.composables.rememberNotificationPermissionHandler
@@ -169,7 +168,6 @@ fun ContentLandscape(
                         colors = colors,
                         mainImageVector = Icons.Filled.NotificationsActive
                     )
-                    2 -> AnimatedIllustration(colors = colors)
                 }
             }
         }
@@ -203,14 +201,6 @@ fun ContentLandscape(
                 }
 
                 1 -> {
-                    LanguageSelectionTap(
-                        modifier = modifier.fillMaxHeight(0.70f),
-                        state = state,
-                        onEvent = onEvent
-                    )
-                }
-
-                2 -> {
                     Text(
                         text = stringResource(R.string.notification_title),
                         fontSize = 28.sp,
@@ -237,7 +227,6 @@ fun ContentLandscape(
             )
 
             Button(
-                enabled = !(state.currentPage == 1 && state.currentLanguage == null),
                 onClick = {
                     if (state.totalpages > state.currentPage + 1) {
                         onEvent(StartUiEvent.NextPage)
@@ -263,12 +252,7 @@ fun ContentLandscape(
                         .fillMaxSize()
                         .background(
                             brush = Brush.horizontalGradient(
-                                colors =
-                                    if (state.currentPage == 1 && state.currentLanguage == null) listOf(
-                                    Color.Gray,
-                                    Color.Gray
-                                )else
-                                    listOf(
+                                colors = listOf(
                                         colors.primaryGradientStart,
                                         colors.primaryGradientEnd
                                     )
@@ -325,12 +309,7 @@ fun ContentPortrait(
         ) { page ->
             when (page) {
                 0 -> WelcomeTab()
-                1 -> LanguageSelectionTap(
-                    state = state,
-                    onEvent = onEvent
-                )
-                2 -> PermissionTab(colors = colors)
-
+                1 -> PermissionTab(colors = colors)
             }
         }
 
@@ -353,7 +332,6 @@ fun ContentPortrait(
 
             // Primary Button
             Button(
-                enabled = !(state.currentPage == 1 && state.currentLanguage == null),
                 onClick = {
                     if (state.totalpages > state.currentPage + 1) {
                         onEvent(StartUiEvent.NextPage)
@@ -379,12 +357,7 @@ fun ContentPortrait(
                         .fillMaxSize()
                         .background(
                             brush = Brush.horizontalGradient(
-                                colors =
-                            if (state.currentPage == 1 && state.currentLanguage == null) listOf(
-                                    Color.Gray,
-                                    Color.Gray
-                            )else
-                                    listOf(
+                                colors = listOf(
                                     colors.primaryGradientStart,
                                     colors.primaryGradientEnd
                                 )

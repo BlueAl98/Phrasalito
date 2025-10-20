@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.common.util.Resource
 import com.nayibit.common.util.normalizeSpaces
-import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesByDeckUseCase
+import com.nayibit.phrasalito_domain.useCases.phrases.GetPhrasesByDeckReadyForTestUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.IsTextSpeechReadyUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.ShutDownTtsUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.SpeakTextUseCase
@@ -33,7 +33,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ExerciseViewModel @Inject constructor(
-    private val getAllPhrasesByDeckUseCase: GetAllPhrasesByDeckUseCase,
+    private val getAllPhrasesByDeckUseCase: GetPhrasesByDeckReadyForTestUseCase,
     private val speakTextUseCase: SpeakTextUseCase,
     private val shutDownTtsUseCase: ShutDownTtsUseCase,
     private val isTextSpeechReadyUseCase: IsTextSpeechReadyUseCase,
@@ -63,7 +63,7 @@ class ExerciseViewModel @Inject constructor(
             is OnInputChanged -> {
                 _state.update { it.copy(inputAnswer = event.input) }
 
-              if (_state.value.phrases[event.currentIndex].targetLanguage.textWithoutSpecialCharacters() == event.input.normalizeSpaces()) {
+              if (_state.value.phrases[event.currentIndex].targetLanguage?.textWithoutSpecialCharacters() == event.input.normalizeSpaces()) {
                   _state.update { currentState ->
                       currentState.copy(
                           phrases = currentState.phrases.mapIndexed { index, phrase ->
