@@ -109,7 +109,7 @@ fun TextFieldBase(
     trailingIcon: (@Composable (() -> Unit))? = null,
     singleLine: Boolean = true,
     maxLines: Int = 1,
-    maxChar: Int = 30,
+    maxChar: Int = 100,
     showCharCounter: Boolean = false,
     textRestriction: Boolean = false,
     isError: Boolean = false,

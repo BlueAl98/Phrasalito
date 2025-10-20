@@ -63,7 +63,7 @@ class ExerciseViewModel @Inject constructor(
             is OnInputChanged -> {
                 _state.update { it.copy(inputAnswer = event.input) }
 
-              if (_state.value.phrases[event.currentIndex].targetLanguage.textWithoutSpecialCharacters() == event.input.normalizeSpaces()) {
+              if (_state.value.phrases[event.currentIndex].targetLanguage?.textWithoutSpecialCharacters() == event.input.normalizeSpaces()) {
                   _state.update { currentState ->
                       currentState.copy(
                           phrases = currentState.phrases.mapIndexed { index, phrase ->

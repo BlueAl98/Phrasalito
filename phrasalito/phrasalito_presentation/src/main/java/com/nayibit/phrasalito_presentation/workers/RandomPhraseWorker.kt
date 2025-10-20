@@ -20,7 +20,7 @@ class RandomPhraseWorker  @AssistedInject constructor(
         val randomPhrase = getRandomPhraseUseCase()
 
         return if (randomPhrase != null) {
-            NotificationBuilder.showNotification(applicationContext, randomPhrase.targetLanguage, randomPhrase.translation)
+            NotificationBuilder.showNotification(applicationContext, randomPhrase.targetLanguage, randomPhrase.translation ?: "no traduccion")
             Result.success()
         } else {
             Result.success()

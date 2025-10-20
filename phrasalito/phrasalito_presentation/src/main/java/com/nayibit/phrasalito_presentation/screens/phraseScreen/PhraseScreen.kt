@@ -219,11 +219,10 @@ fun BodyModalInsertPhrase(
         ButtonBase(
             text = stringResource(id = R.string.btn_save),
             onClick = {
-                if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(
-                    PhraseUiEvent.InsertPhrase
+                if (state.firstPhrase.isNotEmpty()) onEvent(PhraseUiEvent.InsertPhrase
                 ) else onEvent(
                     PhraseUiEvent.ShowToast(
-                        UiText.StringResource(R.string.label_emty_fields)
+                        UiText.StringResource(R.string.label_target_language)
                     )
                 )
             },
@@ -240,11 +239,10 @@ fun BodyModalInsertPhrase(
                 modifier = modifier.weight(0.45f),
                 text = stringResource(id = R.string.btn_save),
                 onClick = {
-                    if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(
-                        PhraseUiEvent.InsertPhrase
+                    if (state.firstPhrase.isNotEmpty()) onEvent(PhraseUiEvent.InsertPhrase
                     ) else onEvent(
                         PhraseUiEvent.ShowToast(
-                            UiText.StringResource(R.string.label_emty_fields)
+                            UiText.StringResource(R.string.label_target_language)
                         )
                     )
                 },
@@ -319,11 +317,11 @@ fun BodyModalUpdatePhrase(
         ButtonBase(
             text = stringResource(id = R.string.btn_update),
             onClick = {
-                if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(
+                if (state.firstPhrase.isNotEmpty()) onEvent(
                     PhraseUiEvent.UpdatePhrase(state.phraseToUpdate!!)
                 ) else onEvent(
                     PhraseUiEvent.ShowToast(
-                        UiText.StringResource(R.string.label_emty_fields)
+                        UiText.StringResource(R.string.label_target_language)
                     )
                 )
             },
@@ -340,11 +338,11 @@ fun BodyModalUpdatePhrase(
                 modifier = modifier.weight(0.45f),
                 text = stringResource(id = R.string.btn_update),
                 onClick = {
-                    if (state.firstPhrase.isNotEmpty() && state.translation.isNotEmpty()) onEvent(
+                    if (state.firstPhrase.isNotEmpty()) onEvent(
                         PhraseUiEvent.UpdatePhrase(state.phraseToUpdate!!)
                     ) else onEvent(
                         PhraseUiEvent.ShowToast(
-                            UiText.StringResource(R.string.label_emty_fields)
+                            UiText.StringResource(R.string.label_target_language)
                         )
                     )
                 },
@@ -503,11 +501,13 @@ fun AreaStudyCards(
                                 phrase = phrase,
                                 isLandscape = isLandscape(),
                                 onEvent = {
+                                    phrase.example?.let {
                                     onEvent(
                                         PhraseUiEvent.SpeakText(
                                             phrase.example
                                         )
                                     )
+                                }
                                 }
                             )
                         }
@@ -594,11 +594,13 @@ fun AreaStudyCards(
                                 phrase = phrase,
                                 isLandscape = isLandscape(),
                                 onEvent = {
-                                    onEvent(
-                                        PhraseUiEvent.SpeakText(
-                                            phrase.example
+                                    phrase.example?.let {
+                                        onEvent(
+                                            PhraseUiEvent.SpeakText(
+                                                phrase.example
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             )
                         }

@@ -8,7 +8,7 @@ fun Phrase.toExerciseUI(): ExercisePhrases {
     return ExercisePhrases(
         id = this.id,
         targetLanguage = this.targetLanguage,
-        translation = this.translation,
+        translation = this.translation ?: "",
         example = exercisePhrase(this.targetLanguage,this.example ?: ""),
         correctAnswer = this.example ?: ""
     )

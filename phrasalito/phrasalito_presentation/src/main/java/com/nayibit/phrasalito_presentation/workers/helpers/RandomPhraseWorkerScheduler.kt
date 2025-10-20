@@ -23,7 +23,7 @@ object RandomPhraseWorkerScheduler {
             return
         }
 
-        val periodicWorkRequest = PeriodicWorkRequestBuilder<RandomPhraseWorker>(15, TimeUnit.MINUTES)
+        val periodicWorkRequest = PeriodicWorkRequestBuilder<RandomPhraseWorker>(1, TimeUnit.HOURS)
             .setConstraints(
                 Constraints.Builder()
                     .setRequiredNetworkType(NetworkType.NOT_REQUIRED)

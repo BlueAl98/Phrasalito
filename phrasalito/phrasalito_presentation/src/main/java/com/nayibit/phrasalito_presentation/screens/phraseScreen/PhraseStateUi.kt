@@ -21,9 +21,9 @@ data class PhraseStateUi(
 data class PhraseUi(
     val id: Int,
     val targetLanguage: String,
-    val translation: String,
+    val translation: String? = null,
     val isOptionsRevealed: Boolean = false,
-    val example: String = "",
+    val example: String? = null,
     val color: Color = Color(0xFF4CAF50)
 )
 
