@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
 
 @Composable
 fun ButtonBase(
@@ -21,8 +22,8 @@ fun ButtonBase(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     loading: Boolean = false,
-    backgroundColor: Color = MaterialTheme.colorScheme.primary,
-    contentColor: Color = MaterialTheme.colorScheme.onPrimary,
+    backgroundColor: Color = primaryGradientEnd,
+    contentColor: Color = Color.White,
     disabledBackgroundColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.30f),
     disabledContentColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
     shapeRadius: Int = 8,

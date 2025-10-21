@@ -1,6 +1,5 @@
 package com.nayibit.phrasalito_presentation.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -18,10 +17,11 @@ private val LightColorScheme = lightColorScheme(
     primaryContainer = BluePrimaryContainer,
     onPrimaryContainer = BlueOnPrimaryContainer,
     secondary = Secondary,
-    tertiary = Tertiary,
+    tertiary = primaryGradientEnd,
     error = Error,
     onError = OnError,
-    background = Color.White
+    background = Color.White,
+
 
 )
 
@@ -31,17 +31,17 @@ private val DarkColorScheme = darkColorScheme(
     primaryContainer = BluePrimary,
     onPrimaryContainer = BlueOnPrimary,
     secondary = Secondary,
-    tertiary = Tertiary,
+    tertiary = Color.White,
     error = Error,
     onError = OnError,
-    background = Color.Black
+    background = Color.Black,
 )
 
 @Composable
 fun PhrasalitoTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

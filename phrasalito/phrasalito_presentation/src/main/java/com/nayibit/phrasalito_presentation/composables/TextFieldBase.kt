@@ -31,73 +31,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.nayibit.common.util.allowOnlyLettersAndSigns
 import com.nayibit.common.util.cleanRepeatedSigns
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
 
-/*
-@Composable
-fun TextFieldBase(
-                  value: String,
-                  onValueChange: (String) -> Unit,
-                  modifier: Modifier = Modifier,
-                  label: String? = null,
-                  placeholder: String? = null,
-                  leadingIcon: (@Composable (() -> Unit))? = null,
-                  trailingIcon: (@Composable (() -> Unit))? = null,
-                  singleLine: Boolean = true,
-                  maxLines: Int = 1,
-                  maxChar: Int = 30,
-                  isError: Boolean = false,
-                  enabled: Boolean = true,
-                  shape: Shape = RoundedCornerShape(8.dp),
-                  textStyle: TextStyle = LocalTextStyle.current,
-                  keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                  visualTransformation: VisualTransformation = VisualTransformation.None,
-    // Dynamic colors: pass colors you want (use MaterialTheme colors or custom)
-                  focusedColor: Color = MaterialTheme.colorScheme.primary,
-                  unfocusedColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
-                  errorColor: Color = MaterialTheme.colorScheme.error
-) {
-    val colors: TextFieldColors = TextFieldDefaults.colors(
-        focusedTextColor = MaterialTheme.colorScheme.onSurface,
-        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-        errorTextColor = MaterialTheme.colorScheme.onSurface,
-        focusedContainerColor = Color.Transparent,
-        unfocusedContainerColor = Color.Transparent,
-        errorContainerColor = Color.Transparent,
-        focusedIndicatorColor = focusedColor,
-        unfocusedIndicatorColor = unfocusedColor,
-        unfocusedLabelColor = unfocusedColor,
-        focusedLabelColor = focusedColor
-    )
-
-    OutlinedTextField(
-        value = value,
-        onValueChange = {newText ->
-            // Apply your cleaning functions first
-            val cleaned = newText.allowOnlyLettersAndSigns().cleanRepeatedSigns()
-            // Limit characters
-            if (cleaned.length <= maxChar) {
-                onValueChange(cleaned)
-            }
-        },
-        modifier = modifier
-            .fillMaxWidth(),
-        label = label?.let { { Text(it) } },
-        placeholder = placeholder?.let { { Text(it) } },
-        leadingIcon = leadingIcon,
-        trailingIcon = trailingIcon,
-        singleLine = singleLine,
-        maxLines = maxLines,
-        isError = isError,
-        enabled = enabled,
-        shape = shape,
-        textStyle = textStyle,
-        keyboardOptions = keyboardOptions,
-        visualTransformation = visualTransformation,
-        colors = colors,
-
-    )
-}
-*/
 @Composable
 fun TextFieldBase(
     value: String,
@@ -119,7 +54,7 @@ fun TextFieldBase(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    focusedColor: Color = MaterialTheme.colorScheme.primary,
+    focusedColor: Color = primaryGradientEnd,
     unfocusedColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     errorColor: Color = MaterialTheme.colorScheme.error
 ) {

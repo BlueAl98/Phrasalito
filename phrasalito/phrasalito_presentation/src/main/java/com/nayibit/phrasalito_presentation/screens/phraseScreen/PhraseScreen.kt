@@ -24,7 +24,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -37,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -50,9 +48,11 @@ import com.nayibit.phrasalito_presentation.composables.AdaptiveLanguageCard
 import com.nayibit.phrasalito_presentation.composables.BaseDialog
 import com.nayibit.phrasalito_presentation.composables.ButtonBase
 import com.nayibit.phrasalito_presentation.composables.DynamicIconSection
+import com.nayibit.phrasalito_presentation.composables.LoadingScreen
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
 import com.nayibit.phrasalito_presentation.composables.isLandscape
 import com.nayibit.phrasalito_presentation.model.IconItem
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientStart
 import com.spartapps.swipeablecards.state.rememberSwipeableCardsState
 import com.spartapps.swipeablecards.ui.SwipeableCardDirection
 import com.spartapps.swipeablecards.ui.lazy.LazySwipeableCards
@@ -103,9 +103,7 @@ fun PhraseScreen(
             ) {
                 when {
                     state.isLoading -> {
-                        Box(modifier.fillMaxSize()) {
-                            CircularProgressIndicator(modifier.align(Alignment.Center))
-                        }
+                        LoadingScreen()
                     }
 
                    else -> {
@@ -390,10 +388,10 @@ fun AreaStudyCards(
 ) {
 
     val icons = listOf(
-        IconItem(Icons.Default.AddCircle, "Agregar", Color(0xFFE91E63), onClick = {
+        IconItem(Icons.Default.AddCircle, "Agregar", primaryGradientStart, onClick = {
             onEvent(PhraseUiEvent.ShowModal(BodyModalEnum.BODY_INSERT_PHRASE))
         }),
-        IconItem(Icons.Default.Edit, "Editar", Color(0xFF4CAF50), onClick = {
+        IconItem(Icons.Default.Edit, "Editar", primaryGradientStart, onClick = {
             onEvent(
                 PhraseUiEvent.ShowModal(
                     BodyModalEnum.BODY_UPDATE_PHRASE,
@@ -402,7 +400,7 @@ fun AreaStudyCards(
             )
         }, enabled = state.phrases.isNotEmpty()),
 
-        IconItem(Icons.Default.Delete, "Eliminar", Color(0xFF2196F3), onClick = {
+        IconItem(Icons.Default.Delete, "Eliminar", primaryGradientStart, onClick = {
             onEvent(
                 PhraseUiEvent.ShowModal(
                     BodyModalEnum.BODY_DELETE_PHRASE,
@@ -410,7 +408,7 @@ fun AreaStudyCards(
                 )
             )
         },enabled = state.phrases.isNotEmpty()),
-        IconItem(Icons.Default.Description, "Examen", Color(0xFFFF9800), onClick = {
+        IconItem(Icons.Default.Description, "Examen", primaryGradientStart, onClick = {
             if (state.isReadyForTest)
             onEvent(
                 PhraseUiEvent.ShowModal(

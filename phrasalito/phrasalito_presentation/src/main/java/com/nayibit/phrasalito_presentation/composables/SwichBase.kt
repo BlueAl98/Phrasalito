@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
 import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientStart
 
 @Composable
@@ -24,7 +25,7 @@ fun SwitchBase(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    activeColor: Color = primaryGradientStart,      // ✅ Active background
+    activeColor: Color = primaryGradientEnd,      // ✅ Active background
     inactiveColor: Color = Color(0xFFCFD8DC),    // ✅ Inactive background
     iconColor: Color = primaryGradientStart         // ✅ Icon tint inside knob
 ) {

@@ -91,7 +91,7 @@ class PhraseViewModel
                 when (result) {
                     ValidateExampleResult.IS_VALID -> {
                         insertPhrase(Phrase(
-                            targetLanguage = _state.value.firstPhrase,
+                            targetLanguage = _state.value.firstPhrase.normalizeSpaces(),
                             translation = _state.value.translation.normalizeSpaces(),
                             deckId = idDeck,
                             example = _state.value.example.normalizeSpaces()
