@@ -79,11 +79,12 @@ fun TextFieldBase(
         errorTextColor = MaterialTheme.colorScheme.onSurface,
         focusedContainerColor = Color.Transparent,
         unfocusedContainerColor = Color.Transparent,
-        errorContainerColor = Color.Transparent,
+        errorContainerColor = MaterialTheme.colorScheme.errorContainer,
         focusedIndicatorColor = focusedColor,
         unfocusedIndicatorColor = unfocusedColor,
         unfocusedLabelColor = unfocusedColor,
-        focusedLabelColor = focusedColor
+        focusedLabelColor = focusedColor,
+        disabledIndicatorColor = if (isError) Color.Red else Color.Transparent
     )
 
     Box(modifier = modifier.fillMaxWidth()) {
