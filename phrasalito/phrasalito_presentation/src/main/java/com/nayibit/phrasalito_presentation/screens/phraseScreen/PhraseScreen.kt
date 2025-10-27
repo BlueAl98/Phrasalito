@@ -364,7 +364,6 @@ fun BodyModalDeletePhrase(
     onEvent: (PhraseUiEvent) -> Unit
 ) {
 
-
     Text(text = stringResource(R.string.title_delete_phrase))
 
     ButtonBase(
@@ -505,7 +504,8 @@ fun AreaStudyCards(
                                         )
                                     )
                                 }
-                                }
+                                },
+                                isTTsReady = state.isTTsReady
                             )
                         }
                     }
@@ -598,7 +598,8 @@ fun AreaStudyCards(
                                             )
                                         )
                                     }
-                                }
+                                },
+                                isTTsReady = state.isTTsReady
                             )
                         }
                     }

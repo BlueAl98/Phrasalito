@@ -13,6 +13,7 @@ import com.nayibit.phrasalito_domain.useCases.phrases.DeletebyIdPhraseUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesByDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.InsertPhraseUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.UpdatePhraseByIdUseCase
+import com.nayibit.phrasalito_domain.useCases.tts.IsTextSpeechReadyUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.SpeakTextUseCase
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.mappers.toPhrase
@@ -51,6 +52,7 @@ class PhraseViewModel
         private val deletePhraseUseCase: DeletebyIdPhraseUseCase,
         private val updatePhraseByIdUseCase: UpdatePhraseByIdUseCase,
         private val speakTextUseCase: SpeakTextUseCase,
+        private val isTTsAvailableUseCase: IsTextSpeechReadyUseCase,
         savedStateHandle: SavedStateHandle
     ) : ViewModel()  {
 
@@ -67,6 +69,7 @@ class PhraseViewModel
 
     init {
          getAllPhrases(idDeck)
+         getStateTTS()
      }
 
     fun onEvent(event: PhraseUiEvent) {
@@ -209,6 +212,7 @@ class PhraseViewModel
 
             is Navigation -> {
                 viewModelScope.launch {
+                    _state.update { it.copy(showModal = false) }
                     _eventFlow.emit(event)
                 }
             }
@@ -226,9 +230,25 @@ class PhraseViewModel
     }
 
 
+     fun getStateTTS(){
+         viewModelScope.launch {
+             isTTsAvailableUseCase().collect { result ->
+                 when (result) {
+                     is Resource.Error -> {
+                         _state.update { it.copy(isTTsReady = false) }
+                     }
 
+                     is Resource.Success<*> -> {
+                         _state.update {
+                             it.copy(isTTsReady = true)
+                         }
+                     }
 
-
+                     Resource.Loading -> {}
+                 }
+             }
+         }
+    }
 
     fun insertPhrase(phrase: Phrase){
         viewModelScope.launch {

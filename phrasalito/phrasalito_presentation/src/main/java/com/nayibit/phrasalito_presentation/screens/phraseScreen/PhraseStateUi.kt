@@ -16,7 +16,8 @@ data class PhraseStateUi(
     val bodyModal: BodyModalEnum = BodyModalEnum.BODY_INSERT_PHRASE,
     val phraseToUpdate: PhraseUi? = null,
     val curentCardPhrase : Int = 0,
-    val idDeck: Int = 0
+    val idDeck: Int = 0,
+    val isTTsReady: Boolean = false
 ){
     val isReadyForTest: Boolean
         get() = phrases.count {

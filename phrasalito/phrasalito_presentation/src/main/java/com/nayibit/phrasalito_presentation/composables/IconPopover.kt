@@ -28,6 +28,7 @@ fun IconPopover(
     updateExpandedState: (Boolean) -> Unit = {},
     onClick: () -> Unit = {},
     enabled: Boolean = true,
+    colorDisable : Color = Color.Gray,
     content: @Composable ColumnScope.() -> Unit = {},
 ) {
    var expanded by remember { mutableStateOf(expandedState) }
@@ -49,7 +50,7 @@ fun IconPopover(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = Color.White
+                tint = if (!enabled) colorDisable else Color.White
             )
         }
 
