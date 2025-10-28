@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 fun LoadingScreen(
     modifier: Modifier = Modifier,
     backgroundColor: Color = Color.Transparent,
-    indicatorColor: Color = MaterialTheme.colorScheme.primary,
+    indicatorColor: Color = MaterialTheme.colorScheme.tertiary,
     strokeWidth: Dp = 4.dp
 ) {
     Box(

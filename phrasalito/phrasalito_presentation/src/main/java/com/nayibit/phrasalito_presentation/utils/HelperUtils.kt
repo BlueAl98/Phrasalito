@@ -40,6 +40,7 @@ fun exercisePhrase(targetPhrase: String, example: String): String {
     // Regex matches words containing letters/digits and common contractions/hyphens
     val wordRegex = Regex("""\b[\p{L}\p{Nd}'’-]+\b""")
 
+
     return wordRegex.replace(example) { mr ->
         val word = mr.value                            // preserves original case/punct inside token
         val cleaned = word.lowercase().replace(Regex("[^\\p{L}\\p{Nd}]+"), "")

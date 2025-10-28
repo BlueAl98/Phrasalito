@@ -16,11 +16,12 @@ data class PhraseStateUi(
     val bodyModal: BodyModalEnum = BodyModalEnum.BODY_INSERT_PHRASE,
     val phraseToUpdate: PhraseUi? = null,
     val curentCardPhrase : Int = 0,
-    val idDeck: Int = 0
+    val idDeck: Int = 0,
+    val isTTsReady: Boolean = false
 ){
     val isReadyForTest: Boolean
         get() = phrases.count {
-            !it.translation.isNullOrBlank() && !it.example.isNullOrBlank()
+            !it.translation.isNullOrBlank() && !it.example.isNullOrBlank() && it.targetLanguage.isNotBlank()
         } >= NUM_CARDS_FOR_EXAM
 }
 

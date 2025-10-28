@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,6 +17,8 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientStart
 
 
 @Composable
@@ -25,8 +28,8 @@ fun CircularProgressIndicator(
     sizePercentage: Float = 0.4f,    // 40% of available space by default
     strokeWidthPercentage: Float = 0.08f, // 8% of circle size for stroke width
     backgroundColor: Color = Color.LightGray.copy(alpha = 0.3f),
-    progressColor: List<Color> = listOf(Color.Blue, Color.Cyan),
-    textColor: Color = Color.Black,
+    progressColor: List<Color> = listOf(primaryGradientStart, primaryGradientEnd),
+    textColor: Color = MaterialTheme.colorScheme.inversePrimary,
     textSizePercentage: Float = 0.15f // 15% of circle size for text
 ) {
     // Clamp progress between 0f and 1f

@@ -2,19 +2,13 @@ package com.nayibit.phrasalito_presentation.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,8 +17,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
 
 @Composable
 fun IconPopover(
@@ -34,6 +28,7 @@ fun IconPopover(
     updateExpandedState: (Boolean) -> Unit = {},
     onClick: () -> Unit = {},
     enabled: Boolean = true,
+    colorDisable : Color = Color.Gray,
     content: @Composable ColumnScope.() -> Unit = {},
 ) {
    var expanded by remember { mutableStateOf(expandedState) }
@@ -42,6 +37,10 @@ fun IconPopover(
     Box  {
         // The trigger icon
         IconButton(
+            colors = IconButtonDefaults.iconButtonColors(
+                containerColor = Color.Transparent,
+                contentColor = primaryGradientEnd
+            ),
             enabled = enabled,
             onClick = {
             expanded = !expanded
@@ -51,7 +50,7 @@ fun IconPopover(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
+                tint = if (!enabled) colorDisable else Color.White
             )
         }
 
@@ -59,11 +58,13 @@ fun IconPopover(
             expanded = expanded,
             onDismissRequest = { expanded = false },
             modifier = Modifier
-                .background(
-                    color = Color.Transparent,
-                    shape = RoundedCornerShape(12.dp) // Rounded corners
+                .background(primaryGradientEnd)
+                .border(
+                    width = 2.dp,
+                    color = Color.White,
+                    shape = RoundedCornerShape(16.dp)
                 )
-                .border(1.dp, Color.Gray, RoundedCornerShape(12.dp))
+
         ) {
             // Your content inside the popover
             content()

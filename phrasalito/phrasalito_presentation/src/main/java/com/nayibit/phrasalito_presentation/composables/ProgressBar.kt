@@ -1,7 +1,6 @@
 package com.nayibit.phrasalito_presentation.composables
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,8 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
 
 
 @Composable
@@ -46,7 +45,7 @@ fun ProgressBar(
                     .height(12.dp)
                     .weight(1f)
                     .clip(RoundedCornerShape(6.dp)),
-                color = MaterialTheme.colorScheme.primary,
+                color = primaryGradientEnd,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant
             )
 

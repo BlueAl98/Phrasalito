@@ -43,3 +43,4 @@ val badgeNew: Brush = Brush.horizontalGradient(
 val badgeComplete: Brush = Brush.horizontalGradient(
     colors = listOf(Color(0xFF10B981), Color(0xFF059669))
 )
+val correctAnswer : Color = Color(0xFF98FB98)

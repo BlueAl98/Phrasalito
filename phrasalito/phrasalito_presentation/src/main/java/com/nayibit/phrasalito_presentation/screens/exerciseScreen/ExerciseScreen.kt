@@ -19,9 +19,9 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.QuestionMark
+import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -51,6 +51,7 @@ import com.nayibit.phrasalito_presentation.composables.LoadingScreen
 import com.nayibit.phrasalito_presentation.composables.ProgressBar
 import com.nayibit.phrasalito_presentation.composables.SimpleConfirmDialog
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -227,6 +228,7 @@ fun PortaitContent(
             verticalArrangement = Arrangement.Center,
         ) {
             TextFieldBase(
+                isError = state.phrases[state.currentIndex].phraseState == PhraseState.ERROR_ANSWER,
                 enabled = state.phrases[state.currentIndex].phraseState == PhraseState.NOT_STARTED,
                 value = state.inputAnswer,
                 onValueChange = {
@@ -282,6 +284,7 @@ fun LandscapeContent(
 
             Column(modifier.weight(0.85f), verticalArrangement = Arrangement.Center) {
                 TextFieldBase(
+                    isError = state.phrases[state.currentIndex].phraseState == PhraseState.ERROR_ANSWER,
                     enabled = state.phrases[state.currentIndex].phraseState == PhraseState.NOT_STARTED,
                     value = state.inputAnswer,
                     onValueChange = {
@@ -330,7 +333,7 @@ fun ExercisePager(
     val colorManager = when (state.phrases[state.currentIndex].phraseState) {
         PhraseState.NOT_STARTED -> Color.Transparent
         PhraseState.ERROR_ANSWER -> Color.Red
-        PhraseState.COMPLETED -> Color.Green
+        PhraseState.COMPLETED -> Color.White
     }
 
     LaunchedEffect(state.currentIndex) {
@@ -354,11 +357,12 @@ fun ExercisePager(
                     .fillMaxWidth()
                     .padding(16.dp)
                     .border(
-                        width = 2.dp,
+                        width = 8.dp,
                         color = colorManager,
                         shape = RoundedCornerShape(16.dp)
                     ),
-                elevation = CardDefaults.cardElevation(8.dp)
+                elevation = CardDefaults.cardElevation(8.dp),
+                colors = CardDefaults.cardColors(containerColor = primaryGradientEnd)
             ) {
 
                 Box {
@@ -370,7 +374,8 @@ fun ExercisePager(
 
                         Row {
                             IconPopover(
-                                icon = Icons.Default.Info,
+                                enabled = !state.isBottomSheetExpanded,
+                                icon = Icons.Default.QuestionMark,
                                 expandedState = state.popOverState,
                                 updateExpandedState = {
                                     onEvent(
@@ -382,13 +387,14 @@ fun ExercisePager(
                             ) {
                                 Text(
                                     state.phrases[state.currentIndex].translation,
-                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                    modifier = Modifier.padding(horizontal = 16.dp),
+                                    color = Color.White
                                 )
                             }
 
                             IconPopover(
                                 enabled = state.phrases[state.currentIndex].phraseState == PhraseState.NOT_STARTED,
-                                icon = Icons.Default.QuestionMark,
+                                icon = Icons.Default.SkipNext,
                                 onClick = {
                                     onEvent(
                                         ExerciseUiEvent.ShowDialog(
@@ -402,6 +408,7 @@ fun ExercisePager(
 
                         if (state.phrases[state.currentIndex].phraseState != PhraseState.NOT_STARTED)
                             IconPopover(
+                                enabled = !state.isBottomSheetExpanded,
                                 icon = Icons.Default.PlayArrow,
                                 expandedState = state.popOverState,
                                 onClick = {
@@ -430,7 +437,7 @@ fun ExercisePager(
     }
 }
 
-
+//BOTTOMS CONTENT ORIETATION
 @Composable
 fun BottomSheetContentLandScape(
     modifier: Modifier = Modifier,
@@ -474,7 +481,7 @@ fun BottomSheetContentLandScape(
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleLarge,
-                color = Color.Red
+                color = MaterialTheme.colorScheme.inversePrimary
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -484,7 +491,7 @@ fun BottomSheetContentLandScape(
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.labelMedium,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.inversePrimary
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -527,7 +534,7 @@ fun BottomSheetContentPortrait(
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.titleLarge,
-            color = Color.Red
+            color = MaterialTheme.colorScheme.inversePrimary
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -539,7 +546,7 @@ fun BottomSheetContentPortrait(
                 .fillMaxWidth(),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.labelMedium,
-            color = Color.Gray
+            color = MaterialTheme.colorScheme.inversePrimary
         )
 
         Spacer(modifier = Modifier.height(16.dp))
