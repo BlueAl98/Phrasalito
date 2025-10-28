@@ -21,7 +21,7 @@ data class PhraseStateUi(
 ){
     val isReadyForTest: Boolean
         get() = phrases.count {
-            !it.translation.isNullOrBlank() && !it.example.isNullOrBlank()
+            !it.translation.isNullOrBlank() && !it.example.isNullOrBlank() && it.targetLanguage.isNotBlank()
         } >= NUM_CARDS_FOR_EXAM
 }
 

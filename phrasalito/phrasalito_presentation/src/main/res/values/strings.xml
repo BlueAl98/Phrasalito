@@ -13,7 +13,7 @@
     <string name="label_learn_phrase">Nombre del Deck</string>
     <string name="phrase_deleted_successfully">Frase eliminada con éxito</string>
     <string name="label_modal_start_exercise">¿Estas listo para ponerte a prueba?</string>
-    <string name="label_dont_cards_enough">Necesitas minimo 3 frases para comenzar</string>
+    <string name="label_dont_cards_enough">Necesitas minimo 3 frases completas para comenzar</string>
     <string name="label_deck">Deck</string>
     <string name="title_update_deck">Estas seguro de actualizar este deck?</string>
     <string name="title_delete_deck">Estas seguro de eliminar </string>

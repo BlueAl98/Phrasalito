@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,17 +60,18 @@ fun TextFieldBase(
     errorColor: Color = MaterialTheme.colorScheme.error
 ) {
 
-    // 👇 Convert your plain text to a TextFieldValue that remembers cursor position
-    var textFieldValue by remember(value) {
-        mutableStateOf(TextFieldValue(value, selection = androidx.compose.ui.text.TextRange(value.length)))
-    }
+    var textFieldValue by remember { mutableStateOf(TextFieldValue(text = value)) }
 
-    // When external text changes, update the internal state if necessary
-    if (textFieldValue.text != value) {
-        textFieldValue = textFieldValue.copy(
-            text = value,
-            selection = androidx.compose.ui.text.TextRange(value.length)
-        )
+    LaunchedEffect(value) {
+        if (value != textFieldValue.text) {
+            val newSelection = textFieldValue.selection
+            val start = newSelection.start.coerceIn(0, value.length)
+            val end = newSelection.end.coerceIn(0, value.length)
+            textFieldValue = textFieldValue.copy(
+                text = value,
+                selection = androidx.compose.ui.text.TextRange(start, end)
+            )
+        }
     }
 
 
@@ -91,9 +93,17 @@ fun TextFieldBase(
         OutlinedTextField(
             value = textFieldValue,
             onValueChange = { newText ->
-                textFieldValue = newText
-                val cleaned = if (textRestriction)textFieldValue.text.allowOnlyLettersAndSigns().cleanRepeatedSigns() else textFieldValue.text
-                if (cleaned.length <= maxChar) onValueChange(cleaned)
+                var cleaned = newText.text
+                if (textRestriction) {
+                    cleaned = cleaned.allowOnlyLettersAndSigns().cleanRepeatedSigns()
+                }
+
+                // Notify parent if cleaned changed text
+                if (cleaned.length <= maxChar) {
+                    // Update internal state
+                   textFieldValue = newText.copy(text = cleaned)
+                    onValueChange(cleaned)
+                }
             },
             modifier = Modifier.fillMaxWidth(),
             label = label?.let { { Text(it) } },

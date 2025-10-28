@@ -20,5 +20,5 @@ fun String.removeLonelySigns(): String {
 
 fun String.cleanRepeatedSigns(): String {
     // Replace 2 or more repeated non-letter/non-digit signs with a single one
-    return this.replace(Regex("([^A-Za-z0-9])\\1+"), "$1")
+    return this.replace(Regex("([^\\p{L}\\p{N}])\\1+"), "$1")
 }
