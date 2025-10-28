@@ -387,10 +387,11 @@ fun AreaStudyCards(
 ) {
 
     val icons = listOf(
-        IconItem(Icons.Default.AddCircle, "Agregar", primaryGradientStart, onClick = {
+        IconItem(Icons.Default.AddCircle,
+            stringResource(R.string.add_card_phrase), primaryGradientStart, onClick = {
             onEvent(PhraseUiEvent.ShowModal(BodyModalEnum.BODY_INSERT_PHRASE))
         }),
-        IconItem(Icons.Default.Edit, "Editar", primaryGradientStart, onClick = {
+        IconItem(Icons.Default.Edit, stringResource(R.string.update_card_phrase), primaryGradientStart, onClick = {
             onEvent(
                 PhraseUiEvent.ShowModal(
                     BodyModalEnum.BODY_UPDATE_PHRASE,
@@ -399,7 +400,7 @@ fun AreaStudyCards(
             )
         }, enabled = state.phrases.isNotEmpty()),
 
-        IconItem(Icons.Default.Delete, "Eliminar", primaryGradientStart, onClick = {
+        IconItem(Icons.Default.Delete, stringResource(R.string.delete_card_phrase), primaryGradientStart, onClick = {
             onEvent(
                 PhraseUiEvent.ShowModal(
                     BodyModalEnum.BODY_DELETE_PHRASE,
@@ -407,7 +408,7 @@ fun AreaStudyCards(
                 )
             )
         },enabled = state.phrases.isNotEmpty()),
-        IconItem(Icons.Default.Description, "Examen", primaryGradientStart, onClick = {
+        IconItem(Icons.Default.Description, stringResource(R.string.test_card_phrase), primaryGradientStart, onClick = {
             if (state.isReadyForTest)
             onEvent(
                 PhraseUiEvent.ShowModal(
