@@ -23,9 +23,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesomeMotion
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material3.Card
@@ -155,7 +155,7 @@ fun CardDeck(
     title: String,
     currentCards: Int,
     totalCards: Int,
-    icon: ImageVector = Icons.Default.Star,
+    icon: ImageVector = Icons.Default.AutoAwesomeMotion,
     badgeType: DeckBadgeType = DeckBadgeType.NONE,
     onClickToTest: () -> Unit,
     isNotified: Boolean = false,

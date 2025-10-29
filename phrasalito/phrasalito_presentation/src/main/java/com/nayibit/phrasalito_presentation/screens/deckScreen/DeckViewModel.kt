@@ -15,6 +15,7 @@ import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.mappers.toDeck
 import com.nayibit.phrasalito_presentation.mappers.toDeckUI
 import com.nayibit.phrasalito_presentation.mappers.toLanguage
+import com.nayibit.phrasalito_presentation.model.Language
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.DeleteDeck
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.DismissModal
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.InsertDeck
@@ -102,11 +103,11 @@ class DeckViewModel @Inject
                             _eventFlow.emit(ShowSnackbar(UiText.StringResource(R.string.label_empty_deck_name)))
                         }
                     }
-                    _state.value.currentDeck.selectedLanguage == null -> {
+                /*    _state.value.currentDeck.selectedLanguage == null -> {
                         viewModelScope.launch {
                             _eventFlow.emit(ShowSnackbar(UiText.StringResource(R.string.label_choose_language)))
                         }
-                    }
+                    }*/
                     else -> {
                         insertDeck(_state.value.currentDeck.toDeck())
                     }
@@ -145,11 +146,11 @@ class DeckViewModel @Inject
                             _eventFlow.emit(ShowSnackbar(UiText.StringResource(R.string.label_empty_deck_name)))
                         }
                     }
-                    _state.value.currentDeck.selectedLanguage == null -> {
+                  /*  _state.value.currentDeck.selectedLanguage == null -> {
                         viewModelScope.launch {
                             _eventFlow.emit(ShowSnackbar(UiText.StringResource(R.string.label_choose_language)))
                         }
-                    }
+                    }*/
                     else -> {
                         updateDeck(_state.value.currentDeck)
                     }
@@ -333,7 +334,7 @@ class DeckViewModel @Inject
                             getAvailableLanguagesUseCase()
                         }
                         is Resource.Error -> {
-                            // Emit an error flow instead of calling getAvailableLanguagesUseCase
+                            _state.value = _state.value.copy(isLoading = false)
                             flowOf(Resource.Error(result.message))
                         }
                         else -> {
@@ -346,7 +347,9 @@ class DeckViewModel @Inject
                         is Resource.Success -> {
                             _state.value = _state.value.copy(
                                 isLoading = false,
-                                listLanguages = result.data.map { it.toLanguage() }
+                                listLanguages = if (result.data.isNotEmpty()){
+                                    listOf(Language(id = -1, language = "Ninguno", alias = "")) + result.data.map { it.toLanguage() }
+                                } else emptyList()
                             )
                         }
 

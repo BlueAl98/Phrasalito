@@ -42,7 +42,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import com.nayibit.common.util.Constants.MAX_CHAR_NAME_DECK
+import com.nayibit.common.util.Constants.MIN_CHAR_NAME_DECK
 import com.nayibit.common.util.asString
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.BaseDialog
@@ -81,7 +81,7 @@ fun DeckScreen(
                     navigationToPhrases(event.id, event.lngCode ?: "en_US")
                 }
 
-                is DeckUiEvent.ShowSnackbar ->{
+                is DeckUiEvent.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(event.message.asString(context))
                 }
 
@@ -144,12 +144,29 @@ fun DeckScreen(
                                 ) {
                                     SwipeableDeckItem(
                                         deck = deck,
-                                        onEdit = { onEvent(DeckUiEvent.ShowModal(BodyDeckModalEnum.BODY_UPDATE_DECK, it)) },
-                                        onDelete = {
-                                         onEvent(DeckUiEvent.ShowModal(BodyDeckModalEnum.BODY_DELETE_DECK, it))
+                                        onEdit = {
+                                            onEvent(
+                                                DeckUiEvent.ShowModal(
+                                                    BodyDeckModalEnum.BODY_UPDATE_DECK,
+                                                    it
+                                                )
+                                            )
                                         },
-                                        onClick = { onEvent(DeckUiEvent.NavigationToPhrases(it.id, it.selectedLanguage?.alias
-                                        ))},
+                                        onDelete = {
+                                            onEvent(
+                                                DeckUiEvent.ShowModal(
+                                                    BodyDeckModalEnum.BODY_DELETE_DECK,
+                                                    it
+                                                )
+                                            )
+                                        },
+                                        onClick = {
+                                            onEvent(
+                                                DeckUiEvent.NavigationToPhrases(
+                                                    it.id, it.selectedLanguage?.alias
+                                                )
+                                            )
+                                        },
                                         isSwiped = deck.isSwiped,
                                         onSwipe = { isSwiped ->
                                             onEvent(DeckUiEvent.UpdateDeckList(deck.id, isSwiped))
@@ -175,7 +192,8 @@ fun DeckScreen(
 
                         BodyDeckModalEnum.BODY_UPDATE_DECK -> BodyModalUpdateDeck(
                             state = state,
-                            onEvent = onEvent)
+                            onEvent = onEvent
+                        )
 
                         BodyDeckModalEnum.BODY_DELETE_DECK -> BodyModalDeleteDeck(
                             state = state,
@@ -215,25 +233,26 @@ fun BodyModalInsertDeck(
         label = stringResource(R.string.label_learn_phrase),
         showCharCounter = true,
         maxChar = 20,
-        isError = state.currentDeck.name.length < MAX_CHAR_NAME_DECK && state.currentDeck.name.isNotEmpty()
+        isError = state.currentDeck.name.length < MIN_CHAR_NAME_DECK && state.currentDeck.name.isNotEmpty()
     )
+    if (state.listLanguages.isNotEmpty())
+        LanguageDropdownMenu(
+            languages = state.listLanguages,
+            selectedLanguage = state.currentDeck.selectedLanguage,
+            onLanguageSelected = { language ->
+                onEvent(DeckUiEvent.OnLanguageSelected(language))
+            },
+            label = stringResource(R.string.available_voice_languages),
+            showAlias = true
+        )
 
-    LanguageDropdownMenu(
-        languages = state.listLanguages,
-        selectedLanguage = state.currentDeck.selectedLanguage,
-        onLanguageSelected = { language ->
-           onEvent(DeckUiEvent.OnLanguageSelected(language))
-        },
-        label = stringResource(R.string.available_voice_languages),
-        showAlias = true
-    )
-
-    Row (modifier = modifier.fillMaxWidth(),
+    Row(
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
-    ){
+    ) {
         SwitchBase(
             checked = state.currentDeck.isNotified,
-            onCheckedChange = { onEvent(DeckUiEvent.UpdateNotificationState(it))}
+            onCheckedChange = { onEvent(DeckUiEvent.UpdateNotificationState(it)) }
         )
 
         Spacer(modifier = modifier.size(6.dp))
@@ -241,38 +260,38 @@ fun BodyModalInsertDeck(
         Text(text = stringResource(R.string.active_notifications_label))
     }
 
- if (isLandscape()){
-     Row  {
-         ButtonBase(
-             modifier = modifier.weight(0.45f),
-             text = stringResource(id = R.string.btn_save),
-             onClick = {
-                 onEvent(DeckUiEvent.InsertDeck)
-             },
-             loading = state.isLoadingButton
-         )
-         Spacer(modifier.weight(0.05f))
-         ButtonBase(
-             modifier = modifier.weight(0.45f),
-             text = stringResource(id = R.string.btn_cancel),
-             onClick = { onEvent(DeckUiEvent.DismissModal) },
-             enabled = !state.isLoadingButton
-         )
-     }
- }else {
-     ButtonBase(
-         text = stringResource(id = R.string.btn_save),
-         onClick = {
-             onEvent(DeckUiEvent.InsertDeck)
-         },
-         loading = state.isLoadingButton
-     )
-     ButtonBase(
-         text = stringResource(id = R.string.btn_cancel),
-         onClick = { onEvent(DeckUiEvent.DismissModal) },
-         enabled = !state.isLoadingButton
-     )
- }
+    if (isLandscape()) {
+        Row {
+            ButtonBase(
+                modifier = modifier.weight(0.45f),
+                text = stringResource(id = R.string.btn_save),
+                onClick = {
+                    onEvent(DeckUiEvent.InsertDeck)
+                },
+                loading = state.isLoadingButton
+            )
+            Spacer(modifier.weight(0.05f))
+            ButtonBase(
+                modifier = modifier.weight(0.45f),
+                text = stringResource(id = R.string.btn_cancel),
+                onClick = { onEvent(DeckUiEvent.DismissModal) },
+                enabled = !state.isLoadingButton
+            )
+        }
+    } else {
+        ButtonBase(
+            text = stringResource(id = R.string.btn_save),
+            onClick = {
+                onEvent(DeckUiEvent.InsertDeck)
+            },
+            loading = state.isLoadingButton
+        )
+        ButtonBase(
+            text = stringResource(id = R.string.btn_cancel),
+            onClick = { onEvent(DeckUiEvent.DismissModal) },
+            enabled = !state.isLoadingButton
+        )
+    }
 }
 
 
@@ -287,26 +306,28 @@ fun BodyModalUpdateDeck(
 
     TextFieldBase(
         value = state.currentDeck.name,
-        onValueChange = { onEvent(DeckUiEvent.UpdateTextFieldUpdate(it))},
+        onValueChange = { onEvent(DeckUiEvent.UpdateTextFieldUpdate(it)) },
         label = stringResource(R.string.label_deck)
     )
 
-    LanguageDropdownMenu(
-        languages = state.listLanguages,
-        selectedLanguage = state.currentDeck.selectedLanguage,
-        onLanguageSelected = { language ->
-            onEvent(DeckUiEvent.OnLanguageSelected(language))
-        },
-        label = stringResource(R.string.available_voice_languages),
-        showAlias = true
-    )
+    if (state.listLanguages.isNotEmpty())
+        LanguageDropdownMenu(
+            languages = state.listLanguages,
+            selectedLanguage = state.currentDeck.selectedLanguage,
+            onLanguageSelected = { language ->
+                onEvent(DeckUiEvent.OnLanguageSelected(language))
+            },
+            label = stringResource(R.string.available_voice_languages),
+            showAlias = true
+        )
 
-    Row (modifier = modifier.fillMaxWidth(),
+    Row(
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
-        ){
+    ) {
         SwitchBase(
             checked = state.currentDeck.isNotified,
-            onCheckedChange = { onEvent(DeckUiEvent.UpdateNotificationState(it))}
+            onCheckedChange = { onEvent(DeckUiEvent.UpdateNotificationState(it)) }
         )
 
         Spacer(modifier = modifier.size(6.dp))
@@ -331,7 +352,7 @@ fun BodyModalUpdateDeck(
             )
 
         }
-    }else {
+    } else {
         ButtonBase(
             text = stringResource(R.string.btn_update),
             onClick = { onEvent(DeckUiEvent.UpdateDeck) },
@@ -355,7 +376,7 @@ fun BodyModalDeleteDeck(
 
     ButtonBase(
         text = stringResource(R.string.btn_delete),
-        onClick = { onEvent(DeckUiEvent.DeleteDeck(state.currentDeck.id))},
+        onClick = { onEvent(DeckUiEvent.DeleteDeck(state.currentDeck.id)) },
         loading = state.isLoadingButton
     )
     ButtonBase(

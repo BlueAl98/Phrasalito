@@ -17,7 +17,8 @@ data class PhraseStateUi(
     val phraseToUpdate: PhraseUi? = null,
     val curentCardPhrase : Int = 0,
     val idDeck: Int = 0,
-    val isTTsReady: Boolean = false
+    val isTTsReady: Boolean = false,
+    val lngCode : String = ""
 ){
     val isReadyForTest: Boolean
         get() = phrases.count {

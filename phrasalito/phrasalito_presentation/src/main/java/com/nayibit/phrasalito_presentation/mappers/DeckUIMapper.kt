@@ -20,8 +20,8 @@ fun DeckUI.toDeck(): Deck{
         id = this.id,
         name = this.name,
         maxCards = this.numCards,
-        lngCode = this.selectedLanguage?.alias ?: "en_US",
-        languageName = this.selectedLanguage?.language ?: "english",
+        lngCode = this.selectedLanguage?.alias ?: "",
+        languageName = this.selectedLanguage?.language ?: "",
         isNotified = this.isNotified
     )
 }

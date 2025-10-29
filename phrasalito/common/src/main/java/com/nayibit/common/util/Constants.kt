@@ -19,5 +19,5 @@ object Constants {
     )
     const val NUM_OF_LANGUAGES = 10
     const val MAX_NUMBER_OF_CARDS_PER_DECK = 50
-    const val MAX_CHAR_NAME_DECK = 22
+    const val MIN_CHAR_NAME_DECK = 5
 }

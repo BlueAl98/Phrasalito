@@ -59,6 +59,7 @@ fun LanguageDropdownMenu(
         )
 
         ExposedDropdownMenu(
+
             expanded = expanded,
             onDismissRequest = { expanded = false },
             modifier = Modifier.exposedDropdownSize()

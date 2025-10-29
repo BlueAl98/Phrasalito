@@ -40,9 +40,10 @@ import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUi
 @Composable
 fun LanguagePhraseCard(
     phrase: PhraseUi,
-    modifier: Modifier = Modifier, 
-    onEvent : () -> Unit = {},
-    isTTsReady: Boolean = false
+    modifier: Modifier = Modifier,
+    onEvent: () -> Unit = {},
+    isTTsReady: Boolean = false,
+    isLanguageVoiceSet: Boolean = false
 ) {
     var isTranslationVisible by remember { mutableStateOf(false) }
 
@@ -154,7 +155,7 @@ fun LanguagePhraseCard(
                                     )
                                     Spacer(modifier = Modifier.weight(1f))
 
-                                    if (isTTsReady){
+                                    if (isTTsReady && isLanguageVoiceSet){
                                     Icon(
                                         modifier = Modifier.clickable { onEvent() },
                                         imageVector = Icons.Default.PlayArrow,
@@ -185,8 +186,9 @@ fun LanguagePhraseCard(
 fun LanguagePhraseCardLandscape(
     phrase: PhraseUi,
     modifier: Modifier = Modifier,
-    onEvent : () -> Unit = {},
-    isTTsReady: Boolean = false
+    onEvent: () -> Unit = {},
+    isTTsReady: Boolean = false,
+    isLanguageVoiceSet: Boolean = false
 ) {
     var isTranslationVisible by remember { mutableStateOf(false) }
 
@@ -302,7 +304,7 @@ fun LanguagePhraseCardLandscape(
                                         )
                                         Spacer(modifier = Modifier.weight(1f))
 
-                                        if (isTTsReady) {
+                                        if (isTTsReady && isLanguageVoiceSet) {
                                             Icon(
                                                 modifier = Modifier.clickable { onEvent() },
                                                 imageVector = Icons.Default.PlayArrow,
@@ -334,12 +336,13 @@ fun AdaptiveLanguageCard(
     phrase: PhraseUi,
     isLandscape: Boolean = false,
     onEvent : () -> Unit = {},
-    isTTsReady: Boolean = false
+    isTTsReady: Boolean = false,
+    isLanguageVoiceSet: Boolean = false
 ) {
     if (isLandscape) {
-        LanguagePhraseCardLandscape(phrase = phrase, modifier = modifier, onEvent = onEvent, isTTsReady = isTTsReady)
+        LanguagePhraseCardLandscape(phrase = phrase, modifier = modifier, onEvent = onEvent, isTTsReady = isTTsReady, isLanguageVoiceSet)
     } else {
-        LanguagePhraseCard(phrase = phrase, modifier = modifier, onEvent = onEvent, isTTsReady = isTTsReady)
+        LanguagePhraseCard(phrase = phrase, modifier = modifier, onEvent = onEvent, isTTsReady = isTTsReady, isLanguageVoiceSet)
     }
 }
 

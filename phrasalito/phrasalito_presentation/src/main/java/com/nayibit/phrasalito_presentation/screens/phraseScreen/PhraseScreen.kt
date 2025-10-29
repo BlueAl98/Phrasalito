@@ -506,7 +506,8 @@ fun AreaStudyCards(
                                     )
                                 }
                                 },
-                                isTTsReady = state.isTTsReady
+                                isTTsReady = state.isTTsReady,
+                                isLanguageVoiceSet = state.lngCode != ""
                             )
                         }
                     }
@@ -600,7 +601,8 @@ fun AreaStudyCards(
                                         )
                                     }
                                 },
-                                isTTsReady = state.isTTsReady
+                                isTTsReady = state.isTTsReady,
+                                isLanguageVoiceSet = state.lngCode != ""
                             )
                         }
                     }

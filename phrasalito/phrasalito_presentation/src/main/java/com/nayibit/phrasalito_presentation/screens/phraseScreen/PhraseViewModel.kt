@@ -57,10 +57,11 @@ class PhraseViewModel
     ) : ViewModel()  {
 
     val idDeck = savedStateHandle.get<Int>("idDeck") ?: -1
-    val lngCode = savedStateHandle.get<String>("lngCode") ?: "en_US"
+    val lngCode = savedStateHandle.get<String>("lngCode") ?: ""
 
     private val _state = MutableStateFlow(PhraseStateUi(
-        idDeck = idDeck
+        idDeck = idDeck,
+        lngCode = lngCode
     ))
     val state: StateFlow<PhraseStateUi> = _state.asStateFlow()
 
