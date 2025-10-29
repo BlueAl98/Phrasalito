@@ -32,6 +32,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.nayibit.common.util.allowOnlyLettersAndSigns
 import com.nayibit.common.util.cleanRepeatedSigns
+import com.nayibit.common.util.countValidChar
 import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
 
 @Composable
@@ -99,7 +100,7 @@ fun TextFieldBase(
                 }
 
                 // Notify parent if cleaned changed text
-                if (cleaned.length <= maxChar) {
+                if (cleaned.countValidChar() <= maxChar) {
                     // Update internal state
                    textFieldValue = newText.copy(text = cleaned)
                     onValueChange(cleaned)
@@ -132,7 +133,7 @@ fun TextFieldBase(
                 .padding(end = 12.dp, top = 16.dp, bottom = 2.dp)
         ) {
             Text(
-                text = "${value.length} / $maxChar",
+                text = "${value.countValidChar()} / $maxChar",
                 style = MaterialTheme.typography.labelSmall,
                 color = if (value.length >= maxChar) errorColor else unfocusedColor
             )
