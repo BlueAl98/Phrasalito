@@ -81,7 +81,7 @@ fun TextFieldBase(
         errorTextColor = MaterialTheme.colorScheme.onSurface,
         focusedContainerColor = Color.Transparent,
         unfocusedContainerColor = Color.Transparent,
-        errorContainerColor = MaterialTheme.colorScheme.errorContainer,
+        errorContainerColor = Color.Transparent,
         focusedIndicatorColor = focusedColor,
         unfocusedIndicatorColor = unfocusedColor,
         unfocusedLabelColor = unfocusedColor,

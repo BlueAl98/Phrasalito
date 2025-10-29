@@ -42,6 +42,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import com.nayibit.common.util.Constants.MAX_CHAR_NAME_DECK
 import com.nayibit.common.util.asString
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.BaseDialog
@@ -211,7 +212,10 @@ fun BodyModalInsertDeck(
     TextFieldBase(
         value = state.currentDeck.name,
         onValueChange = { onEvent(DeckUiEvent.UpdateTextFieldInsert(it)) },
-        label = stringResource(R.string.label_learn_phrase)
+        label = stringResource(R.string.label_learn_phrase),
+        showCharCounter = true,
+        maxChar = 20,
+        isError = state.currentDeck.name.length < MAX_CHAR_NAME_DECK && state.currentDeck.name.isNotEmpty()
     )
 
     LanguageDropdownMenu(
@@ -220,7 +224,7 @@ fun BodyModalInsertDeck(
         onLanguageSelected = { language ->
            onEvent(DeckUiEvent.OnLanguageSelected(language))
         },
-        label = "Idiomas disponibles voz",
+        label = stringResource(R.string.available_voice_languages),
         showAlias = true
     )
 
@@ -234,7 +238,7 @@ fun BodyModalInsertDeck(
 
         Spacer(modifier = modifier.size(6.dp))
 
-        Text(text = "Activar notificationes")
+        Text(text = stringResource(R.string.active_notifications_label))
     }
 
  if (isLandscape()){
@@ -293,7 +297,7 @@ fun BodyModalUpdateDeck(
         onLanguageSelected = { language ->
             onEvent(DeckUiEvent.OnLanguageSelected(language))
         },
-        label = "Idiomas disponibles voz",
+        label = stringResource(R.string.available_voice_languages),
         showAlias = true
     )
 
@@ -307,7 +311,7 @@ fun BodyModalUpdateDeck(
 
         Spacer(modifier = modifier.size(6.dp))
 
-        Text(text = "Activar notificationes")
+        Text(text = stringResource(R.string.active_notifications_label))
     }
 
     if (isLandscape()) {

@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
@@ -32,6 +31,7 @@ import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -165,7 +165,7 @@ fun CardDeck(
     val isPressed by interactionSource.collectIsPressedAsState()
 
     val elevation by animateDpAsState(
-        targetValue = if (isPressed) 2.dp else 8.dp,
+        targetValue = if (isPressed) 2.dp else 40.dp,
         animationSpec = tween(durationMillis = 150),
         label = "elevation"
     )
@@ -185,17 +185,22 @@ fun CardDeck(
             .shadow(
                 elevation = elevation,
                 shape = RoundedCornerShape(20.dp),
-                spotColor = primaryGradientStart.copy(alpha = 0.3f)
+                spotColor = MaterialTheme.colorScheme.inversePrimary,
+                ambientColor = MaterialTheme.colorScheme.inversePrimary
             )
+
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
                 onClick = onClickToTest
-            ),
+            )
+        ,
         shape = RoundedCornerShape(20.dp)
     ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
+        Box(modifier = Modifier.fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
 
+        ) {
             // Left gradient border
             Box(
                 modifier = Modifier
@@ -357,32 +362,6 @@ private fun DeckProgress(
     }
 }
 
-@Composable
-private fun DeckArrow(onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .size(32.dp)
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        primaryGradientStart.copy(alpha = 0.15f),
-                        primaryGradientEnd.copy(alpha = 0.15f)
-                    )
-                ),
-                shape = RoundedCornerShape(10.dp)
-            )
-            .clickable{onClick()}
-        ,
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = "Open deck",
-            tint = primaryGradientStart,
-            modifier = Modifier.size(16.dp)
-        )
-    }
-}
 
 @Composable
 private fun DeckBadge(
