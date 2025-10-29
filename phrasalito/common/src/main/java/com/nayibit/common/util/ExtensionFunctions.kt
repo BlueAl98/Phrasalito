@@ -22,3 +22,7 @@ fun String.cleanRepeatedSigns(): String {
     // Replace 2 or more repeated non-letter/non-digit signs with a single one
     return this.replace(Regex("([^\\p{L}\\p{N}])\\1+"), "$1")
 }
+
+fun String.countValidChar(): Int {
+    return count { it.isLetterOrDigit() }
+}

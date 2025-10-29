@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.nayibit.common.util.Constants.MIN_CHAR_NAME_DECK
 import com.nayibit.common.util.asString
+import com.nayibit.common.util.countValidChar
 import com.nayibit.phrasalito_presentation.R
 import com.nayibit.phrasalito_presentation.composables.BaseDialog
 import com.nayibit.phrasalito_presentation.composables.ButtonBase
@@ -233,7 +234,7 @@ fun BodyModalInsertDeck(
         label = stringResource(R.string.label_learn_phrase),
         showCharCounter = true,
         maxChar = 20,
-        isError = state.currentDeck.name.length < MIN_CHAR_NAME_DECK && state.currentDeck.name.isNotEmpty()
+        isError = state.currentDeck.name.countValidChar() < MIN_CHAR_NAME_DECK && state.currentDeck.name.isNotEmpty()
     )
     if (state.listLanguages.isNotEmpty())
         LanguageDropdownMenu(
@@ -307,7 +308,10 @@ fun BodyModalUpdateDeck(
     TextFieldBase(
         value = state.currentDeck.name,
         onValueChange = { onEvent(DeckUiEvent.UpdateTextFieldUpdate(it)) },
-        label = stringResource(R.string.label_deck)
+        label = stringResource(R.string.label_deck),
+        showCharCounter = true,
+        maxChar = 20,
+        isError = state.currentDeck.name.countValidChar() < MIN_CHAR_NAME_DECK && state.currentDeck.name.isNotEmpty()
     )
 
     if (state.listLanguages.isNotEmpty())

@@ -21,6 +21,7 @@
     <string name="label_choose_language">Elige un idioma</string>
     <string name="available_voice_languages">Idiomas disponibles voz</string>
     <string name="active_notifications_label">Activar notificationes</string>
+    <string name="label_short_deck_name">El nombre del deck debe tener minimo 5 caracteres</string>
 
 
 

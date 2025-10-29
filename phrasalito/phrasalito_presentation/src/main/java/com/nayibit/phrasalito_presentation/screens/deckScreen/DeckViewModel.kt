@@ -2,8 +2,11 @@ package com.nayibit.phrasalito_presentation.screens.deckScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nayibit.common.util.Constants.FIRST_ELEMENT_DROP_LANGUAGE_LIST
+import com.nayibit.common.util.Constants.MIN_CHAR_NAME_DECK
 import com.nayibit.common.util.Resource
 import com.nayibit.common.util.UiText
+import com.nayibit.common.util.countValidChar
 import com.nayibit.phrasalito_domain.model.Deck
 import com.nayibit.phrasalito_domain.useCases.decks.DeleteDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.GetAllDecksUseCase
@@ -100,14 +103,17 @@ class DeckViewModel @Inject
                 when{
                     _state.value.currentDeck.name.isEmpty() -> {
                         viewModelScope.launch {
-                            _eventFlow.emit(ShowSnackbar(UiText.StringResource(R.string.label_empty_deck_name)))
+                            _eventFlow.emit(ShowToast(UiText.StringResource(R.string.label_empty_deck_name)))
                         }
                     }
-                /*    _state.value.currentDeck.selectedLanguage == null -> {
+
+                    _state.value.currentDeck.name.countValidChar() < MIN_CHAR_NAME_DECK ->{
                         viewModelScope.launch {
-                            _eventFlow.emit(ShowSnackbar(UiText.StringResource(R.string.label_choose_language)))
+                            _eventFlow.emit(ShowToast(UiText.StringResource(R.string.label_short_deck_name)))
                         }
-                    }*/
+                    }
+                    
+
                     else -> {
                         insertDeck(_state.value.currentDeck.toDeck())
                     }
@@ -143,14 +149,16 @@ class DeckViewModel @Inject
                 when{
                     _state.value.currentDeck.name.isEmpty() -> {
                         viewModelScope.launch {
-                            _eventFlow.emit(ShowSnackbar(UiText.StringResource(R.string.label_empty_deck_name)))
+                            _eventFlow.emit(ShowToast(UiText.StringResource(R.string.label_empty_deck_name)))
                         }
                     }
-                  /*  _state.value.currentDeck.selectedLanguage == null -> {
+
+                    _state.value.currentDeck.name.countValidChar() < MIN_CHAR_NAME_DECK ->{
                         viewModelScope.launch {
-                            _eventFlow.emit(ShowSnackbar(UiText.StringResource(R.string.label_choose_language)))
+                            _eventFlow.emit(ShowToast(UiText.StringResource(R.string.label_short_deck_name)))
                         }
-                    }*/
+                    }
+
                     else -> {
                         updateDeck(_state.value.currentDeck)
                     }
@@ -216,14 +224,14 @@ class DeckViewModel @Inject
                     _state.value = _state.value.copy(
                         showModal = false
                     )
-                    _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Error: ${result.message}")))
+                    _eventFlow.emit(ShowToast(UiText.DynamicString("Error: ${result.message}")))
                 }
 
                 is Resource.Success<*> -> {
                     _state.value = _state.value.copy(
                         showModal = false
                     )
-                    _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Deck actualizado")))
+                    _eventFlow.emit(ShowToast(UiText.DynamicString("Deck actualizado")))
                 }
 
                 else -> {}
@@ -239,14 +247,14 @@ class DeckViewModel @Inject
                     _state.value = _state.value.copy(
                         showModal = false
                     )
-                    _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Error: ${result.message}")))
+                    _eventFlow.emit(ShowToast(UiText.DynamicString("Error: ${result.message}")))
                 }
 
                 is Resource.Success<*> -> {
                     _state.value = _state.value.copy(
                         showModal = false
                     )
-                    _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Deck eliminado")))
+                    _eventFlow.emit(ShowToast(UiText.DynamicString("Deck eliminado")))
                 }
 
                 else -> {}
@@ -275,7 +283,7 @@ class DeckViewModel @Inject
                             errorMessage = null,
                             showModal = false,
                             isLoadingButton = false)
-                        _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Deck inserted successfully")))
+                        _eventFlow.emit(ShowToast(UiText.DynamicString("Deck inserted successfully")))
                     }
 
                     is Resource.Error -> {
@@ -285,7 +293,7 @@ class DeckViewModel @Inject
                             showModal = false,
                             isLoadingButton = false
                         )
-                        _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Error: ${result.message}")))
+                        _eventFlow.emit(ShowToast(UiText.DynamicString("Error: ${result.message}")))
                     }
 
                 }
@@ -315,7 +323,7 @@ class DeckViewModel @Inject
                             isLoading = false,
                             errorMessage = result.message
                         )
-                        _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Error: ${result.message}")))
+                        _eventFlow.emit(ShowToast(UiText.DynamicString("Error: ${result.message}")))
                     }
                 }
             }
@@ -348,7 +356,7 @@ class DeckViewModel @Inject
                             _state.value = _state.value.copy(
                                 isLoading = false,
                                 listLanguages = if (result.data.isNotEmpty()){
-                                    listOf(Language(id = -1, language = "Ninguno", alias = "")) + result.data.map { it.toLanguage() }
+                                    listOf(Language(id = -1, language = FIRST_ELEMENT_DROP_LANGUAGE_LIST, alias = "")) + result.data.map { it.toLanguage() }
                                 } else emptyList()
                             )
                         }
@@ -358,7 +366,7 @@ class DeckViewModel @Inject
                                 isLoading = false,
                                 errorMessage = result.message
                             )
-                            _eventFlow.emit(ShowSnackbar(UiText.DynamicString("Error: ${result.message}")))
+                            _eventFlow.emit(ShowToast(UiText.DynamicString("Error: ${result.message}")))
                         }
 
                         is Resource.Loading -> {
