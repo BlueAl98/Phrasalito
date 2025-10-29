@@ -8,8 +8,9 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.nayibit.phrasalito_presentation.model.Language
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,6 +35,19 @@ fun LanguageDropdownMenu(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
+    val colors: TextFieldColors = TextFieldDefaults.colors(
+        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+        errorTextColor = MaterialTheme.colorScheme.onSurface,
+        focusedContainerColor = Color.Transparent,
+        unfocusedContainerColor = Color.Transparent,
+        errorContainerColor = Color.Transparent,
+        focusedIndicatorColor = primaryGradientEnd,
+        unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        focusedLabelColor = primaryGradientEnd
+    )
+
+
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = it && enabled },
@@ -46,12 +61,7 @@ fun LanguageDropdownMenu(
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
             },
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = Color.Gray,
-                focusedLabelColor = MaterialTheme.colorScheme.primary,
-                unfocusedLabelColor = Color.Gray
-            ),
+            colors = colors,
             modifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth(),
