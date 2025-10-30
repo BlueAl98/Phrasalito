@@ -230,9 +230,7 @@ fun BodyModalInsertDeck(
     onEvent: (DeckUiEvent) -> Unit
 ) {
 
-
     val permissionState = rememberNotificationPermissionHandler()
-
 
     TextFieldBase(
         value = state.currentDeck.name,
@@ -316,6 +314,9 @@ fun BodyModalUpdateDeck(
     modifier: Modifier = Modifier,
 ) {
 
+    val permissionState = rememberNotificationPermissionHandler()
+
+
     Text(text = stringResource(R.string.title_update_deck))
 
     TextFieldBase(
@@ -344,7 +345,12 @@ fun BodyModalUpdateDeck(
     ) {
         SwitchBase(
             checked = state.currentDeck.isNotified,
-            onCheckedChange = { onEvent(DeckUiEvent.UpdateNotificationState(it)) }
+            onCheckedChange = {
+                if (permissionState.shouldRequest && !permissionState.isGranted){
+                permissionState.openSettings()
+            }else{
+                onEvent(DeckUiEvent.UpdateNotificationState(it))
+            } }
         )
 
         Spacer(modifier = modifier.size(6.dp))
