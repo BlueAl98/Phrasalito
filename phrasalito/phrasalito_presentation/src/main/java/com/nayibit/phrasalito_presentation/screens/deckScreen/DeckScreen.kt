@@ -54,6 +54,8 @@ import com.nayibit.phrasalito_presentation.composables.SwipeableDeckItem
 import com.nayibit.phrasalito_presentation.composables.SwitchBase
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
 import com.nayibit.phrasalito_presentation.composables.isLandscape
+import com.nayibit.phrasalito_presentation.composables.rememberNotificationPermissionHandler
+import com.nayibit.phrasalito_presentation.screens.startScreen.StartUiEvent
 import kotlinx.coroutines.flow.Flow
 
 
@@ -228,6 +230,10 @@ fun BodyModalInsertDeck(
     onEvent: (DeckUiEvent) -> Unit
 ) {
 
+
+    val permissionState = rememberNotificationPermissionHandler()
+
+
     TextFieldBase(
         value = state.currentDeck.name,
         onValueChange = { onEvent(DeckUiEvent.UpdateTextFieldInsert(it)) },
@@ -253,7 +259,14 @@ fun BodyModalInsertDeck(
     ) {
         SwitchBase(
             checked = state.currentDeck.isNotified,
-            onCheckedChange = { onEvent(DeckUiEvent.UpdateNotificationState(it)) }
+            onCheckedChange = {
+                if (permissionState.shouldRequest && !permissionState.isGranted){
+                    permissionState.openSettings()
+                }else{
+                    onEvent(DeckUiEvent.UpdateNotificationState(it))
+                }
+
+            }
         )
 
         Spacer(modifier = modifier.size(6.dp))

@@ -12,6 +12,7 @@ import com.nayibit.phrasalito_domain.useCases.tts.IsTextSpeechReadyUseCase
 import com.nayibit.phrasalito_presentation.mappers.toDeckUI
 import com.nayibit.phrasalito_presentation.mappers.toLanguage
 import com.nayibit.phrasalito_presentation.model.Language
+import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.ShowToast
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -29,7 +31,10 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TestWatcher
+import org.junit.runner.Description
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.util.Locale
@@ -48,7 +53,6 @@ class DeckViewModelTest {
     private val mockIsTextSpeechReadyUseCase:  IsTextSpeechReadyUseCase = mock()
 
     private val testDispatcher = StandardTestDispatcher()
-
 
 
     @Before
@@ -269,58 +273,28 @@ class DeckViewModelTest {
 
     // UPDATE DECKS METHOD
 
-/*
+
     @Test
     fun `UpdateDeck should update state with success `() = runTest {
         val deck = Deck(1, "Test Deck", 3, "en", "English")
 
-        val result: <Resource<Unit> = Resource.Loading,
-            Resource.Success(Unit)
-
 
         // ✅ Explicitly mock the operator invoke
-        whenever(mockUpdateDeckUseCase(deck)).thenReturn(result)
+        whenever(mockUpdateDeckUseCase(deck)).thenReturn(Resource.Success(Unit))
 
         // Act
         viewModel.updateDeck(deck.toDeckUI())
 
-        // Assert
-        viewModel.state.test {
-            val initial = awaitItem()
-            assertEquals(false, initial.isLoadingButton)
+        advanceUntilIdle()
 
-            val loadingState = awaitItem()
-            assertEquals(true, loadingState.isLoadingButton)
-
-            val successState = awaitItem()
-            assertEquals(false, successState.isLoadingButton)
-            assertEquals(deck.toDeckUI(), successState.successInsertedDeck)
-            assertNull(successState.errorMessage)
-
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `UpdateDeck failure result should be return message error`() = runTest {
-        val messageError =  "Something bad happens"
-        val fakeDeck = Deck(1, "Test Deck", 3, "en", "English")
-        val flowResult = flowOf(Resource.Loading, Resource.Error(messageError))
-
-        whenever(mockInsertDeckUseCase(fakeDeck)).thenReturn(flowResult)
-
-        viewModel.insertDeck(fakeDeck)
-
-        viewModel.state.test {
-            awaitItem()
-            val isLoading = awaitItem()
-            assertEquals(true, isLoading.isLoadingButton)
-            val failueState =  awaitItem()
-            assertEquals(false, failueState.isLoadingButton)
-            assertEquals(messageError, failueState.errorMessage)
-        }
+        //assert
+       assertEquals(false, viewModel.state.value.isLoadingButton)
+       assertEquals(false, viewModel.state.value.showModal)
 
     }
-*/
+
+
+
+
 
 }

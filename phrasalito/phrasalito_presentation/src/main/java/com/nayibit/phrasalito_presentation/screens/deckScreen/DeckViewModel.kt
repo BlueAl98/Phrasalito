@@ -33,6 +33,7 @@ import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.Update
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.UpdateTextFieldInsert
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.UpdateTextFieldUpdate
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -222,7 +223,8 @@ class DeckViewModel @Inject
             when (result) {
                 is Resource.Error -> {
                     _state.value = _state.value.copy(
-                        showModal = false
+                        showModal = false,
+                        errorMessage = result.message
                     )
                     _eventFlow.emit(ShowToast(UiText.DynamicString("Error: ${result.message}")))
                 }
