@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.nayibit.common.util.Constants.OP_TARGET_LANGUAGE
 import com.nayibit.common.util.UiText
 import com.nayibit.common.util.asString
 import com.nayibit.phrasalito_presentation.R
@@ -497,15 +498,16 @@ fun AreaStudyCards(
                                 modifier = modifier.fillMaxSize(),
                                 phrase = phrase,
                                 isLandscape = isLandscape(),
-                                onEvent = {
-                                    phrase.example?.let {
-                                    onEvent(
-                                        PhraseUiEvent.SpeakText(
-                                            phrase.example
-                                        )
-                                    )
-                                }
-                                },
+                                onEvent = { select ->
+                                    val textToSpeak = when (select) {
+                                        OP_TARGET_LANGUAGE -> phrase.targetLanguage.takeIf { it.isNotEmpty() }
+                                        else -> phrase.example?.takeIf { it.isNotEmpty() }
+                                    }
+
+                                    textToSpeak?.let {
+                                        onEvent(PhraseUiEvent.SpeakText(it))
+                                    }
+                              },
                                 isTTsReady = state.isTTsReady,
                                 isLanguageVoiceSet = state.lngCode != ""
                             )
@@ -592,13 +594,14 @@ fun AreaStudyCards(
                                 modifier = modifier.fillMaxSize(),
                                 phrase = phrase,
                                 isLandscape = isLandscape(),
-                                onEvent = {
-                                    phrase.example?.let {
-                                        onEvent(
-                                            PhraseUiEvent.SpeakText(
-                                                phrase.example
-                                            )
-                                        )
+                                onEvent = { select ->
+                                    val textToSpeak = when (select) {
+                                        OP_TARGET_LANGUAGE -> phrase.targetLanguage.takeIf { it.isNotEmpty() }
+                                        else -> phrase.example?.takeIf { it.isNotEmpty() }
+                                    }
+
+                                    textToSpeak?.let {
+                                        onEvent(PhraseUiEvent.SpeakText(it))
                                     }
                                 },
                                 isTTsReady = state.isTTsReady,

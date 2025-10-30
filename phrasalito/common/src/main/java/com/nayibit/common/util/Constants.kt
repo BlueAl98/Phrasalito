@@ -21,4 +21,6 @@ object Constants {
     const val MAX_NUMBER_OF_CARDS_PER_DECK = 50
     const val MIN_CHAR_NAME_DECK = 5
     const val FIRST_ELEMENT_DROP_LANGUAGE_LIST = "Ninguno"
+    const val OP_TARGET_LANGUAGE = 0
+    const val OP_EXAMPLE_LANGUAGE = 1
 }

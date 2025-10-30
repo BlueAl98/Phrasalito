@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -35,13 +37,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nayibit.common.util.Constants.OP_EXAMPLE_LANGUAGE
+import com.nayibit.common.util.Constants.OP_TARGET_LANGUAGE
 import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUi
 
 @Composable
 fun LanguagePhraseCard(
     phrase: PhraseUi,
     modifier: Modifier = Modifier,
-    onEvent: () -> Unit = {},
+    onEvent: (Int) -> Unit = {},
     isTTsReady: Boolean = false,
     isLanguageVoiceSet: Boolean = false
 ) {
@@ -52,6 +56,7 @@ fun LanguagePhraseCard(
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -67,6 +72,22 @@ fun LanguagePhraseCard(
                 .padding(24.dp),
             contentAlignment = Alignment.Center
         ) {
+            if (isTTsReady && isLanguageVoiceSet) {
+              Box(contentAlignment = Alignment.TopEnd, modifier = Modifier.fillMaxSize()){
+                    IconButton(
+                        onClick = { onEvent(OP_TARGET_LANGUAGE) },
+                        modifier = Modifier.align(Alignment.TopEnd)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                            contentDescription = "Play pronunciation",
+                            tint = Color.White,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
+                }
+            }
+
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -157,7 +178,7 @@ fun LanguagePhraseCard(
 
                                     if (isTTsReady && isLanguageVoiceSet){
                                     Icon(
-                                        modifier = Modifier.clickable { onEvent() },
+                                        modifier = Modifier.clickable { onEvent(OP_EXAMPLE_LANGUAGE) },
                                         imageVector = Icons.Default.PlayArrow,
                                         contentDescription = "Play",
                                         tint = phrase.color
@@ -186,7 +207,7 @@ fun LanguagePhraseCard(
 fun LanguagePhraseCardLandscape(
     phrase: PhraseUi,
     modifier: Modifier = Modifier,
-    onEvent: () -> Unit = {},
+    onEvent: (Int) -> Unit = {},
     isTTsReady: Boolean = false,
     isLanguageVoiceSet: Boolean = false
 ) {
@@ -212,6 +233,22 @@ fun LanguagePhraseCardLandscape(
                 .padding(20.dp),
             contentAlignment = Alignment.Center
         ) {
+
+            if (isTTsReady && isLanguageVoiceSet) {
+                Box(contentAlignment = Alignment.TopEnd, modifier = Modifier.fillMaxSize()){
+                    IconButton(
+                        onClick = { onEvent(OP_TARGET_LANGUAGE) },
+                        modifier = Modifier.align(Alignment.TopEnd)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                            contentDescription = "Play pronunciation",
+                            tint = Color.White,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
+                }
+            }
 
             Column (
                 modifier = Modifier.fillMaxSize()
@@ -306,7 +343,7 @@ fun LanguagePhraseCardLandscape(
 
                                         if (isTTsReady && isLanguageVoiceSet) {
                                             Icon(
-                                                modifier = Modifier.clickable { onEvent() },
+                                                modifier = Modifier.clickable { onEvent(OP_EXAMPLE_LANGUAGE) },
                                                 imageVector = Icons.Default.PlayArrow,
                                                 contentDescription = "Play",
                                                 tint = phrase.color
@@ -335,14 +372,14 @@ fun AdaptiveLanguageCard(
     modifier: Modifier = Modifier,
     phrase: PhraseUi,
     isLandscape: Boolean = false,
-    onEvent : () -> Unit = {},
+    onEvent : (Int) -> Unit = {},
     isTTsReady: Boolean = false,
     isLanguageVoiceSet: Boolean = false
 ) {
     if (isLandscape) {
         LanguagePhraseCardLandscape(phrase = phrase, modifier = modifier, onEvent = onEvent, isTTsReady = isTTsReady, isLanguageVoiceSet)
     } else {
-        LanguagePhraseCard(phrase = phrase, modifier = modifier, onEvent = onEvent, isTTsReady = isTTsReady, isLanguageVoiceSet)
+        LanguagePhraseCard(phrase = phrase, modifier = modifier, onEvent = onEvent , isTTsReady = isTTsReady, isLanguageVoiceSet)
     }
 }
 
