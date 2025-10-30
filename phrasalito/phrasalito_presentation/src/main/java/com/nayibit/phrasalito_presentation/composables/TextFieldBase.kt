@@ -135,7 +135,7 @@ fun TextFieldBase(
             Text(
                 text = "${value.countValidChar()} / $maxChar",
                 style = MaterialTheme.typography.labelSmall,
-                color = if (value.length >= maxChar) errorColor else unfocusedColor
+                color = if (value.countValidChar() >= maxChar) errorColor else unfocusedColor
             )
         }
     }
