@@ -13,6 +13,7 @@ import com.nayibit.phrasalito_domain.useCases.phrases.DeletebyIdPhraseUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.GetAllPhrasesByDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.InsertPhraseUseCase
 import com.nayibit.phrasalito_domain.useCases.phrases.UpdatePhraseByIdUseCase
+import com.nayibit.phrasalito_domain.useCases.tts.IsSpeakingUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.IsTextSpeechReadyUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.SpeakTextUseCase
 import com.nayibit.phrasalito_presentation.R
@@ -53,6 +54,7 @@ class PhraseViewModel
         private val updatePhraseByIdUseCase: UpdatePhraseByIdUseCase,
         private val speakTextUseCase: SpeakTextUseCase,
         private val isTTsAvailableUseCase: IsTextSpeechReadyUseCase,
+        private val isSpeakingUseCase: IsSpeakingUseCase,
         savedStateHandle: SavedStateHandle
     ) : ViewModel()  {
 
@@ -71,6 +73,7 @@ class PhraseViewModel
     init {
          getAllPhrases(idDeck)
          getStateTTS()
+         observeTtsSpeaking()
      }
 
     fun onEvent(event: PhraseUiEvent) {
@@ -347,5 +350,12 @@ class PhraseViewModel
       }
     }
 
+    private fun observeTtsSpeaking() {
+        viewModelScope.launch {
+            isSpeakingUseCase().collect { isSpeaking ->
+                _state.update { it.copy(isTtsSpeaking = isSpeaking) }
+            }
+        }
+    }
 
 }

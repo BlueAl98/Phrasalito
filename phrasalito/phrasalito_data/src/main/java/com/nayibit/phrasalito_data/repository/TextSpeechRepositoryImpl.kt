@@ -26,4 +26,8 @@ class TextSpeechRepositoryImpl
         return tts.getAvailableLanguages()
     }
 
+    override suspend fun isTtsSpeaking(): StateFlow<Boolean> {
+        return tts.isSpeaking
+    }
+
 }

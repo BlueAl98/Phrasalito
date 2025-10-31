@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Card
@@ -47,7 +48,8 @@ fun LanguagePhraseCard(
     modifier: Modifier = Modifier,
     onEvent: (Int) -> Unit = {},
     isTTsReady: Boolean = false,
-    isLanguageVoiceSet: Boolean = false
+    isLanguageVoiceSet: Boolean = false,
+    isSpeaking: Boolean = false
 ) {
     var isTranslationVisible by remember { mutableStateOf(false) }
 
@@ -79,7 +81,7 @@ fun LanguagePhraseCard(
                         modifier = Modifier.align(Alignment.TopEnd)
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                            imageVector = if (isSpeaking) Icons.Default.Update else Icons.AutoMirrored.Filled.VolumeUp,
                             contentDescription = "Play pronunciation",
                             tint = Color.White,
                             modifier = Modifier.size(30.dp)
@@ -179,7 +181,7 @@ fun LanguagePhraseCard(
                                     if (isTTsReady && isLanguageVoiceSet){
                                     Icon(
                                         modifier = Modifier.clickable { onEvent(OP_EXAMPLE_LANGUAGE) },
-                                        imageVector = Icons.Default.PlayArrow,
+                                        imageVector = if (isSpeaking) Icons.Default.Update else Icons.Default.PlayArrow,
                                         contentDescription = "Play",
                                         tint = phrase.color
                                     )
@@ -209,7 +211,8 @@ fun LanguagePhraseCardLandscape(
     modifier: Modifier = Modifier,
     onEvent: (Int) -> Unit = {},
     isTTsReady: Boolean = false,
-    isLanguageVoiceSet: Boolean = false
+    isLanguageVoiceSet: Boolean = false,
+    isSpeaking: Boolean = false
 ) {
     var isTranslationVisible by remember { mutableStateOf(false) }
 
@@ -241,7 +244,7 @@ fun LanguagePhraseCardLandscape(
                         modifier = Modifier.align(Alignment.TopEnd)
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                            imageVector = if (isSpeaking) Icons.Default.Update else Icons.AutoMirrored.Filled.VolumeUp,
                             contentDescription = "Play pronunciation",
                             tint = Color.White,
                             modifier = Modifier.size(30.dp)
@@ -344,7 +347,7 @@ fun LanguagePhraseCardLandscape(
                                         if (isTTsReady && isLanguageVoiceSet) {
                                             Icon(
                                                 modifier = Modifier.clickable { onEvent(OP_EXAMPLE_LANGUAGE) },
-                                                imageVector = Icons.Default.PlayArrow,
+                                                imageVector = if (isSpeaking) Icons.Default.Update else Icons.Default.PlayArrow,
                                                 contentDescription = "Play",
                                                 tint = phrase.color
                                             )
@@ -374,12 +377,13 @@ fun AdaptiveLanguageCard(
     isLandscape: Boolean = false,
     onEvent : (Int) -> Unit = {},
     isTTsReady: Boolean = false,
-    isLanguageVoiceSet: Boolean = false
+    isLanguageVoiceSet: Boolean = false,
+    isTtsSpeaking: Boolean = false
 ) {
     if (isLandscape) {
-        LanguagePhraseCardLandscape(phrase = phrase, modifier = modifier, onEvent = onEvent, isTTsReady = isTTsReady, isLanguageVoiceSet)
+        LanguagePhraseCardLandscape(phrase = phrase, modifier = modifier, onEvent = onEvent, isTTsReady = isTTsReady, isLanguageVoiceSet, isTtsSpeaking)
     } else {
-        LanguagePhraseCard(phrase = phrase, modifier = modifier, onEvent = onEvent , isTTsReady = isTTsReady, isLanguageVoiceSet)
+        LanguagePhraseCard(phrase = phrase, modifier = modifier, onEvent = onEvent , isTTsReady = isTTsReady, isLanguageVoiceSet, isTtsSpeaking)
     }
 }
 

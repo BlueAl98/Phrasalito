@@ -18,7 +18,10 @@ data class PhraseStateUi(
     val curentCardPhrase : Int = 0,
     val idDeck: Int = 0,
     val isTTsReady: Boolean = false,
-    val lngCode : String = ""
+    val lngCode : String = "",
+    val isTtsSpeaking : Boolean = false,
+    val currentSpeakingPhraseId: Int = 0
+
 ){
     val isReadyForTest: Boolean
         get() = phrases.count {
@@ -32,7 +35,8 @@ data class PhraseUi(
     val translation: String? = null,
     val isOptionsRevealed: Boolean = false,
     val example: String? = null,
-    val color: Color = Color(0xFF4CAF50)
+    val color: Color = Color(0xFF4CAF50),
+    val isTtsSpeaking: Boolean = false
 )
 
 enum class BodyModalEnum() {

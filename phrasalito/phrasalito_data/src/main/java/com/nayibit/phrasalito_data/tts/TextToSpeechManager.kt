@@ -24,11 +24,18 @@ class TextToSpeechManager @Inject constructor(
     private val _isReady = MutableStateFlow<Resource<Boolean>>(Resource.Loading)
     val isReady: StateFlow<Resource<Boolean>> = _isReady.asStateFlow()
 
+
+    private val _isSpeaking = MutableStateFlow(false)
+    val isSpeaking: StateFlow<Boolean> = _isSpeaking.asStateFlow()
+
     private lateinit var tts: TextToSpeech
 
     init {
         initTts()
     }
+
+
+
 
     private fun initTts() {
         tts = TextToSpeech(context) { status ->
@@ -40,6 +47,22 @@ class TextToSpeechManager @Inject constructor(
                 _isReady.value = Resource.Error("Initialization failed")
             }
         }
+
+        // Track when TTS is currently speaking (API 26+)
+        tts.setOnUtteranceProgressListener(object : android.speech.tts.UtteranceProgressListener() {
+            override fun onStart(utteranceId: String?) {
+                _isSpeaking.value = true
+            }
+
+            override fun onDone(utteranceId: String?) {
+                _isSpeaking.value = false
+            }
+
+            override fun onError(utteranceId: String?) {
+                _isSpeaking.value = false
+            }
+        })
+
     }
 
     fun speak(text: String, langCode: String = "en_US") {
@@ -68,26 +91,6 @@ class TextToSpeechManager @Inject constructor(
             tts.shutdown()
         }
     }
-/*
-    fun getAvailableLanguages(): Flow<Resource<List<Locale>>> = flow {
-        try {
-            emit(Resource.Loading)
-            val allLanguages = tts.availableLanguages
-                ?.filter { tts.isLanguageAvailable(it) >= TextToSpeech.LANG_AVAILABLE }
-                ?.distinctBy { it.language }
-                ?: emptyList()
-
-            val prioritized = allLanguages.filter { LIST_OF_LANGUAGES.contains(it.language) }
-            val remaining = allLanguages.filterNot { LIST_OF_LANGUAGES.contains(it.language) }
-
-            emit(Resource.Success((prioritized + remaining).take(NUM_OF_LANGUAGES)))
-        } catch (e: Exception) {
-            Log.e("TTS", "Error fetching languages: ${e.message}")
-            emit(Resource.Error(e.message ?: "Unknown error"))
-        }
-    }
-
-*/
 
     fun getAvailableLanguages(): Flow<Resource<List<Locale>>> = flow {
         try {
