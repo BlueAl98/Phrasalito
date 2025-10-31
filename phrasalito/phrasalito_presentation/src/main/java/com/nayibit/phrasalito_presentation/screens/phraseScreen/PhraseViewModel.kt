@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -70,10 +71,13 @@ class PhraseViewModel
     private val _eventFlow = MutableSharedFlow< PhraseUiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
+    private var isTtsPrewarmed = false
+
+
     init {
          getAllPhrases(idDeck)
-         getStateTTS()
          observeTtsSpeaking()
+         getStateTTS()
      }
 
     fun onEvent(event: PhraseUiEvent) {
@@ -246,6 +250,7 @@ class PhraseViewModel
                          _state.update {
                              it.copy(isTTsReady = true)
                          }
+                         prewarmTts()
                      }
 
                      Resource.Loading -> {}
@@ -350,10 +355,21 @@ class PhraseViewModel
       }
     }
 
+    private fun prewarmTts() {
+        if (isTtsPrewarmed) return
+        isTtsPrewarmed = true
+        viewModelScope.launch {
+            speakTextUseCase(" ", lngCode)
+        }
+    }
+
     private fun observeTtsSpeaking() {
         viewModelScope.launch {
-            isSpeakingUseCase().collect { isSpeaking ->
-                _state.update { it.copy(isTtsSpeaking = isSpeaking) }
+            isSpeakingUseCase()
+                .drop(2)
+                .collect { isSpeaking ->
+                if (isTtsPrewarmed)
+                   _state.update { it.copy(isTtsSpeaking = isSpeaking) }
             }
         }
     }
