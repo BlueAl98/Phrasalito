@@ -23,6 +23,7 @@ fun String.cleanRepeatedSigns(): String {
     return this.replace(Regex("([^\\p{L}\\p{N}])\\1+"), "$1")
 }
 
+
 fun String.countValidChar(): Int {
     return count { it.isLetterOrDigit() }
 }

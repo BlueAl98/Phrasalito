@@ -237,6 +237,7 @@ fun BodyModalInsertDeck(
         onValueChange = { onEvent(DeckUiEvent.UpdateTextFieldInsert(it)) },
         label = stringResource(R.string.label_learn_phrase),
         showCharCounter = true,
+        textRestriction = true,
         maxChar = 20,
         isError = state.currentDeck.name.countValidChar() < MIN_CHAR_NAME_DECK && state.currentDeck.name.isNotEmpty()
     )
@@ -324,6 +325,7 @@ fun BodyModalUpdateDeck(
         onValueChange = { onEvent(DeckUiEvent.UpdateTextFieldUpdate(it)) },
         label = stringResource(R.string.label_deck),
         showCharCounter = true,
+        textRestriction = true,
         maxChar = 20,
         isError = state.currentDeck.name.countValidChar() < MIN_CHAR_NAME_DECK && state.currentDeck.name.isNotEmpty()
     )

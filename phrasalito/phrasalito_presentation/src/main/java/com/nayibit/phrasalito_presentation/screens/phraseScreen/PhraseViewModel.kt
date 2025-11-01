@@ -76,8 +76,7 @@ class PhraseViewModel
 
     init {
          getAllPhrases(idDeck)
-         observeTtsSpeaking()
-         getStateTTS()
+         ttsSetUp()
      }
 
     fun onEvent(event: PhraseUiEvent) {
@@ -238,8 +237,7 @@ class PhraseViewModel
     }
 
 
-     fun getStateTTS(){
-         viewModelScope.launch {
+     private suspend fun getStateTTS(){
              isTTsAvailableUseCase().collect { result ->
                  when (result) {
                      is Resource.Error -> {
@@ -256,7 +254,6 @@ class PhraseViewModel
                      Resource.Loading -> {}
                  }
              }
-         }
     }
 
     fun insertPhrase(phrase: Phrase){
@@ -363,15 +360,23 @@ class PhraseViewModel
         }
     }
 
-    private fun observeTtsSpeaking() {
-        viewModelScope.launch {
+    private suspend fun observeTtsSpeaking() {
             isSpeakingUseCase()
                 .drop(2)
                 .collect { isSpeaking ->
                 if (isTtsPrewarmed)
                    _state.update { it.copy(isTtsSpeaking = isSpeaking) }
             }
+
+    }
+
+    private fun ttsSetUp(){
+        viewModelScope.launch {
+            if (lngCode != ""){
+              getStateTTS()
+              observeTtsSpeaking()
         }
+            }
     }
 
 }
