@@ -278,6 +278,7 @@ fun BodyModalUpdatePhrase(
         label = stringResource(R.string.label_phrase),
         maxChar = 30,
         showCharCounter = true,
+        textRestriction = true,
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
         keyboardActions = KeyboardActions(
             onNext = { focusRequesterTranslation.requestFocus() } // 👈 pasa al siguiente

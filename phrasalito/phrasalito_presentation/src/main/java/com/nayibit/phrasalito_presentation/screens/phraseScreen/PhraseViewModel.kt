@@ -93,8 +93,11 @@ class PhraseViewModel
             }
 
             InsertPhrase -> { viewModelScope.launch {
-                _state.update { it.copy(bodyModal = BodyModalEnum.BODY_INSERT_PHRASE,
-                    firstPhrase = _state.value.firstPhrase.removeLonelySigns()) }
+                _state.update { it.copy(bodyModal = BodyModalEnum.BODY_UPDATE_PHRASE,
+                    firstPhrase = _state.value.firstPhrase.removeLonelySigns(),
+                    example = _state.value.example.removeLonelySigns()
+                ) }
+
 
                 val result = validateExample(_state.value.firstPhrase, _state.value.example)
 
@@ -171,6 +174,11 @@ class PhraseViewModel
             }
 
             is UpdatePhrase -> { viewModelScope.launch {
+
+                _state.update { it.copy(bodyModal = BodyModalEnum.BODY_UPDATE_PHRASE,
+                    firstPhrase = _state.value.firstPhrase.removeLonelySigns(),
+                    example = _state.value.example.removeLonelySigns()
+                ) }
 
                 val result = validateExample(_state.value.firstPhrase, _state.value.example)
 

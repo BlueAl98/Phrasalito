@@ -12,9 +12,13 @@ fun String.allowOnlyLettersAndSigns(): String {
 
 fun String.removeLonelySigns(): String {
     return this
-        // Remove punctuation if it's followed by a space NOT followed by a letter, or end of text
-        .replace("([,.'’\\-]+)(?=(\\s(?!\\p{L})|\$))".toRegex(), "")
-        .replace("\\s+".toRegex(), " ") // normalize multiple spaces
+        // Remove punctuation/symbols that are directly before or after a space
+        .replace("([\\p{P}\\p{S}])(?=\\s)".toRegex(), "")
+        .replace("(?<=\\s)([\\p{P}\\p{S}])".toRegex(), "")
+        // Remove punctuation at start or end
+        .replace("^[\\p{P}\\p{S}]+|[\\p{P}\\p{S}]+$".toRegex(), "")
+        // Normalize spaces
+        .replace("\\s+".toRegex(), " ")
         .trim()
 }
 
