@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.nayibit.common.util.Resource
 import com.nayibit.common.util.normalizeSpaces
 import com.nayibit.phrasalito_domain.useCases.phrases.GetPhrasesByDeckReadyForTestUseCase
+import com.nayibit.phrasalito_domain.useCases.tts.IsSpeakingUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.IsTextSpeechReadyUseCase
-import com.nayibit.phrasalito_domain.useCases.tts.ShutDownTtsUseCase
 import com.nayibit.phrasalito_domain.useCases.tts.SpeakTextUseCase
 import com.nayibit.phrasalito_presentation.mappers.toExerciseUI
 import com.nayibit.phrasalito_presentation.screens.exerciseScreen.ExerciseUiEvent.OnInputChanged
@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -35,23 +36,28 @@ import javax.inject.Inject
 class ExerciseViewModel @Inject constructor(
     private val getAllPhrasesByDeckUseCase: GetPhrasesByDeckReadyForTestUseCase,
     private val speakTextUseCase: SpeakTextUseCase,
-    private val shutDownTtsUseCase: ShutDownTtsUseCase,
-    private val isTextSpeechReadyUseCase: IsTextSpeechReadyUseCase,
+    private val isTTsAvailableUseCase: IsTextSpeechReadyUseCase,
+    private val isSpeakingUseCase: IsSpeakingUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     val idDeck = savedStateHandle.get<Int>("idDeck") ?: -1
+    val lngCode = savedStateHandle.get<String>("lngCode") ?: ""
 
-    private val _state = MutableStateFlow(ExerciseUiState())
+
+    private val _state = MutableStateFlow(ExerciseUiState(
+        lngCode = lngCode
+    ))
     val state: StateFlow<ExerciseUiState> = _state.asStateFlow()
 
     private val _eventChannel = Channel<ExerciseUiEvent>()
     val eventFlow: Flow<ExerciseUiEvent> = _eventChannel.receiveAsFlow()
 
+    private var isTtsPrewarmed = false
 
     init {
-        observeTextToSpeechReady()
         getAllPhrases(idDeck)
+        ttsSetUp()
     }
 
     fun onEvent(event: ExerciseUiEvent) {
@@ -115,12 +121,7 @@ class ExerciseViewModel @Inject constructor(
             }
 
             is OnSpeakPhrase -> {
-                if (_state.value.ttsState)
-                    speakTextUseCase(event.text, "en_US")
-                else
-                    viewModelScope.launch {
-                        _eventChannel.send(ShowSnackBar("TTS is not ready"))
-                    }
+                speakTextUseCase(event.text, _state.value.lngCode)
             }
 
             is ShowDialog -> {
@@ -157,18 +158,6 @@ class ExerciseViewModel @Inject constructor(
 
     }
 
-    private fun observeTextToSpeechReady() {
-        viewModelScope.launch {
-            isTextSpeechReadyUseCase().collect { result ->
-                when (result){
-                    is Resource.Loading -> { _state.update { it.copy(ttsState = false) }}
-                    is Resource.Success -> _state.update { it.copy( ttsState = true) }
-                    is Resource.Error -> _state.update { it.copy( ttsState = false) }
-                }
-            }
-        }
-    }
-
 
     fun getAllPhrases(idDeck: Int) {
         viewModelScope.launch {
@@ -190,10 +179,59 @@ class ExerciseViewModel @Inject constructor(
                             }
                             is Resource.Error -> {
                                 _state.update { it.copy(isLoading = false) }
-                                //  _eventFlow.emit(PhraseUiEvent.ShowToast(UiText.DynamicString(result.message)))
                             }
                         }
                     }
             }
         }
+
+    private fun prewarmTts() {
+        if (isTtsPrewarmed) return
+        isTtsPrewarmed = true
+        viewModelScope.launch {
+            speakTextUseCase(" ", lngCode)
+        }
     }
+
+    private suspend fun observeTtsSpeaking() {
+        isSpeakingUseCase()
+            .drop(2)
+            .collect { isSpeaking ->
+                if (isTtsPrewarmed)
+                    _state.update { it.copy(isTtsSpeaking = isSpeaking) }
+            }
+
+    }
+
+    private suspend fun getStateTTS(){
+        isTTsAvailableUseCase().collect { result ->
+            when (result) {
+                is Resource.Error -> {
+
+                    _state.update { it.copy(isTTsReady = false) }
+                }
+
+                is Resource.Success<*> -> {
+                    _state.update {
+                        it.copy(isTTsReady = true)
+                    }
+                    prewarmTts()
+                }
+
+                Resource.Loading -> {}
+            }
+        }
+    }
+
+
+    private fun ttsSetUp(){
+        viewModelScope.launch {
+            if (lngCode != ""){
+                getStateTTS()
+                observeTtsSpeaking()
+            }
+        }
+    }
+
+
+}

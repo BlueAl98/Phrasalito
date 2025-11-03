@@ -66,7 +66,7 @@ fun PhraseScreen(
     state: PhraseStateUi,
     eventFlow: Flow<PhraseUiEvent>,
     onEvent: (PhraseUiEvent) -> Unit,
-    navigation: (id: Int) -> Unit
+    navigation: (id: Int, lngCode: String) -> Unit
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
@@ -81,7 +81,7 @@ fun PhraseScreen(
                 }
 
                 is PhraseUiEvent.Navigation -> {
-                    navigation(state.idDeck)
+                    navigation(state.idDeck, state.lngCode)
                 }
                 is PhraseUiEvent.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(event.message.asString(context))

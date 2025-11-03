@@ -406,7 +406,7 @@ fun ExercisePager(
                             )
                         }
 
-                        if (state.phrases[state.currentIndex].phraseState != PhraseState.NOT_STARTED)
+                        if (state.phrases[state.currentIndex].phraseState != PhraseState.NOT_STARTED && state.isTTsReady) {
                             IconPopover(
                                 enabled = !state.isBottomSheetExpanded,
                                 icon = Icons.Default.PlayArrow,
@@ -414,6 +414,7 @@ fun ExercisePager(
                                 onClick = {
                                     onEvent(ExerciseUiEvent.OnSpeakPhrase(state.phrases[state.currentIndex].correctAnswer))
                                 })
+                        }
                     }
                 }
 

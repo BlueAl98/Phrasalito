@@ -27,7 +27,7 @@ object DeckScreen
 data class PhraseScreenNav(val idDeck: Int, val lngCode: String)
 
 @Serializable
-data class ExerciseScreenNav(val idDeck: Int)
+data class ExerciseScreenNav(val idDeck: Int, val lngCode: String)
 
 @Serializable
 object StartScreen
@@ -82,8 +82,8 @@ fun Navigation() {
              state = state,
              eventFlow = viewModel.eventFlow,
              onEvent = viewModel::onEvent,
-             navigation = {
-                 navController.navigate(ExerciseScreenNav(it))
+             navigation = { idDeck, lngCode ->
+                 navController.navigate(ExerciseScreenNav(idDeck, lngCode))
              }
          )
      }

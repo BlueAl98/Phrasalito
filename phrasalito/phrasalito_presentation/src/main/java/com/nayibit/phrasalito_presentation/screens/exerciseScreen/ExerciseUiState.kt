@@ -9,12 +9,14 @@ data class ExerciseUiState (
     val totalItems: Int = 10,
     val inputAnswer : String = "",
     val popOverState: Boolean = false,
-    val ttsState : Boolean = false,
     val testCompleted : Boolean = false,
     val showDialog : Boolean = false,
     val testProgressCorrectAnswers : Float = 0f,
     val bodyModalExercise : BodyModalExercise = BodyModalExercise.BODY_SKIP_QUESTION,
-    val isBottomSheetExpanded : Boolean = false
+    val isBottomSheetExpanded : Boolean = false,
+    val lngCode : String = "",
+    val isTTsReady: Boolean = false,
+    val isTtsSpeaking : Boolean = false,
 )
 
 data class ExercisePhrases(
