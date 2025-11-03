@@ -16,7 +16,7 @@ fun HighlightedText(fullText: String, highlightWords: List<String>) {
     val annotatedText = buildAnnotatedString {
         val words = fullText.split(" ")
         words.forEachIndexed { index, word ->
-            if (highlightWords.contains(word.textWithoutSpecialCharacters())) {
+            if (highlightWords.contains(word)) {
                 withStyle(
                     style = SpanStyle(color = Color.Yellow, fontWeight = FontWeight.Bold)
                 ) {

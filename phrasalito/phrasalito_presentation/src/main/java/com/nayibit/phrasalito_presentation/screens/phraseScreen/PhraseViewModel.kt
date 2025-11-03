@@ -93,7 +93,7 @@ class PhraseViewModel
             }
 
             InsertPhrase -> { viewModelScope.launch {
-                _state.update { it.copy(bodyModal = BodyModalEnum.BODY_UPDATE_PHRASE,
+                _state.update { it.copy(bodyModal = BodyModalEnum.BODY_INSERT_PHRASE,
                     firstPhrase = _state.value.firstPhrase.removeLonelySigns(),
                     example = _state.value.example.removeLonelySigns()
                 ) }
