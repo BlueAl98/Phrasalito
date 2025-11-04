@@ -452,13 +452,12 @@ fun AreaStudyCards(
             ) {
                 Text(
                     modifier = modifier.padding(5.dp),
-                    text = "Cards: ${
-                       when{
-                           state.phrases.isNotEmpty() && state.curentCardPhrase < state.phrases.size -> state.curentCardPhrase + 1
-                           else -> state.curentCardPhrase
-                       }
-                    
-                    } /  ${state.phrases.size}",
+                    text = stringResource(
+                        R.string.cards_label_count, when {
+                            state.phrases.isNotEmpty() && state.curentCardPhrase < state.phrases.size -> state.curentCardPhrase + 1
+                            else -> state.curentCardPhrase
+                        }, state.phrases.size
+                    ),
                     style = MaterialTheme.typography.titleLarge
                 )
 
@@ -547,7 +546,7 @@ fun AreaStudyCards(
                     ) {
                         Text(
                             modifier = modifier.padding(5.dp),
-                            text = "Cards",
+                            text = stringResource(R.string.cartas_label_landscape),
                             style = MaterialTheme.typography.titleLarge,
                         )
                         Text(

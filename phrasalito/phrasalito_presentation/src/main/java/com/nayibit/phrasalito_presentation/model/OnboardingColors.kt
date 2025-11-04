@@ -3,8 +3,6 @@ package com.nayibit.phrasalito_presentation.model
 import androidx.compose.ui.graphics.Color
 
 data class OnboardingColors(
-    val primaryGradientStart: Color = Color(0xFF667EEA),
-    val primaryGradientEnd: Color = Color(0xFF764BA2),
     val backgroundColor: Color = Color.White,
     val textPrimary: Color = Color(0xFF1A1A1A),
     val textSecondary: Color = Color(0xFF666666),

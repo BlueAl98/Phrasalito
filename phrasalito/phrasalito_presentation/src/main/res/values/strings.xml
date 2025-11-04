@@ -38,6 +38,10 @@
     <string name="update_card_phrase">Editar</string>
     <string name="delete_card_phrase">Eliminar</string>
     <string name="test_card_phrase">Examen</string>
+    <string name="cards_label_count">Cartas: %1$s /  %2$s</string>
+    <string name="cartas_label_landscape">Cartas</string>
+
+
 
 
     <!-- ExerciseScreen Strings -->

@@ -55,7 +55,7 @@ import com.nayibit.phrasalito_presentation.composables.SwitchBase
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
 import com.nayibit.phrasalito_presentation.composables.isLandscape
 import com.nayibit.phrasalito_presentation.composables.rememberNotificationPermissionHandler
-import com.nayibit.phrasalito_presentation.screens.startScreen.StartUiEvent
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
 import kotlinx.coroutines.flow.Flow
 
 
@@ -211,7 +211,7 @@ fun DeckScreen(
 
         }, floatingActionButton = {
             FloatingActionButton(
-                containerColor = Color(0xFF673AB7),
+                containerColor = primaryGradientEnd,
                 onClick = {
                     onEvent(DeckUiEvent.ShowModal(BodyDeckModalEnum.BODY_INSERT_DECK))
                 }) {

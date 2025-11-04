@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.nayibit.phrasalito_presentation.model.OnboardingColors
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientStart
 
 @Composable
 fun DotsIndicator(
@@ -30,7 +31,7 @@ fun DotsIndicator(
                     .width(if (index == currentDot) 24.dp else 8.dp)
                     .background(
                         color = if (index == currentDot) {
-                            colors.primaryGradientStart
+                            primaryGradientStart
                         } else {
                             colors.dotInactive
                         },

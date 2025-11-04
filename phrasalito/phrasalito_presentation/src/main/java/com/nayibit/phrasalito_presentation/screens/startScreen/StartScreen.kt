@@ -42,6 +42,8 @@ import com.nayibit.phrasalito_presentation.composables.LoadingScreen
 import com.nayibit.phrasalito_presentation.composables.isLandscape
 import com.nayibit.phrasalito_presentation.composables.rememberNotificationPermissionHandler
 import com.nayibit.phrasalito_presentation.model.OnboardingColors
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
+import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientStart
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -253,8 +255,8 @@ fun ContentLandscape(
                         .background(
                             brush = Brush.horizontalGradient(
                                 colors = listOf(
-                                        colors.primaryGradientStart,
-                                        colors.primaryGradientEnd
+                                        primaryGradientStart,
+                                        primaryGradientEnd
                                     )
                             )
                         ),
@@ -358,8 +360,8 @@ fun ContentPortrait(
                         .background(
                             brush = Brush.horizontalGradient(
                                 colors = listOf(
-                                    colors.primaryGradientStart,
-                                    colors.primaryGradientEnd
+                                    primaryGradientStart,
+                                    primaryGradientEnd
                                 )
                             )
                         ),

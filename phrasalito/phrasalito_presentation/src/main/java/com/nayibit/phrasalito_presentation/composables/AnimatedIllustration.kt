@@ -144,8 +144,8 @@ fun AnimatedIllustration(
                     .background(
                         brush = Brush.linearGradient(
                             colors = listOf(
-                                colors.primaryGradientStart,
-                                colors.primaryGradientEnd
+                                primaryGradientStart,
+                                primaryGradientEnd
                             )
                         ),
                         shape = RoundedCornerShape(30.dp)
@@ -163,7 +163,7 @@ fun AnimatedIllustration(
             // Floating element 2 (bottom right)
             FloatingElement(
                 icon = bottomIconVector,
-                iconColor = colors.primaryGradientStart,
+                iconColor = primaryGradientStart,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .offset(
