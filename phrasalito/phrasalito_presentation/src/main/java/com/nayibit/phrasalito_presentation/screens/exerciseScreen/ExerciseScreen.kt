@@ -169,7 +169,7 @@ fun ExerciseScreen(
                 LoadingScreen()
             else if (state.phrases.isEmpty())
                 Box(contentAlignment = Alignment.Center, modifier = modifier.fillMaxSize()) {
-                    Text(text = "No Phrases Found")
+                    Text(text = stringResource(R.string.not_phrases_found))
                 }
             else {
 
@@ -333,7 +333,7 @@ fun ExercisePager(
     val colorManager = when (state.phrases[state.currentIndex].phraseState) {
         PhraseState.NOT_STARTED -> Color.Transparent
         PhraseState.ERROR_ANSWER -> Color.Red
-        PhraseState.COMPLETED -> Color.White
+        PhraseState.COMPLETED -> Color.Green
     }
 
     LaunchedEffect(state.currentIndex) {
@@ -488,7 +488,11 @@ fun BottomSheetContentLandScape(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Respuestas correctas: ${state.phrases.filter { it.phraseState == PhraseState.COMPLETED }.size} /  ${state.totalItems}",
+                text = stringResource(
+                    R.string.correct_answers_label,
+                    state.phrases.filter { it.phraseState == PhraseState.COMPLETED }.size,
+                    state.totalItems
+                ),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.labelMedium,
@@ -540,11 +544,14 @@ fun BottomSheetContentPortrait(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+
         Text(
-            text = "Respuestas correctas: ${state.phrases.filter { it.phraseState == PhraseState.COMPLETED }.size} /  ${state.totalItems}",
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(),
+            text = stringResource(
+                R.string.correct_answers_label,
+                state.phrases.filter { it.phraseState == PhraseState.COMPLETED }.size,
+                state.totalItems
+            ),
+            modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.inversePrimary

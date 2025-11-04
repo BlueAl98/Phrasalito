@@ -8,8 +8,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,9 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -89,24 +87,22 @@ fun BaseDialog(
 
 @Composable
 fun SimpleConfirmDialog(
+    modifier: Modifier = Modifier,
     title: String = "Title",
     onConfirm: () -> Unit,
     onCancel: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = { onCancel() },
-        title = { Text(title) },
+        title = { Text(title, style = MaterialTheme.typography.titleMedium) },
         confirmButton = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                OutlinedButton(onClick = { onCancel() }) {
-                    Text("Cancelar")
-                }
-                OutlinedButton(onClick = { onConfirm() }) {
-                    Text("Confirmar")
-                }
+                Text(modifier= modifier.clickable{onCancel()}, text = "Cancelar", color = Color.Red)
+                Text(modifier= modifier.clickable{onConfirm()}, text = "Confirmar")
+
             }
         }
     )

@@ -8,7 +8,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import com.nayibit.phrasalito_presentation.utils.textWithoutSpecialCharacters
 
 @Composable
 fun HighlightedText(fullText: String, highlightWords: List<String>) {
