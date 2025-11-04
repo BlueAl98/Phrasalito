@@ -149,7 +149,7 @@ fun ContentLandscape(
 
     LaunchedEffect(permissionState.shouldShowSettings) {
         if (permissionState.shouldShowSettings) {
-            permissionState.openSettings()
+            onEvent(StartUiEvent.InsertSkipTutorial)
         }
     }
 
@@ -288,15 +288,15 @@ fun ContentPortrait(
 ) {
 
     val permissionState = rememberNotificationPermissionHandler(
-        onPermissionResult = {
-            if (it)
+        onPermissionResult = { hasPermission ->
+            if (hasPermission)
                 onEvent(StartUiEvent.InsertSkipTutorial)
         }
     )
 
     LaunchedEffect(permissionState.shouldShowSettings) {
         if (permissionState.shouldShowSettings) {
-            permissionState.openSettings()
+            onEvent(StartUiEvent.InsertSkipTutorial)
         }
     }
 
