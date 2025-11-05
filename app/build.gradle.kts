@@ -42,7 +42,6 @@ android {
 
     signingConfigs {
         create("release") {
-            println(">>> Keystore path: ${localProps.getProperty("KEYSTORE_PATH") ?: System.getenv("ANDROID_KEYSTORE_PATH")}")
 
             storeFile = localProps.getProperty("KEYSTORE_PATH")?.let { file(it) }
                 ?: System.getenv("ANDROID_KEYSTORE_PATH")?.let { file(it) }
