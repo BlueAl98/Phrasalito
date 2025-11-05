@@ -7,3 +7,4 @@ captures/
 phrasalito/phrasalito_data/build
 phrasalito/phrasalito_domain/build
 phrasalito/phrasalito_presentation/build
+local.properties

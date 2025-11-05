@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,12 +20,30 @@ jobs:
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest --no-daemon --stacktrace
 
+      # 🧱 Build debug APK only on develop branch
       - name: Build debug APK
+        if: github.ref == 'refs/heads/develop'
         run: ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Upload debug APK
+        if: github.ref == 'refs/heads/develop'
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk
-          path: |
-            **/build/outputs/**/*.apk
+          path: '**/build/outputs/**/*.apk'
+
+      - name: Decode keystore
+        if: github.ref == 'refs/heads/master'
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > keystore.jks
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+
+      - name: Build signed release APK
+        if: github.ref == 'refs/heads/master'
+        env:
+          ANDROID_KEYSTORE_PATH: keystore.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
