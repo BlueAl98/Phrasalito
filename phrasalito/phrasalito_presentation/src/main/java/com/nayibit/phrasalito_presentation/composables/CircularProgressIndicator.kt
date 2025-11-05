@@ -49,6 +49,7 @@ fun CircularProgressIndicator(
             contentAlignment = Alignment.Center,
             modifier = Modifier.size(circleSize)
         ) {
+
             Canvas(modifier = Modifier.fillMaxSize()) {
                 val sweepAngle = safeProgress * 360f
                 val stroke = Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Round)

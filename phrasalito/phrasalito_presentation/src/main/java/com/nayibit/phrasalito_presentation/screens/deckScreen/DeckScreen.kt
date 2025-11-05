@@ -119,7 +119,7 @@ fun DeckScreen(
         },
         content = { padding ->
 
-            Box(
+           Box(
                 modifier
                     .fillMaxSize()
                     .padding(padding)
@@ -130,7 +130,6 @@ fun DeckScreen(
                     }
 
                     state.decks.isNotEmpty() -> {
-
                         LazyColumn(
                             modifier = modifier
                                 .fillMaxSize()

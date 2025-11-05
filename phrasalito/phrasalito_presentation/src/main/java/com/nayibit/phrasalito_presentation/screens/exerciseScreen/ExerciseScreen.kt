@@ -48,6 +48,7 @@ import com.nayibit.phrasalito_presentation.composables.CircularProgressIndicator
 import com.nayibit.phrasalito_presentation.composables.HighlightedText
 import com.nayibit.phrasalito_presentation.composables.IconPopover
 import com.nayibit.phrasalito_presentation.composables.LoadingScreen
+import com.nayibit.phrasalito_presentation.composables.LottieStartsAnimation
 import com.nayibit.phrasalito_presentation.composables.ProgressBar
 import com.nayibit.phrasalito_presentation.composables.SimpleConfirmDialog
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
@@ -137,24 +138,37 @@ fun ExerciseScreen(
         scaffoldState = sheetState,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         sheetContent = {
-            Column(
-                modifier
-                    .fillMaxHeight(0.6f)
-                    .fillMaxWidth()
-                    .padding(bottom = 20.dp)
-            ) {
 
-                when (orientation) {
-                    Configuration.ORIENTATION_LANDSCAPE -> BottomSheetContentLandScape(
-                        state = state,
-                        onEvent = onEvent
-                    )
+            Box(modifier
+                .fillMaxHeight(0.6f)
+                .fillMaxWidth()
+                .padding(bottom = 20.dp)) {
 
-                    else -> BottomSheetContentPortrait(
-                        state = state,
-                        onEvent = onEvent
-                    )
+                Column(
+                    modifier
+                        .fillMaxSize()
+                ) {
+
+                    when (orientation) {
+                        Configuration.ORIENTATION_LANDSCAPE -> BottomSheetContentLandScape(
+                            state = state,
+                            onEvent = onEvent
+                        )
+
+                        else -> BottomSheetContentPortrait(
+                            state = state,
+                            onEvent = onEvent
+                        )
+                    }
+
                 }
+                if (state.isBottomSheetExpanded) {
+                        LottieStartsAnimation(
+                            modifier.fillMaxSize()
+                        )
+                    }
+
+
             }
 
         }
@@ -183,17 +197,17 @@ fun ExerciseScreen(
                     }
 
                     else -> {
-                        PortaitContent(
-                            state = state,
-                            onEvent = onEvent,
-                            pagerState = pagerState
-                        )
+                            PortaitContent(
+                                state = state,
+                                onEvent = onEvent,
+                                pagerState = pagerState
+                            )
                     }
                 }
 
-
             }
         }
+
     }
 }
 
@@ -204,11 +218,11 @@ fun PortaitContent(
     onEvent: (ExerciseUiEvent) -> Unit,
     pagerState: PagerState
 ) {
+
     Column(
         modifier = modifier
             .fillMaxSize()
     ) {
-
         ProgressBar(
             current = state.currentIndex + 1,
             total = state.totalItems,
@@ -256,6 +270,8 @@ fun PortaitContent(
         }
 
     }
+
+
 }
 
 @Composable
@@ -517,54 +533,57 @@ fun BottomSheetContentPortrait(
     state: ExerciseUiState,
     onEvent: (ExerciseUiEvent) -> Unit
 ) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        CircularProgressIndicator(
-            progress = state.testProgressCorrectAnswers,
-            sizePercentage = 0.5f, // 50% of available space
-            strokeWidthPercentage = 0.08f, // 6% of circle size for stroke
-            textSizePercentage = 0.20f // 12% of circle size for text
-        )
+        Column(
+            modifier = modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-        Spacer(modifier = Modifier.height(20.dp))
+                CircularProgressIndicator(
+                    progress = state.testProgressCorrectAnswers,
+                    sizePercentage = 0.5f, // 50% of available space
+                    strokeWidthPercentage = 0.08f, // 6% of circle size for stroke
+                    textSizePercentage = 0.20f // 12% of circle size for text
+                )
 
-        Text(
-            text = stringResource(R.string.label_percentage_correct_answers),
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.inversePrimary
-        )
+            Spacer(modifier = Modifier.height(20.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = stringResource(R.string.label_percentage_correct_answers),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.inversePrimary
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
 
-        Text(
-            text = stringResource(
-                R.string.correct_answers_label,
-                state.phrases.filter { it.phraseState == PhraseState.COMPLETED }.size,
-                state.totalItems
-            ),
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.inversePrimary
-        )
+            Text(
+                text = stringResource(
+                    R.string.correct_answers_label,
+                    state.phrases.filter { it.phraseState == PhraseState.COMPLETED }.size,
+                    state.totalItems
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.inversePrimary
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        ButtonBase(
-            onClick = { onEvent(ExerciseUiEvent.NavigateNext) },
-            text = stringResource(R.string.btn_finish_exercise),
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-    }
+            ButtonBase(
+                onClick = { onEvent(ExerciseUiEvent.NavigateNext) },
+                text = stringResource(R.string.btn_finish_exercise),
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+
+        }
+
 }
 
 
