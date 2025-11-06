@@ -36,7 +36,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -53,6 +56,7 @@ import com.nayibit.phrasalito_presentation.composables.LoadingScreen
 import com.nayibit.phrasalito_presentation.composables.SwipeableDeckItem
 import com.nayibit.phrasalito_presentation.composables.SwitchBase
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
+import com.nayibit.phrasalito_presentation.composables.TutorialBase
 import com.nayibit.phrasalito_presentation.composables.isLandscape
 import com.nayibit.phrasalito_presentation.composables.rememberNotificationPermissionHandler
 import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
@@ -70,6 +74,8 @@ fun DeckScreen(
 
     val context = LocalContext.current
     val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
+    var rectFab by remember { mutableStateOf<Rect?>(null) }
+    var rectSwipeCard by remember { mutableStateOf<Rect?>(null) }
 
 
     LaunchedEffect(Unit) {
@@ -113,13 +119,16 @@ fun DeckScreen(
         }
     }
 
+    TutorialBase(
+        listComponents = listOf(rectFab, rectSwipeCard)
+    ){
     Scaffold(
         snackbarHost = {
             SnackbarHost(snackbarHostState)
         },
         content = { padding ->
 
-           Box(
+            Box(
                 modifier
                     .fillMaxSize()
                     .padding(padding)
@@ -145,6 +154,9 @@ fun DeckScreen(
                                     exit = fadeOut(animationSpec = tween(300)) + shrinkVertically(),
                                 ) {
                                     SwipeableDeckItem(
+                                        modifier =  Modifier.onGloballyPositioned{
+                                            rectSwipeCard = it.boundsInWindow()
+                                        },
                                         deck = deck,
                                         onEdit = {
                                             onEvent(
@@ -209,7 +221,10 @@ fun DeckScreen(
 
 
         }, floatingActionButton = {
-            FloatingActionButton(
+          FloatingActionButton(
+                modifier = Modifier.onGloballyPositioned{
+                    rectFab = it.boundsInWindow()
+                },
                 containerColor = primaryGradientEnd,
                 onClick = {
                     onEvent(DeckUiEvent.ShowModal(BodyDeckModalEnum.BODY_INSERT_DECK))
@@ -217,8 +232,8 @@ fun DeckScreen(
                 Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.White)
             }
         }
-    )
-
+    ) //Close Scaffold
+}
 }
 
 
