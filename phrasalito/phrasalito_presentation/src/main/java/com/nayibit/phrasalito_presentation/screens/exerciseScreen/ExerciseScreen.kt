@@ -162,7 +162,7 @@ fun ExerciseScreen(
                     }
 
                 }
-                if (state.isBottomSheetExpanded) {
+                if (state.isBottomSheetExpanded && state.testProgressCorrectAnswers == 1f) {
                         LottieStartsAnimation(
                             modifier.fillMaxSize()
                         )
