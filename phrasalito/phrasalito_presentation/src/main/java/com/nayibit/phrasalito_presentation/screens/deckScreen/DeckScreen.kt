@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
@@ -132,6 +133,9 @@ fun DeckScreen(
         }
     }
 
+
+
+
     TutorialBase(
         listComponents = steps,
         currentIndex = state.currentStep,
@@ -151,10 +155,6 @@ fun DeckScreen(
                     .padding(padding)
             ) {
                 when {
-                    state.isLoading -> {
-                        LoadingScreen()
-                    }
-
                     state.decks.isNotEmpty() -> {
                         LazyColumn(
                             modifier = modifier
@@ -206,7 +206,7 @@ fun DeckScreen(
                                 }
                             }
                         }
-                    }
+                    }else -> {}
                 }
 
 
@@ -249,8 +249,14 @@ fun DeckScreen(
                 Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.White)
             }
         }
-    ) //Close Scaffold
+    )
 }
+
+    if (state.isLoading){
+        LoadingScreen(backgroundColor = MaterialTheme.colorScheme.background)
+    }
+
+
 }
 
 
