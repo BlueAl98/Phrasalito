@@ -5,7 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.nayibit.common.util.Constants.FIRST_ELEMENT_DROP_LANGUAGE_LIST
 import com.nayibit.common.util.Constants.MIN_CHAR_NAME_DECK
 import com.nayibit.common.util.Resource
-import com.nayibit.common.util.UiText
+import com.nayibit.common.util.UiText.DynamicString
+import com.nayibit.common.util.UiText.StringResource
 import com.nayibit.common.util.countValidChar
 import com.nayibit.phrasalito_domain.model.Deck
 import com.nayibit.phrasalito_domain.useCases.decks.DeleteDeckUseCase
@@ -33,7 +34,6 @@ import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.Update
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.UpdateTextFieldInsert
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.UpdateTextFieldUpdate
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -104,13 +104,13 @@ class DeckViewModel @Inject
                 when{
                     _state.value.currentDeck.name.isEmpty() -> {
                         viewModelScope.launch {
-                            _eventFlow.emit(ShowToast(UiText.StringResource(R.string.label_empty_deck_name)))
+                            _eventFlow.emit(ShowToast(StringResource(R.string.label_empty_deck_name)))
                         }
                     }
 
                     _state.value.currentDeck.name.countValidChar() < MIN_CHAR_NAME_DECK ->{
                         viewModelScope.launch {
-                            _eventFlow.emit(ShowToast(UiText.StringResource(R.string.label_short_deck_name)))
+                            _eventFlow.emit(ShowToast(StringResource(R.string.label_short_deck_name)))
                         }
                     }
                     
@@ -150,13 +150,13 @@ class DeckViewModel @Inject
                 when{
                     _state.value.currentDeck.name.isEmpty() -> {
                         viewModelScope.launch {
-                            _eventFlow.emit(ShowToast(UiText.StringResource(R.string.label_empty_deck_name)))
+                            _eventFlow.emit(ShowToast(StringResource(R.string.label_empty_deck_name)))
                         }
                     }
 
                     _state.value.currentDeck.name.countValidChar() < MIN_CHAR_NAME_DECK ->{
                         viewModelScope.launch {
-                            _eventFlow.emit(ShowToast(UiText.StringResource(R.string.label_short_deck_name)))
+                            _eventFlow.emit(ShowToast(StringResource(R.string.label_short_deck_name)))
                         }
                     }
 
@@ -202,6 +202,18 @@ class DeckViewModel @Inject
                     currentDeck = _state.value.currentDeck.copy(isNotified = event.isNotified)
                 )
             }
+
+            DeckUiEvent.TutorialFinish -> {
+                _state.value = _state.value.copy(
+                    showTutorial = false
+                )
+            }
+
+            DeckUiEvent.onNextStep -> {
+                _state.value = _state.value.copy(
+                    currentStep = _state.value.currentStep + 1
+                )
+            }
         }
     }
 
@@ -226,14 +238,14 @@ class DeckViewModel @Inject
                         showModal = false,
                         errorMessage = result.message
                     )
-                    _eventFlow.emit(ShowToast(UiText.DynamicString("Error: ${result.message}")))
+                    _eventFlow.emit(ShowToast(DynamicString("Error: ${result.message}")))
                 }
 
                 is Resource.Success<*> -> {
                     _state.value = _state.value.copy(
                         showModal = false
                     )
-                    _eventFlow.emit(ShowToast(UiText.DynamicString("Deck actualizado")))
+                    _eventFlow.emit(ShowToast(DynamicString("Deck actualizado")))
                 }
 
                 else -> {}
@@ -249,14 +261,14 @@ class DeckViewModel @Inject
                     _state.value = _state.value.copy(
                         showModal = false
                     )
-                    _eventFlow.emit(ShowToast(UiText.DynamicString("Error: ${result.message}")))
+                    _eventFlow.emit(ShowToast(DynamicString("Error: ${result.message}")))
                 }
 
                 is Resource.Success<*> -> {
                     _state.value = _state.value.copy(
                         showModal = false
                     )
-                    _eventFlow.emit(ShowToast(UiText.DynamicString("Deck eliminado")))
+                    _eventFlow.emit(ShowToast(DynamicString("Deck eliminado")))
                 }
 
                 else -> {}
@@ -285,7 +297,7 @@ class DeckViewModel @Inject
                             errorMessage = null,
                             showModal = false,
                             isLoadingButton = false)
-                        _eventFlow.emit(ShowToast(UiText.DynamicString("Deck inserted successfully")))
+                        _eventFlow.emit(ShowToast(DynamicString("Deck inserted successfully")))
                     }
 
                     is Resource.Error -> {
@@ -295,7 +307,7 @@ class DeckViewModel @Inject
                             showModal = false,
                             isLoadingButton = false
                         )
-                        _eventFlow.emit(ShowToast(UiText.DynamicString("Error: ${result.message}")))
+                        _eventFlow.emit(ShowToast(DynamicString("Error: ${result.message}")))
                     }
 
                 }
@@ -325,7 +337,7 @@ class DeckViewModel @Inject
                             isLoading = false,
                             errorMessage = result.message
                         )
-                        _eventFlow.emit(ShowToast(UiText.DynamicString("Error: ${result.message}")))
+                        _eventFlow.emit(ShowToast(DynamicString("Error: ${result.message}")))
                     }
                 }
             }
@@ -368,7 +380,7 @@ class DeckViewModel @Inject
                                 isLoading = false,
                                 errorMessage = result.message
                             )
-                            _eventFlow.emit(ShowToast(UiText.DynamicString("Error: ${result.message}")))
+                            _eventFlow.emit(ShowToast(DynamicString("Error: ${result.message}")))
                         }
 
                         is Resource.Loading -> {

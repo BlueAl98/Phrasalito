@@ -12,7 +12,9 @@ data class DeckStateUi (
     val isLoadingButton: Boolean = false,
     val bodyModal: BodyDeckModalEnum = BodyDeckModalEnum.BODY_INSERT_DECK,
     val currentDeck: DeckUI = DeckUI(name = "", numCards = 0),
-    val listLanguages : List<Language> = emptyList()
+    val listLanguages : List<Language> = emptyList(),
+    val currentStep : Int = 0,
+    val showTutorial : Boolean = true
 )
 
 data class DeckUI(

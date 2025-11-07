@@ -19,6 +19,8 @@ sealed class DeckUiEvent {
     data class ShowSnackbar(val message: UiText) : DeckUiEvent()
     data class OnLanguageSelected(val language: Language): DeckUiEvent()
     data class UpdateNotificationState(val isNotified: Boolean): DeckUiEvent()
+    object TutorialFinish : DeckUiEvent()
+    object onNextStep: DeckUiEvent()
 }
 
 

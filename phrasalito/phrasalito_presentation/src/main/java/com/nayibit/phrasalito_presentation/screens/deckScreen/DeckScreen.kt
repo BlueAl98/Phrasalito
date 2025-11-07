@@ -59,7 +59,9 @@ import com.nayibit.phrasalito_presentation.composables.TextFieldBase
 import com.nayibit.phrasalito_presentation.composables.TutorialBase
 import com.nayibit.phrasalito_presentation.composables.isLandscape
 import com.nayibit.phrasalito_presentation.composables.rememberNotificationPermissionHandler
+import com.nayibit.phrasalito_presentation.model.TutorialStep
 import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
+import com.nayibit.phrasalito_presentation.utils.LabelPosition
 import kotlinx.coroutines.flow.Flow
 
 
@@ -74,9 +76,20 @@ fun DeckScreen(
 
     val context = LocalContext.current
     val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
-    var rectFab by remember { mutableStateOf<Rect?>(null) }
-    var rectSwipeCard by remember { mutableStateOf<Rect?>(null) }
-
+    var rectFab by remember { mutableStateOf<Rect>(Rect.Zero) }
+    var rectSwipeCard by remember { mutableStateOf<Rect>(Rect.Zero) }
+    val steps = listOf(
+        TutorialStep(
+            rect = rectFab ,
+            description = stringResource(R.string.tutorial_floatButton_description),
+            labelPosition = LabelPosition.Left
+        ),
+        TutorialStep(
+            rect = rectSwipeCard,
+            description = stringResource(R.string.tutorial_itemDeck_description),
+            labelPosition = LabelPosition.Bottom
+        )
+    )
 
     LaunchedEffect(Unit) {
         eventFlow.collect { event ->
@@ -120,7 +133,11 @@ fun DeckScreen(
     }
 
     TutorialBase(
-        listComponents = listOf(rectFab, rectSwipeCard)
+        listComponents = steps,
+        currentIndex = state.currentStep,
+        isTutorialEnabled = state.showTutorial,
+        onTutorialFinish = { onEvent(DeckUiEvent.TutorialFinish) },
+        onNextStep = { onEvent(DeckUiEvent.onNextStep) }
     ){
     Scaffold(
         snackbarHost = {
