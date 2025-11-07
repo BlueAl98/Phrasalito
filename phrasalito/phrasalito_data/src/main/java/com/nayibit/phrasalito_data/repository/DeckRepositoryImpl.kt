@@ -2,6 +2,8 @@ package com.nayibit.phrasalito_data.repository
 
 import com.nayibit.common.util.Resource
 import com.nayibit.phrasalito_data.dao.DeckDao
+import com.nayibit.phrasalito_data.entities.DeckEntity
+import com.nayibit.phrasalito_data.entities.PhraseEntity
 import com.nayibit.phrasalito_data.mapper.toDomain
 import com.nayibit.phrasalito_data.mapper.toPhrase
 import com.nayibit.phrasalito_data.mapper.toEntity
@@ -67,5 +69,28 @@ class DeckRepositoryImpl
         }catch (e: Exception){
             return Resource.Error(e.localizedMessage ?: "Unknown error")
         }
+    }
+
+    override suspend fun createInitialDeck(): Resource<Boolean> {
+
+        val deck = DeckEntity(
+            name = "Ejemplo Deck",
+            lngCode = "",
+            languageName = ""
+        )
+        val phrases = listOf(
+            PhraseEntity(targetLanguage = "Hello", translation = "Hola", deckId = 0),
+            PhraseEntity(targetLanguage = "Thank you", translation = "Gracias", deckId = 0),
+            PhraseEntity(targetLanguage = "Goodbye", translation = "Adiós", deckId = 0),
+        )
+
+        try {
+            deckDao.insertDeckWithPhrases(deck, phrases)
+            return Resource.Success(true)
+        }catch (e: Exception){
+            return Resource.Error(e.localizedMessage ?: "Unknown error")
+        }
+
+
     }
 }

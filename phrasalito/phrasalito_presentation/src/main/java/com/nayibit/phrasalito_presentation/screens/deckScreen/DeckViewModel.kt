@@ -1,5 +1,6 @@
 package com.nayibit.phrasalito_presentation.screens.deckScreen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.common.util.Constants.FIRST_ELEMENT_DROP_LANGUAGE_LIST
@@ -9,6 +10,8 @@ import com.nayibit.common.util.UiText.DynamicString
 import com.nayibit.common.util.UiText.StringResource
 import com.nayibit.common.util.countValidChar
 import com.nayibit.phrasalito_domain.model.Deck
+import com.nayibit.phrasalito_domain.useCases.dataStore.InsertTutorialDeckUseCase
+import com.nayibit.phrasalito_domain.useCases.dataStore.IsTutorialDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.DeleteDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.GetAllDecksUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.InsertDeckUseCase
@@ -54,7 +57,9 @@ class DeckViewModel @Inject
     private val deleteDeckUseCase: DeleteDeckUseCase,
     private val updateDeckUseCase: UpdateDeckUseCase,
     private val getAvailableLanguagesUseCase: GetAvailableLanguagesUseCase,
-    private val isTextSpeechReadyUseCase: IsTextSpeechReadyUseCase)
+    private val isTextSpeechReadyUseCase: IsTextSpeechReadyUseCase,
+    private val isTutorialDeckUseCase: IsTutorialDeckUseCase,
+    private val insertTutorialDeckUseCase: InsertTutorialDeckUseCase)
     : ViewModel() {
 
     private val _state = MutableStateFlow(DeckStateUi()) // Initial default state
@@ -67,6 +72,7 @@ class DeckViewModel @Inject
 
     init {
         getAllDecks()
+        getTutorialState()
     }
 
 
@@ -204,9 +210,9 @@ class DeckViewModel @Inject
             }
 
             DeckUiEvent.TutorialFinish -> {
-                _state.value = _state.value.copy(
-                    showTutorial = false
-                )
+                viewModelScope.launch {
+                    insertTutorialDeckUseCase()
+                }
             }
 
             DeckUiEvent.onNextStep -> {
@@ -316,6 +322,21 @@ class DeckViewModel @Inject
         }
     }
 
+    fun getTutorialState(){
+        viewModelScope.launch {
+            isTutorialDeckUseCase().collect{ result ->
+                when (result){
+                    is Resource.Success -> {
+                        _state.value = _state.value.copy(
+                            showTutorial = result.data
+                        )
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
     fun getAllDecks() {
         viewModelScope.launch {
             getDecksUseCase().collect { result ->
@@ -367,6 +388,7 @@ class DeckViewModel @Inject
                 .collect { result ->
                     when (result) {
                         is Resource.Success -> {
+                            Log.d("getAvailableLanguages", "Success: ${result.data}")
                             _state.value = _state.value.copy(
                                 isLoading = false,
                                 listLanguages = if (result.data.isNotEmpty()){

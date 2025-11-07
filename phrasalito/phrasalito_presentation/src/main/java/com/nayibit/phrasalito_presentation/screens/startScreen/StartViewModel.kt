@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.nayibit.common.util.Resource
 import com.nayibit.phrasalito_domain.useCases.dataStore.GetFirstTimeUseCase
 import com.nayibit.phrasalito_domain.useCases.dataStore.InsertFirstTimeUseCase
+import com.nayibit.phrasalito_domain.useCases.start.InsertFirstDeckUseCase
 import com.nayibit.phrasalito_presentation.screens.startScreen.StartUiEvent.InsertSkipTutorial
 import com.nayibit.phrasalito_presentation.screens.startScreen.StartUiEvent.Navigate
 import com.nayibit.phrasalito_presentation.screens.startScreen.StartUiEvent.NextPage
@@ -20,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class StartViewModel @Inject constructor(
     private val insertFirstTimeUseCase: InsertFirstTimeUseCase,
-    private val getFirstTimeUseCase: GetFirstTimeUseCase
+    private val getFirstTimeUseCase: GetFirstTimeUseCase,
+    private val insertFirstDeckUseCase: InsertFirstDeckUseCase
 ): ViewModel() {
 
     private val _state = MutableStateFlow(StartStateUi())
@@ -37,7 +39,7 @@ class StartViewModel @Inject constructor(
     fun onEvent(event: StartUiEvent) {
         when (event) {
             is InsertSkipTutorial -> {
-                insertFirstTime()
+               insertInitialConfiguration()
             }
 
            is Navigate -> {
@@ -92,6 +94,19 @@ class StartViewModel @Inject constructor(
         _state.value = block(_state.value)
     }
 
+    fun insertInitialConfiguration(){
+        viewModelScope.launch {
+            when (val result = insertFirstDeckUseCase()) {
+                is Resource.Error -> {
+                    _eventFlow.emit(ShowToast("Error: ${result.message}"))
+                }
+                is Resource.Success -> {
+                    insertFirstTime()
+                }
+                Resource.Loading -> {}
+            }
+        }
+    }
 
         fun insertFirstTime() {
             viewModelScope.launch {

@@ -5,6 +5,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -136,7 +137,7 @@ fun DeckScreen(
 
 
 
-    TutorialBase(
+  TutorialBase(
         listComponents = steps,
         currentIndex = state.currentStep,
         isTutorialEnabled = state.showTutorial,
@@ -278,6 +279,8 @@ fun BodyModalInsertDeck(
         maxChar = 20,
         isError = state.currentDeck.name.countValidChar() < MIN_CHAR_NAME_DECK && state.currentDeck.name.isNotEmpty()
     )
+
+
     if (state.listLanguages.isNotEmpty())
         LanguageDropdownMenu(
             languages = state.listLanguages,
