@@ -5,7 +5,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -283,6 +282,7 @@ fun BodyModalInsertDeck(
 
     if (state.listLanguages.isNotEmpty())
         LanguageDropdownMenu(
+            modifier = modifier,
             languages = state.listLanguages,
             selectedLanguage = state.currentDeck.selectedLanguage,
             onLanguageSelected = { language ->
