@@ -217,7 +217,7 @@ fun BodyModalInsertPhrase(
         ButtonBase(
             text = stringResource(id = R.string.btn_save),
             onClick = {
-                if (state.firstPhrase.isNotEmpty()) onEvent(PhraseUiEvent.InsertPhrase
+                if (state.firstPhrase.isNotBlank()) onEvent(PhraseUiEvent.InsertPhrase
                 ) else onEvent(
                     PhraseUiEvent.ShowToast(
                         UiText.StringResource(R.string.label_target_language)
@@ -237,7 +237,7 @@ fun BodyModalInsertPhrase(
                 modifier = modifier.weight(0.45f),
                 text = stringResource(id = R.string.btn_save),
                 onClick = {
-                    if (state.firstPhrase.isNotEmpty()) onEvent(PhraseUiEvent.InsertPhrase
+                    if (state.firstPhrase.isNotBlank()) onEvent(PhraseUiEvent.InsertPhrase
                     ) else onEvent(
                         PhraseUiEvent.ShowToast(
                             UiText.StringResource(R.string.label_target_language)
@@ -316,7 +316,7 @@ fun BodyModalUpdatePhrase(
         ButtonBase(
             text = stringResource(id = R.string.btn_update),
             onClick = {
-                if (state.firstPhrase.isNotEmpty()) onEvent(
+                if (state.firstPhrase.isNotBlank()) onEvent(
                     PhraseUiEvent.UpdatePhrase(state.phraseToUpdate!!)
                 ) else onEvent(
                     PhraseUiEvent.ShowToast(
@@ -337,7 +337,7 @@ fun BodyModalUpdatePhrase(
                 modifier = modifier.weight(0.45f),
                 text = stringResource(id = R.string.btn_update),
                 onClick = {
-                    if (state.firstPhrase.isNotEmpty()) onEvent(
+                    if (state.firstPhrase.isNotBlank()) onEvent(
                         PhraseUiEvent.UpdatePhrase(state.phraseToUpdate!!)
                     ) else onEvent(
                         PhraseUiEvent.ShowToast(
