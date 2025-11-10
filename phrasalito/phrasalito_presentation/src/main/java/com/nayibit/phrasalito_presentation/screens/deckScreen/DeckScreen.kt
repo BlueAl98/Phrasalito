@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
@@ -36,7 +37,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -53,9 +57,12 @@ import com.nayibit.phrasalito_presentation.composables.LoadingScreen
 import com.nayibit.phrasalito_presentation.composables.SwipeableDeckItem
 import com.nayibit.phrasalito_presentation.composables.SwitchBase
 import com.nayibit.phrasalito_presentation.composables.TextFieldBase
+import com.nayibit.phrasalito_presentation.composables.TutorialBase
 import com.nayibit.phrasalito_presentation.composables.isLandscape
 import com.nayibit.phrasalito_presentation.composables.rememberNotificationPermissionHandler
+import com.nayibit.phrasalito_presentation.model.TutorialStep
 import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
+import com.nayibit.phrasalito_presentation.utils.LabelPosition
 import kotlinx.coroutines.flow.Flow
 
 
@@ -70,7 +77,20 @@ fun DeckScreen(
 
     val context = LocalContext.current
     val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
-
+    var rectFab by remember { mutableStateOf<Rect>(Rect.Zero) }
+    var rectSwipeCard by remember { mutableStateOf<Rect>(Rect.Zero) }
+    val steps = listOf(
+        TutorialStep(
+            rect = rectFab ,
+            description = stringResource(R.string.tutorial_floatButton_description),
+            labelPosition = LabelPosition.Left
+        ),
+        TutorialStep(
+            rect = rectSwipeCard,
+            description = stringResource(R.string.tutorial_itemDeck_description),
+            labelPosition = LabelPosition.Bottom
+        )
+    )
 
     LaunchedEffect(Unit) {
         eventFlow.collect { event ->
@@ -113,22 +133,26 @@ fun DeckScreen(
         }
     }
 
+
+  TutorialBase(
+        listComponents = steps,
+        currentIndex = state.currentStep,
+        isTutorialEnabled = state.showTutorial,
+        onTutorialFinish = { onEvent(DeckUiEvent.TutorialFinish) },
+        onNextStep = { onEvent(DeckUiEvent.onNextStep) }
+    ){
     Scaffold(
         snackbarHost = {
             SnackbarHost(snackbarHostState)
         },
         content = { padding ->
 
-           Box(
+            Box(
                 modifier
                     .fillMaxSize()
                     .padding(padding)
             ) {
                 when {
-                    state.isLoading -> {
-                        LoadingScreen()
-                    }
-
                     state.decks.isNotEmpty() -> {
                         LazyColumn(
                             modifier = modifier
@@ -145,6 +169,9 @@ fun DeckScreen(
                                     exit = fadeOut(animationSpec = tween(300)) + shrinkVertically(),
                                 ) {
                                     SwipeableDeckItem(
+                                        modifier =  Modifier.onGloballyPositioned{
+                                            rectSwipeCard = it.boundsInWindow()
+                                        },
                                         deck = deck,
                                         onEdit = {
                                             onEvent(
@@ -177,7 +204,7 @@ fun DeckScreen(
                                 }
                             }
                         }
-                    }
+                    }else -> {}
                 }
 
 
@@ -209,7 +236,10 @@ fun DeckScreen(
 
 
         }, floatingActionButton = {
-            FloatingActionButton(
+          FloatingActionButton(
+                modifier = Modifier.onGloballyPositioned{
+                    rectFab = it.boundsInWindow()
+                },
                 containerColor = primaryGradientEnd,
                 onClick = {
                     onEvent(DeckUiEvent.ShowModal(BodyDeckModalEnum.BODY_INSERT_DECK))
@@ -218,6 +248,12 @@ fun DeckScreen(
             }
         }
     )
+}
+
+    if (state.isLoading){
+        LoadingScreen(backgroundColor = MaterialTheme.colorScheme.background)
+    }
+
 
 }
 
@@ -240,8 +276,11 @@ fun BodyModalInsertDeck(
         maxChar = 20,
         isError = state.currentDeck.name.countValidChar() < MIN_CHAR_NAME_DECK && state.currentDeck.name.isNotEmpty()
     )
+
+
     if (state.listLanguages.isNotEmpty())
         LanguageDropdownMenu(
+            modifier = modifier,
             languages = state.listLanguages,
             selectedLanguage = state.currentDeck.selectedLanguage,
             onLanguageSelected = { language ->

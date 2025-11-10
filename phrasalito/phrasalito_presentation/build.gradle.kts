@@ -91,7 +91,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    implementation(libs.material3)
+   // implementation(libs.material3)
 
     implementation(libs.androidx.navigation.ui.ktx)
 

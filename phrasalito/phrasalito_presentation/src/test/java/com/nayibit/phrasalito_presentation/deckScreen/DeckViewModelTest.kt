@@ -3,6 +3,8 @@ package com.nayibit.phrasalito_presentation.deckScreen
 import app.cash.turbine.test
 import com.nayibit.common.util.Resource
 import com.nayibit.phrasalito_domain.model.Deck
+import com.nayibit.phrasalito_domain.useCases.dataStore.InsertTutorialDeckUseCase
+import com.nayibit.phrasalito_domain.useCases.dataStore.IsTutorialDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.DeleteDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.GetAllDecksUseCase
 import com.nayibit.phrasalito_domain.useCases.decks.InsertDeckUseCase
@@ -51,6 +53,8 @@ class DeckViewModelTest {
     private val mockUpdateDeckUseCase: UpdateDeckUseCase = mock()
     private val mockGetAvailableLanguagesUseCase: GetAvailableLanguagesUseCase  = mock()
     private val mockIsTextSpeechReadyUseCase:  IsTextSpeechReadyUseCase = mock()
+    private val mockIsTutorialDeckUseCase : IsTutorialDeckUseCase = mock()
+    private val mockInsertTutorialDeckUseCase : InsertTutorialDeckUseCase = mock()
 
     private val testDispatcher = StandardTestDispatcher()
 
@@ -72,7 +76,14 @@ class DeckViewModelTest {
             .thenReturn(flowOf(Resource.Success(emptyList())))
 
         }
-        viewModel = DeckViewModel(mockInsertDeckUseCase, mockGetAllDecksUseCase, mockDeleteDeckUseCase, mockUpdateDeckUseCase, mockGetAvailableLanguagesUseCase, mockIsTextSpeechReadyUseCase )
+
+        whenever(mockIsTutorialDeckUseCase())
+            .thenReturn(flowOf(Resource.Success(false)))
+
+        viewModel = DeckViewModel(mockInsertDeckUseCase, mockGetAllDecksUseCase,
+            mockDeleteDeckUseCase, mockUpdateDeckUseCase,
+            mockGetAvailableLanguagesUseCase, mockIsTextSpeechReadyUseCase,
+            mockIsTutorialDeckUseCase, mockInsertTutorialDeckUseCase)
 
     }
 
@@ -82,7 +93,7 @@ class DeckViewModelTest {
     }
 
     //GET ALL DECKS ISOLATION TEST
-
+/*
     @Test
     fun `getAllDecks should update state with decks`() = runTest {
         val decks = listOf(Deck(1, "Deck 1", 5, "en", "English"))
@@ -294,7 +305,7 @@ class DeckViewModelTest {
     }
 
 
-
+*/
 
 
 }

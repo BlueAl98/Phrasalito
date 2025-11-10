@@ -67,6 +67,11 @@ fun calculateProgressPercentage(
       EXAMPLE_IS_NOT_LONGER_THAN_PHRASE
   }
 
+enum class LabelPosition {
+    Top, Bottom, Left, Right
+}
+
+
 fun List<String>.textWithoutSpecialCharacters(): String  {
     return this.joinToString(" ") {
         it.filter { it.isLetterOrDigit() }

@@ -11,4 +11,5 @@ interface DeckRepository {
    suspend fun deleteDeck(id: Int): Resource<Unit>
    suspend fun updateDeck(deck: Deck): Resource<Unit>
    suspend fun getPhrasesForNotification(): Resource<List<DeckWithPhrases?>>
+   suspend fun createInitialDeck(): Resource<Boolean>
 }
