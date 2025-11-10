@@ -31,8 +31,9 @@ class DeckRepositoryImplTest {
         //given
         val deckEntity = DeckEntity(name = "Test", lngCode = "en", languageName = "English")
         val deckDomain = deckEntity.toDeck()
+        val expectReturn = 1L
 
-        `when`(deckDao.insert(deckEntity)).thenReturn(Unit)
+        `when`(deckDao.insert(deckEntity)).thenReturn(expectReturn)
 
 
        repositoryImpl.insert(deckDomain).test {
