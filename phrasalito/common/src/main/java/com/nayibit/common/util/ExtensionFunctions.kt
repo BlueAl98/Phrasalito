@@ -31,3 +31,5 @@ fun String.cleanRepeatedSigns(): String {
 fun String.countValidChar(): Int {
     return count { it.isLetterOrDigit() }
 }
+
+ fun Char.isPunctuation(): Boolean = this in listOf(',', '.', '!', '?', ';', ':', '"', '\'', '(', ')')
