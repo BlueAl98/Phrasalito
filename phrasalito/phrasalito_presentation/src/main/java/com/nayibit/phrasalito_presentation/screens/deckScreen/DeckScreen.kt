@@ -134,8 +134,6 @@ fun DeckScreen(
     }
 
 
-
-
   TutorialBase(
         listComponents = steps,
         currentIndex = state.currentStep,

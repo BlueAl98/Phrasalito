@@ -7,10 +7,10 @@ import com.nayibit.phrasalito_presentation.utils.exercisePhrase
 fun Phrase.toExerciseUI(): ExercisePhrases {
     return ExercisePhrases(
         id = this.id,
-        targetLanguage = this.targetLanguage,
+        targetLanguage = this.targetLanguage.lowercase(),
         translation = this.translation ?: "",
         example = exercisePhrase(this.targetLanguage,this.example ?: ""),
-        correctAnswer = this.example ?: ""
+        correctAnswer = this.example?.lowercase() ?: ""
     )
 
 }
