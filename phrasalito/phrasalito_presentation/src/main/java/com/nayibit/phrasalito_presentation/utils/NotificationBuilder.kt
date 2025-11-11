@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -46,19 +47,22 @@ object NotificationBuilder {
             .createNotificationChannel(channel)
 
 
+        val largeIcon = BitmapFactory.decodeResource(context.resources, R.drawable.icon_frasalito_only)
+
+
         val builder = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.ic_noti)
+            .setSmallIcon(R.drawable.icon_frasalito_only)
+            .setLargeIcon(largeIcon)
             .setContentTitle(null) // 👈 remove system title
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .setBigContentTitle(phrase)
+                    .setBigContentTitle("\n"+phrase)
                     .bigText(translation)
             )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setCategory(Notification.CATEGORY_MESSAGE)
             .setFullScreenIntent(null, true)
 
-        // .setContentIntent(pendingIntent) // Uncomment if you want to handle taps
 
         // Show notification
         with(NotificationManagerCompat.from(context)) {

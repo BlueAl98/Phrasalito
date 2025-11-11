@@ -52,7 +52,6 @@ fun TutorialBase(
 ) {
     val insets = WindowInsets.systemBars.asPaddingValues()
     val density = LocalDensity.current
-  //  var currentIndex by remember { mutableIntStateOf(currentIndex) }
     val configuration = LocalConfiguration.current
     val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
     val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
@@ -74,8 +73,6 @@ fun TutorialBase(
         if (isTutorialEnabled && listComponents.isNotEmpty() && currentIndex < listComponents.size) {
             val currentRect = listComponents[currentIndex]
 
-
-            //  if (currentRect.rect != null) {
             Canvas(
                 modifier = Modifier
                     .fillMaxSize()
@@ -200,10 +197,8 @@ fun TutorialBase(
             ){
                 Text(currentRect.description)
             }
-
-
         }
-        //  }
+
     }
 }
 
