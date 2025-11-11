@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">Phrasalito</string>
-
+    <string name="app_name">Frasalito</string>
 
 
     <string name="token_expired">Token has expired</string>
