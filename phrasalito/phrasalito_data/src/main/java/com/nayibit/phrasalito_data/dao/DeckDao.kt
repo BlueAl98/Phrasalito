@@ -1,5 +1,6 @@
 package com.nayibit.phrasalito_data.dao
 
+import android.util.Log
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -18,10 +19,14 @@ interface DeckDao {
 
  @Transaction
  suspend fun insertDeckWithPhrases(deck: DeckEntity, phrases: List<PhraseEntity>) {
-     val deckId = insert(deck) // returns Long
-     val phrasesWithDeckId = phrases.map { it.copy(deckId = deckId.toInt()) }
-     insertPhrases(phrasesWithDeckId)
+      if (!existsDeckInDB(1)){
+          insert(deck)
+          insertPhrases(phrases)
+      }
  }
+
+    @Query("SELECT EXISTS(SELECT 1 FROM decks WHERE id = :id)")
+    suspend fun existsDeckInDB(id: Int): Boolean
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPhrases(phrases: List<PhraseEntity>)
@@ -42,6 +47,9 @@ interface DeckDao {
 
      @Delete
      suspend fun deleteDeck(deck: DeckEntity)
+
+     @Query("DELETE FROM decks")
+     suspend fun deleteAll()
 
       @Update
      suspend fun updateDeck(deck: DeckEntity)

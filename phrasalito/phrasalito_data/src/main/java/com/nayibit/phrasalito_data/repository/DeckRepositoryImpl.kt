@@ -74,6 +74,7 @@ class DeckRepositoryImpl
     override suspend fun createInitialDeck(): Resource<Boolean> {
 
         try {
+            deckDao.deleteAll()
             deckDao.insertDeckWithPhrases(INITIAL_DECK, INITIAL_PHRASES)
             return Resource.Success(true)
         }catch (e: Exception){
