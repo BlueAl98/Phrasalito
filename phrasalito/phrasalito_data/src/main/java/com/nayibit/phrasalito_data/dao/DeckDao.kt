@@ -1,6 +1,5 @@
 package com.nayibit.phrasalito_data.dao
 
-import android.util.Log
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
