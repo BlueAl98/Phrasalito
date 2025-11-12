@@ -93,6 +93,7 @@ fun DeckScreen(
     )
 
     LaunchedEffect(Unit) {
+
         eventFlow.collect { event ->
             when (event) {
                 is DeckUiEvent.ShowToast -> {
@@ -138,8 +139,13 @@ fun DeckScreen(
         listComponents = steps,
         currentIndex = state.currentStep,
         isTutorialEnabled = state.showTutorial,
-        onTutorialFinish = { onEvent(DeckUiEvent.TutorialFinish) },
-        onNextStep = { onEvent(DeckUiEvent.onNextStep) }
+        onTutorialFinish = {
+            onEvent(DeckUiEvent.TutorialFinish)
+            onEvent(DeckUiEvent.UpdateDeckList(state.decks.first().id, true))
+         },
+        onNextStep = {
+            onEvent(DeckUiEvent.onNextStep)
+        }
     ){
     Scaffold(
         snackbarHost = {

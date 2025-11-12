@@ -12,23 +12,32 @@ import com.nayibit.common.util.isPunctuation
 
 @Composable
 fun HighlightedText(fullText: String, highlightWords: List<String>) {
-    val annotatedText = buildAnnotatedString {
-        val words = fullText.split(" ")
-        words.forEachIndexed { index, word ->
-            // Remove punctuation for comparison (but keep it for display)
-            val cleanWord = word.trim { it.isWhitespace() || it.isPunctuation() }
+    // Pre-normalize highlight words: remove non-letter chars and lowercase
+    val normalizedHighlights = highlightWords
+        .map { it.replace(Regex("[^\\p{L}]"), "").lowercase() }
+        .toSet()
 
-            if (highlightWords.any { it.equals(cleanWord, ignoreCase = true) }) {
+    val annotatedText = buildAnnotatedString {
+        // split on any whitespace (handles multiple spaces / newlines / tabs)
+        val tokens = fullText.split(Regex("\\s+"))
+
+        tokens.forEachIndexed { index, token ->
+            // Normalize token for comparison: remove non-letters, lowercase
+            val clean = token.replace(Regex("[^\\p{L}]"), "").lowercase()
+
+            if (clean.isNotEmpty() && normalizedHighlights.contains(clean)) {
+                // highlight the whole token (word + punctuation). If you want to highlight only the letters
+                // and keep punctuation unstyled, see the alternative version below.
                 withStyle(
                     style = SpanStyle(color = Color.Yellow, fontWeight = FontWeight.Bold)
                 ) {
-                    append(word)
+                    append(token)
                 }
             } else {
-                append(word)
+                append(token)
             }
 
-            if (index < words.size - 1) append(" ")
+            if (index < tokens.size - 1) append(" ")
         }
     }
 
