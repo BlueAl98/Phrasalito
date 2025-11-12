@@ -1,18 +1,25 @@
-# Phrasalito
+# 📱 Phrasalito
 
-Phrasalito is a modern Android application built with Kotlin and Jetpack Compose, designed to help users master English phrasal verbs. The app provides an interactive and engaging learning experience through features like customizable decks, flashcards, and completion exercises.
+[![Kotlin](https://img.shields.io/badge/Kotlin-1.9.0-blue?logo=kotlin)](https://kotlinlang.org/)
+[![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-1.7.0-4285F4?logo=android&logoColor=white)](https://developer.android.com/jetpack/compose)
+[![Build](https://github.com/BlueAl98/Phrasalito/actions/workflows/ci.yml/badge.svg)](https://github.com/BlueAl98/Phrasalito/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Android-green?logo=android)](https://developer.android.com/)
+[![Status](https://img.shields.io/badge/Status-Active-success)]()
+
+Phrasalito is a modern Android application built with Kotlin and Jetpack Compose, designed to help users master languages. The app provides an interactive and engaging learning experience through features like customizable decks, flashcards, and completion exercises.
 
 The project is structured following **Clean Architecture** principles and is organized into a **multi-module Gradle setup**, ensuring a scalable, maintainable, and testable codebase.
 
 ## ✨ Core Features
 
-*   **Deck Management**: Create custom decks to group phrasal verbs by topic or difficulty.
-*   **Phrase Flashcards**: Add, edit, and delete phrases within your decks. Each phrase includes the target phrasal verb, its translation, and a usage example.
-*   **Interactive Learning**: Study phrases with an animated flip-card interface.
-*   **Quizzes & Exercises**: Test your knowledge by completing example sentences where the phrasal verb is hidden. The app provides instant feedback on your answers.
-*   **Spaced Repetition**: Receive periodic notifications with a random phrase from your decks to reinforce memory, powered by `WorkManager`.
-*   **Text-to-Speech**: Listen to the correct pronunciation of phrasal verbs and their examples.
-*   **Clean, Modern UI**: A user-friendly interface built entirely with Jetpack Compose.
+* 🗂️ **Deck Management**: Create custom decks to group phrasal verbs by topic or difficulty.
+* 💬 **Phrase Flashcards**: Add, edit, and delete phrases within your decks. Each phrase includes the target phrase, its translation, and a usage example.
+* 🔄 **Interactive Learning**: Study phrases with an animated flip-card interface.
+* 🧠 **Quizzes & Exercises**: Test your knowledge by completing example sentences and instant feedback on your answers.
+* ⏰ **Spaced Repetition**: Receive periodic notifications with a random phrase from your decks to reinforce memory, powered by `WorkManager`.
+* 🔊 **Text-to-Speech**: Listen to the correct pronunciation of phrases and their examples.
+* 🎨 **Clean, Modern UI**: A user-friendly interface built entirely with Jetpack Compose.
 
 ## 🏗️ Architecture
 
@@ -102,3 +109,29 @@ The workflow performs the following steps:
 2.  Runs all unit tests to verify business logic.
 3.  Builds the debug APK to ensure the project compiles successfully.
 4.  Uploads the generated APK as a build artifact.
+
+## 📸 Screenshots
+
+###  📱 Portrait 
+<p align="left">
+  <img src="screenshots/s1.png" width="250"/>
+  <img src="screenshots/d3.png" width="250"/>
+  <img src="screenshots/d4.png" width="250"/>
+  <img src="screenshots/p1.png" width="250"/>
+  <img src="screenshots/e1.png" width="250"/>
+  <img src="screenshots/e2.png" width="250"/>
+  <img src="screenshots/e3.png" width="250"/>
+  <img src="screenshots/e5.png" width="250"/>
+  
+</p>
+
+
+## 🌄 Landscape
+<p align="left">
+  <img src="screenshots/s2.png" width="300"/>
+  <img src="screenshots/d1.png" width="300"/>
+  <img src="screenshots/d2.png" width="300"/>
+  <img src="screenshots/p2.png" width="300"/>
+  <img src="screenshots/e4.png" width="300"/>
+  <img src="screenshots/e6.png" width="300"/>
+</p>
