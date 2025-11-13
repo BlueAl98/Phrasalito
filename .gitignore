@@ -9,3 +9,4 @@ phrasalito/phrasalito_domain/build
 phrasalito/phrasalito_presentation/build
 local.properties
 .keystore/
+app/release/
