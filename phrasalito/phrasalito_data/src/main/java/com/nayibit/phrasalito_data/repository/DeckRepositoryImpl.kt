@@ -72,7 +72,6 @@ class DeckRepositoryImpl
     }
 
     override suspend fun createInitialDeck(): Resource<Boolean> {
-
         try {
             deckDao.deleteAll()
             deckDao.insertDeckWithPhrases(INITIAL_DECK, INITIAL_PHRASES)
@@ -80,7 +79,5 @@ class DeckRepositoryImpl
         }catch (e: Exception){
             return Resource.Error(e.localizedMessage ?: "Unknown error")
         }
-
-
     }
 }
