@@ -1,7 +1,8 @@
 package com.nayibit.phrasalito_presentation.deckScreen
 
-import app.cash.turbine.test
+import com.nayibit.common.util.Constants.FIRST_ELEMENT_DROP_LANGUAGE_LIST
 import com.nayibit.common.util.Resource
+import com.nayibit.common.util.UiText.DynamicString
 import com.nayibit.phrasalito_domain.model.Deck
 import com.nayibit.phrasalito_domain.useCases.dataStore.InsertTutorialDeckUseCase
 import com.nayibit.phrasalito_domain.useCases.dataStore.IsTutorialDeckUseCase
@@ -18,28 +19,24 @@ import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.ShowTo
 import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestWatcher
-import org.junit.runner.Description
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.util.Locale
+import kotlin.collections.plus
 
 @ExperimentalCoroutinesApi
 class DeckViewModelTest {
@@ -93,16 +90,25 @@ class DeckViewModelTest {
     }
 
     //GET ALL DECKS ISOLATION TEST
-/*
+
+
     @Test
-    fun `getAllDecks should update state with decks`() = runTest {
+    fun `getAllDecks should update state with decks and languages`() = runTest {
         val decks = listOf(Deck(1, "Deck 1", 5, "en", "English"))
         val flow = flowOf(Resource.Loading, Resource.Success(decks))
+        val languages = Resource.Success(listOf(Locale("en", "usa"), Locale("es", "mexico"), Locale("fr", "france")))
+
+        val isTextSpeechReady = Resource.Success(true)
 
         whenever(mockGetAllDecksUseCase()).thenReturn(flow)
+        whenever(mockIsTextSpeechReadyUseCase()).thenReturn(flowOf(isTextSpeechReady))
 
+        whenever(mockGetAvailableLanguagesUseCase()).thenReturn(
+            flowOf(languages)
+        )
         // Act
         viewModel.getAllDecks()
+
 
         // Wait for coroutines
         advanceUntilIdle()
@@ -111,201 +117,94 @@ class DeckViewModelTest {
         val currentState = viewModel.state.value
 
         // Assert
+        assertEquals(currentState.isLoading, false)
         assertEquals(decks.map { it.toDeckUI() }, currentState.decks)
-        assertEquals(false, currentState.isLoading)
-    }
+        assertEquals(currentState.listLanguages, listOf(Language(id = -1, language = FIRST_ELEMENT_DROP_LANGUAGE_LIST, alias = "")) + languages.data.map { it.toLanguage() })
 
-    @Test
-    fun `getAllDecks should emits filure toast event`()= runTest {
-        val errorMessage = "Error to fetch decks"
-        val flow = flowOf(Resource.Loading, Resource.Error(errorMessage))
 
-        whenever(mockGetAllDecksUseCase()).thenReturn(flow)
-
-        viewModel.getAllDecks()
-
-        viewModel.state.test {
-            awaitItem()
-            val isLoading = awaitItem()
-            assertEquals(true, isLoading.isLoading)
-            val failureState = awaitItem()
-            assertEquals(false, failureState.isLoading)
-            assertEquals(errorMessage, failureState.errorMessage)
-        }
     }
 
 
-    // GET ALL DECKS FLOW WITH LANGUAGES ALL FLOW
     @Test
-    fun `getAllDecks should update state with decks and available languages `() = runTest {
-        // --- Arrange ---
-        val decks = listOf(Deck(1, "Deck 1", 5, "en", "English"))
-        val fakeSuccessLocales  = listOf(Locale("en"), Locale("es"), Locale("fr"))
+    fun `getAllDecks should return error`() = runTest {
+        val errorExpect = "Error fetch decks"
 
-
-        // Mock all flows
         whenever(mockGetAllDecksUseCase()).thenReturn(
-            flowOf(Resource.Loading, Resource.Success(decks))
-        )
-        whenever(mockIsTextSpeechReadyUseCase()).thenReturn(
-            flowOf(Resource.Success(true))
-        )
-        whenever(mockGetAvailableLanguagesUseCase()).thenReturn(
-            flowOf(Resource.Loading,Resource.Success(fakeSuccessLocales))
+            flowOf(Resource.Loading, Resource.Error(errorExpect))
         )
 
-        // --- Act ---
-        viewModel.getAllDecks()
 
-        // --- Assert ---
-        viewModel.state.test {
-            val initial = awaitItem()
-            assertFalse(initial.isLoading)
-
-            val loadingDecks = awaitItem()
-            assertTrue(loadingDecks.isLoading)
-
-            val successDecks = awaitItem()
-            assertEquals(decks.map { it.toDeckUI() }, successDecks.decks)
-
-            // Wait for nested getAvailableLanguages() to complete
-            val afterLanguages = awaitItem()
-            assertEquals(false, afterLanguages.isLoading)
-            assertEquals(
-                listOf(
-                    Language(
-                        id = -1,
-                        language = "Ninguno", // or whatever FIRST_ELEMENT_DROP_LANGUAGE_LIST is
-                        alias = ""
-                    )
-                ) + fakeSuccessLocales.map { it.toLanguage() },
-                afterLanguages.listLanguages
-            )
-
-            cancelAndIgnoreRemainingEvents()
+        // Start collecting events BEFORE invoking action
+        val eventDeferred = async {
+            viewModel.eventFlow.first()
         }
-    }
-
-    @Test
-    fun `getAllDecks should not update state with decks and available languages failure`() = runTest {
-        // --- Arrange ---
-        val decks = listOf(Deck(1, "Deck 1", 5, "en", "English"))
-        val errorMessage  =  "Error to fech languages"
-
-        // Mock all flows
-        whenever(mockGetAllDecksUseCase()).thenReturn(
-            flowOf(Resource.Loading, Resource.Success(decks))
-        )
-        whenever(mockIsTextSpeechReadyUseCase()).thenReturn(
-            flowOf(Resource.Success(true))
-        )
-        whenever(mockGetAvailableLanguagesUseCase()).thenReturn(
-            flowOf(Resource.Loading,Resource.Error(errorMessage))
-        )
-
-        // --- Act ---
-        viewModel.getAllDecks()
-
-        // --- Assert ---
-        viewModel.state.test {
-            val initial = awaitItem()
-            assertFalse(initial.isLoading)
-
-            val loadingDecks = awaitItem()
-            assertTrue(loadingDecks.isLoading)
-
-            val successDecks = awaitItem()
-            assertEquals(decks.map { it.toDeckUI() }, successDecks.decks)
-
-            // Wait for nested getAvailableLanguages() to complete
-            val afterLanguages = awaitItem()
-            assertEquals(false, afterLanguages.isLoading)
-            assertEquals(errorMessage, afterLanguages.errorMessage)
-
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-
-    // INSERT DECKS METHOD
-
-    @Test
-    fun `insertDeck should update state with success `() = runTest {
-        val deck = Deck(1, "Test Deck", 3, "en", "English")
-
-        val flow: Flow<Resource<Deck>> = flowOf(
-            Resource.Loading,
-            Resource.Success(deck)
-        )
-
-        // ✅ Explicitly mock the operator invoke
-        whenever(mockInsertDeckUseCase.invoke(deck)).thenReturn(flow)
 
         // Act
-        viewModel.insertDeck(deck)
-
-        // Assert
-        viewModel.state.test {
-            val initial = awaitItem()
-            assertEquals(false, initial.isLoadingButton)
-
-            val loadingState = awaitItem()
-            assertEquals(true, loadingState.isLoadingButton)
-
-            val successState = awaitItem()
-            assertEquals(false, successState.isLoadingButton)
-            assertEquals(deck.toDeckUI(), successState.successInsertedDeck)
-            assertNull(successState.errorMessage)
-
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `insertDeck failure result should be return message error`() = runTest {
-        val messageError =  "Something bad happens"
-        val fakeDeck = Deck(1, "Test Deck", 3, "en", "English")
-        val flowResult = flowOf(Resource.Loading, Resource.Error(messageError))
-
-        whenever(mockInsertDeckUseCase(fakeDeck)).thenReturn(flowResult)
-
-        viewModel.insertDeck(fakeDeck)
-
-        viewModel.state.test {
-            awaitItem()
-            val isLoading = awaitItem()
-            assertEquals(true, isLoading.isLoadingButton)
-            val failueState =  awaitItem()
-            assertEquals(false, failueState.isLoadingButton)
-            assertEquals(messageError, failueState.errorMessage)
-        }
-
-    }
-
-    // UPDATE DECKS METHOD
-
-
-    @Test
-    fun `UpdateDeck should update state with success `() = runTest {
-        val deck = Deck(1, "Test Deck", 3, "en", "English")
-
-
-        // ✅ Explicitly mock the operator invoke
-        whenever(mockUpdateDeckUseCase(deck)).thenReturn(Resource.Success(Unit))
-
-        // Act
-        viewModel.updateDeck(deck.toDeckUI())
-
+        viewModel.getAllDecks()
         advanceUntilIdle()
 
-        //assert
-       assertEquals(false, viewModel.state.value.isLoadingButton)
-       assertEquals(false, viewModel.state.value.showModal)
+        val event = withTimeout(5_000) { eventDeferred.await() }
+
+        val state = viewModel.state.value
+
+        // Assert
+        assertEquals(false, state.isLoading)
+        assertEquals(errorExpect, state.errorMessage)
+       assertEquals(ShowToast(DynamicString("Error: $errorExpect")), event)
+    }
+
+
+    @Test
+    fun `insertDeck is successfully`() = runTest {
+        val fakeDeck = Deck(1, "Deck 1", maxCards = 10, lngCode = "eng", languageName = "English")
+
+        whenever(mockInsertDeckUseCase(fakeDeck)).thenReturn(flowOf(Resource.Success(fakeDeck)))
+
+
+        // Start collecting events BEFORE invoking action
+        val eventDeferred = async {
+            viewModel.eventFlow.first()
+        }
+        viewModel.insertDeck(fakeDeck)
+        advanceUntilIdle()
+
+        val currentState = viewModel.state.value
+        val event = withTimeout(5_000) { eventDeferred.await() }
+
+        assertEquals(currentState.isLoading, false)
+        assertEquals(currentState.successInsertedDeck, fakeDeck.toDeckUI())
+        assertEquals(event, ShowToast(DynamicString("Deck inserted successfully")))
+        assert(!currentState.showModal)
 
     }
 
 
-*/
+    @Test
+    fun `insertDeck is failure`() = runTest {
+        val fakeDeck = Deck(1, "Deck 1", maxCards = 10, lngCode = "eng", languageName = "English")
+        val errorExpected =  "Error expected"
+
+        whenever(mockInsertDeckUseCase(fakeDeck)).thenReturn(flowOf(Resource.Error(errorExpected)))
+
+
+        // Start collecting events BEFORE invoking action
+        val eventDeferred = async {
+            viewModel.eventFlow.first()
+        }
+        viewModel.insertDeck(fakeDeck)
+        advanceUntilIdle()
+
+        val currentState = viewModel.state.value
+        val event = withTimeout(5_000) { eventDeferred.await() }
+
+        assertEquals(currentState.isLoading, false)
+        assertEquals(currentState.errorMessage, errorExpected)
+        assertEquals(ShowToast(DynamicString("Error: $errorExpected")), event)
+        assert(!currentState.showModal)
+
+    }
+
+
 
 
 }

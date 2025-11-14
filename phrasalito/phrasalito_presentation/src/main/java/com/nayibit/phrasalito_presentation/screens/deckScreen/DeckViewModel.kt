@@ -350,7 +350,7 @@ class DeckViewModel @Inject
                     is Resource.Success -> {
                         _state.value = _state.value.copy(
                             decks = result.data.map { it.toDeckUI() })
-                        getAvailableLanguages()
+                         getAvailableLanguages()
                     }
 
                     is Resource.Error -> {
@@ -367,8 +367,7 @@ class DeckViewModel @Inject
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun getAvailableLanguages() {
-        viewModelScope.launch {
+    suspend fun getAvailableLanguages() {
             isTextSpeechReadyUseCase()
                 .flatMapLatest { result ->
                     when (result) {
@@ -388,7 +387,6 @@ class DeckViewModel @Inject
                 .collect { result ->
                     when (result) {
                         is Resource.Success -> {
-                            Log.d("getAvailableLanguages", "Success: ${result.data}")
                             _state.value = _state.value.copy(
                                 isLoading = false,
                                 listLanguages = if (result.data.isNotEmpty()){
@@ -411,5 +409,4 @@ class DeckViewModel @Inject
                     }
                 }
         }
-    }
 }
