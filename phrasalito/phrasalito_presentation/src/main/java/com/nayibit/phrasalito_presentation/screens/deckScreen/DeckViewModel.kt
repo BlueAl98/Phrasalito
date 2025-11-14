@@ -1,6 +1,5 @@
 package com.nayibit.phrasalito_presentation.screens.deckScreen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.common.util.Constants.FIRST_ELEMENT_DROP_LANGUAGE_LIST
