@@ -1,13 +1,12 @@
 package com.nayibit.phrasalito_presentation.screens.deckScreen
 
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.nayibit.phrasalito_presentation.ui.theme.PhrasalitoTheme
+import com.nayibit.phrasalito_presentation.model.Language
 import kotlinx.coroutines.flow.MutableSharedFlow
 import org.junit.Rule
 import org.junit.Test
@@ -19,61 +18,93 @@ class DeckScreenTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    private val fakeDecks = listOf(
-        DeckUI(id = 1, name = "English Deck", numCards = 5),
-        DeckUI(id = 2, name = "Spanish Deck", numCards = 3)
+
+    private lateinit var eventFlow: MutableSharedFlow<DeckUiEvent>
+    private val capturedEvents = mutableListOf<DeckUiEvent>()
+
+
+    private fun setupScreen(
+        state: DeckStateUi = createDefaultState(),
+        onEvent: (DeckUiEvent) -> Unit = { capturedEvents.add(it) }
+    ) {
+        eventFlow = MutableSharedFlow()
+        composeRule.setContent {
+            DeckScreen(
+                state = state,
+                eventFlow = eventFlow,
+                onEvent = onEvent,
+                navigationToPhrases = { _, _ -> }
+            )
+        }
+    }
+
+    private fun createDefaultState(
+        decks: List<DeckUI> = emptyList(),
+        isLoading: Boolean = false,
+        showModal: Boolean = false,
+        showTutorial: Boolean = false,
+        currentStep: Int = 0,
+        bodyModal: BodyDeckModalEnum = BodyDeckModalEnum.BODY_INSERT_DECK
+    ) = DeckStateUi(
+        decks = decks,
+        isLoading = isLoading,
+        showModal = showModal,
+        showTutorial = showTutorial,
+        currentStep = currentStep,
+        bodyModal = bodyModal
     )
 
+    private fun createMockDeck(
+        id: Int = 1,
+        name: String = "Test Deck",
+        isSwiped: Boolean = false
+    ) = DeckUI(
+        id = id,
+        name = name,
+        isSwiped = isSwiped,
+        selectedLanguage = Language(1,"en_US", "English")
+    )
+
+
     @Test
-    fun deckList_isDisplayed_whenStateHasDecks() {
-        val state = DeckStateUi(decks = fakeDecks, isLoading = false)
-        val eventFlow = MutableSharedFlow<DeckUiEvent>()
-        var eventCalled: DeckUiEvent? = null
+    fun deckScreen_whenEmpty_showsEmptyState() {
+        setupScreen()
 
-        composeRule.setContent {
-            PhrasalitoTheme {
-                DeckScreen(
-                    state = state,
-                    eventFlow = eventFlow,
-                    onEvent = { eventCalled = it },
-                    navigationToPhrases = { _, _ -> }
-                )
-            }
-        }
+        composeRule.onNodeWithTag("deck_list").assertDoesNotExist()
+    }
 
-        // ✅ Assert LazyColumn exists
+    @Test
+    fun deckScreen_withDecks_showsLazyColumn() {
+        val decks = listOf(
+            createMockDeck(1, "Deck 1"),
+            createMockDeck(2, "Deck 2")
+        )
+        setupScreen(state = createDefaultState(decks = decks))
+
         composeRule.onNodeWithTag("deck_list").assertExists()
-
-        // ✅ Assert each deck name appears
-        composeRule.onNodeWithText("English Deck").assertIsDisplayed()
-        composeRule.onNodeWithText("Spanish Deck").assertIsDisplayed()
     }
 
     @Test
-    fun clickingFloatingButton_triggersShowModalEvent() {
-        val state = DeckStateUi()
-        val eventFlow = MutableSharedFlow<DeckUiEvent>()
-        var eventCalled: DeckUiEvent? = null
-
-        composeRule.setContent {
-            PhrasalitoTheme {
-                DeckScreen(
-                    state = state,
-                    eventFlow = eventFlow,
-                    onEvent = { eventCalled = it },
-                    navigationToPhrases = { _, _ -> }
-                )
-            }
-        }
-
-        // ✅ Click FAB
+    fun floatingActionButton_exists_and_works() {
+        setupScreen(createDefaultState(showModal = true))
+        composeRule.onNodeWithContentDescription("Add").assertExists()
         composeRule.onNodeWithContentDescription("Add").performClick()
-
-        // ✅ Verify event emitted
-        assert(eventCalled is DeckUiEvent.ShowModal)
-        val modal = eventCalled as DeckUiEvent.ShowModal
-        assert(modal.type == BodyDeckModalEnum.BODY_INSERT_DECK)
+        assert(capturedEvents.last() is DeckUiEvent.ShowModal)
+        assert((capturedEvents.last() as DeckUiEvent.ShowModal).type == BodyDeckModalEnum.BODY_INSERT_DECK)
+        composeRule.onNodeWithTag("text_field_insert_deck").assertExists()
     }
+
+    @Test
+    fun show_modal_and_funcionality(){
+        setupScreen(createDefaultState(showModal = true, bodyModal = BodyDeckModalEnum.BODY_INSERT_DECK))
+        composeRule.onNodeWithTag("text_field_insert_deck").assertExists()
+        composeRule.onNodeWithTag("text_field_insert_deck").performClick()
+        composeRule.onNodeWithTag("text_field_base")
+            .performTextInput("My Deck")
+    }
+
+
+
 }
 
 

@@ -93,7 +93,6 @@ fun DeckScreen(
     )
 
     LaunchedEffect(Unit) {
-
         eventFlow.collect { event ->
             when (event) {
                 is DeckUiEvent.ShowToast -> {
@@ -136,6 +135,7 @@ fun DeckScreen(
 
 
   TutorialBase(
+        modifier = modifier.testTag("tutorial_base"),
         listComponents = steps,
         currentIndex = state.currentStep,
         isTutorialEnabled = state.showTutorial,
@@ -175,8 +175,13 @@ fun DeckScreen(
                                     exit = fadeOut(animationSpec = tween(300)) + shrinkVertically(),
                                 ) {
                                     SwipeableDeckItem(
-                                        modifier =  Modifier.onGloballyPositioned{
-                                            rectSwipeCard = it.boundsInWindow()
+                                        modifier =  Modifier.onGloballyPositioned {
+                                         if (state.showTutorial){
+                                            val newRect = it.boundsInWindow()
+                                            if (rectSwipeCard != newRect) {
+                                                rectSwipeCard = it.boundsInWindow()
+                                            }
+                                         }
                                         },
                                         deck = deck,
                                         onEdit = {
@@ -244,7 +249,10 @@ fun DeckScreen(
         }, floatingActionButton = {
           FloatingActionButton(
                 modifier = Modifier.onGloballyPositioned{
-                    rectFab = it.boundsInWindow()
+                    val newRect = it.boundsInWindow()
+                    if (rectFab != newRect) { // Only update if changed
+                        rectFab = it.boundsInWindow()
+                    }
                 },
                 containerColor = primaryGradientEnd,
                 onClick = {
@@ -274,6 +282,7 @@ fun BodyModalInsertDeck(
     val permissionState = rememberNotificationPermissionHandler()
 
     TextFieldBase(
+        modifier = modifier.testTag("text_field_insert_deck"),
         value = state.currentDeck.name,
         onValueChange = { onEvent(DeckUiEvent.UpdateTextFieldInsert(it)) },
         label = stringResource(R.string.label_learn_phrase),

@@ -43,6 +43,7 @@ import com.nayibit.phrasalito_presentation.utils.LabelPosition
 
 @Composable
 fun TutorialBase(
+    modifier: Modifier = Modifier,
     listComponents: List<TutorialStep>,
     currentIndex: Int = 0,
     isTutorialEnabled: Boolean = true,
