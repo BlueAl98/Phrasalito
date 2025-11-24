@@ -72,6 +72,7 @@ class DeckViewModel @Inject
     init {
         getAllDecks()
         getTutorialState()
+        getAvailableLanguages()
     }
 
 
@@ -236,8 +237,7 @@ class DeckViewModel @Inject
        deckUI: DeckUI
     ) {
         viewModelScope.launch {
-            val result = updateDeckUseCase(deckUI.toDeck())
-            when (result) {
+            when (val result = updateDeckUseCase(deckUI.toDeck())) {
                 is Resource.Error -> {
                     _state.value = _state.value.copy(
                         showModal = false,
@@ -336,6 +336,7 @@ class DeckViewModel @Inject
         }
     }
 
+
     fun getAllDecks() {
         viewModelScope.launch {
             getDecksUseCase().collect { result ->
@@ -347,9 +348,9 @@ class DeckViewModel @Inject
                     }
 
                     is Resource.Success -> {
+
                         _state.value = _state.value.copy(
                             decks = result.data.map { it.toDeckUI() })
-                         getAvailableLanguages()
                     }
 
                     is Resource.Error -> {
@@ -366,7 +367,8 @@ class DeckViewModel @Inject
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    suspend fun getAvailableLanguages() {
+     fun getAvailableLanguages() {
+    viewModelScope.launch {
             isTextSpeechReadyUseCase()
                 .flatMapLatest { result ->
                     when (result) {
@@ -409,3 +411,4 @@ class DeckViewModel @Inject
                 }
         }
 }
+    }

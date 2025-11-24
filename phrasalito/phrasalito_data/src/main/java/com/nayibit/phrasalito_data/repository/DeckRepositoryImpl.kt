@@ -7,13 +7,15 @@ import com.nayibit.phrasalito_data.mapper.toEntity
 import com.nayibit.phrasalito_data.mapper.toPhrase
 import com.nayibit.phrasalito_data.utils.Constants.INITIAL_DECK
 import com.nayibit.phrasalito_data.utils.Constants.INITIAL_PHRASES
-import com.nayibit.phrasalito_data.utils.Constants.INITIAL_PHRASES_FR
 import com.nayibit.phrasalito_domain.model.Deck
 import com.nayibit.phrasalito_domain.model.DeckWithPhrases
 import com.nayibit.phrasalito_domain.repository.DeckRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
 class DeckRepositoryImpl
@@ -30,19 +32,20 @@ class DeckRepositoryImpl
          }
         }
 
-    override suspend fun getAllDecks(): Flow<Resource<List<Deck>>> = flow {
-      emit(Resource.Loading)
-        delay(1000)
-        try {
-            deckDao.getDecksWithPhrases()
-                .collect { entities ->
-                    val decks = entities.map { it.toPhrase() }
-                    emit(Resource.Success(decks))
-                }
-        }catch (e: Exception){
-            emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
-        }
-    }
+    override fun getAllDecks(): Flow<Resource<List<Deck>>> =
+        deckDao.getDecksWithPhrases()
+            .map { entities ->
+                val decks = entities.map { it.toPhrase() }
+                Resource.Success(decks) as Resource<List<Deck>>
+            }
+            .onStart {
+                emit(Resource.Loading)
+            }
+            .catch { e ->
+                emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
+            }
+
+
 
     override suspend fun deleteDeck(id: Int): Resource<Unit> {
         try {
@@ -75,7 +78,7 @@ class DeckRepositoryImpl
     override suspend fun createInitialDeck(): Resource<Boolean> {
         try {
             deckDao.deleteAll()
-            deckDao.insertDeckWithPhrases(INITIAL_DECK, INITIAL_PHRASES_FR)
+            deckDao.insertDeckWithPhrases(INITIAL_DECK, INITIAL_PHRASES)
             return Resource.Success(true)
         }catch (e: Exception){
             return Resource.Error(e.localizedMessage ?: "Unknown error")

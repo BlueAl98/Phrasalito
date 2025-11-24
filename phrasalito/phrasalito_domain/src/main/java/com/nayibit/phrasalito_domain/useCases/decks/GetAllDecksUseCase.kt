@@ -9,7 +9,7 @@ import javax.inject.Inject
 class GetAllDecksUseCase @Inject
     constructor(private val repository: DeckRepository){
 
-    suspend operator fun invoke(): Flow<Resource<List<Deck>>> {
+    operator fun invoke(): Flow<Resource<List<Deck>>> {
         return repository.getAllDecks()
     }
 

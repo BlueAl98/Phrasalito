@@ -12,6 +12,7 @@ import com.nayibit.phrasalito_data.model.DeckWithPhrasesDto
 import com.nayibit.phrasalito_data.utils.Constants.INITIAL_DECK
 import com.nayibit.phrasalito_data.utils.Constants.INITIAL_PHRASES
 import com.nayibit.phrasalito_domain.model.Deck
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -114,23 +115,24 @@ class DeckRepositoryImplTest {
     }
 
     @Test
-    fun `get all decks failure`() = runBlocking {
-        //given
-
+    fun `get all decks failure`() = runTest {
+        // Given
         val errorExpected = "error to get decks"
 
-        `when`(deckDao.getDecksWithPhrases()).thenThrow(RuntimeException(errorExpected))
+        whenever(deckDao.getDecksWithPhrases()).thenReturn(
+            flow { throw RuntimeException(errorExpected) }
+        )
 
+        // When / Then
         repositoryImpl.getAllDecks().test {
             assertEquals(Resource.Loading, awaitItem())
 
             val result = awaitItem()
-
             assertTrue(result is Resource.Error)
             assertEquals(errorExpected, (result as Resource.Error).message)
+
             awaitComplete()
         }
-
     }
 
 
