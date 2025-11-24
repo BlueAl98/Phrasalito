@@ -79,6 +79,8 @@ fun DeckScreen(
     val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
     var rectFab by remember { mutableStateOf<Rect>(Rect.Zero) }
     var rectSwipeCard by remember { mutableStateOf<Rect>(Rect.Zero) }
+
+
     val steps = listOf(
         TutorialStep(
             rect = rectFab ,
@@ -135,7 +137,6 @@ fun DeckScreen(
 
 
   TutorialBase(
-        modifier = modifier.testTag("tutorial_base"),
         listComponents = steps,
         currentIndex = state.currentStep,
         isTutorialEnabled = state.showTutorial,
@@ -176,12 +177,9 @@ fun DeckScreen(
                                 ) {
                                     SwipeableDeckItem(
                                         modifier =  Modifier.onGloballyPositioned {
-                                         if (state.showTutorial){
-                                            val newRect = it.boundsInWindow()
-                                            if (rectSwipeCard != newRect) {
+                                            if (state.showTutorial && rectSwipeCard.isEmpty) {
                                                 rectSwipeCard = it.boundsInWindow()
                                             }
-                                         }
                                         },
                                         deck = deck,
                                         onEdit = {

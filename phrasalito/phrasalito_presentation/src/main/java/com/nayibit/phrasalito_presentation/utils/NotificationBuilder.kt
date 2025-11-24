@@ -56,7 +56,7 @@ object NotificationBuilder {
             .setContentTitle(null) // 👈 remove system title
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .setBigContentTitle("\n"+phrase)
+                    .setBigContentTitle(phrase)
                     .bigText(translation)
             )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

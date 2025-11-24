@@ -7,6 +7,7 @@ import com.nayibit.phrasalito_data.mapper.toEntity
 import com.nayibit.phrasalito_data.mapper.toPhrase
 import com.nayibit.phrasalito_data.utils.Constants.INITIAL_DECK
 import com.nayibit.phrasalito_data.utils.Constants.INITIAL_PHRASES
+import com.nayibit.phrasalito_data.utils.Constants.INITIAL_PHRASES_FR
 import com.nayibit.phrasalito_domain.model.Deck
 import com.nayibit.phrasalito_domain.model.DeckWithPhrases
 import com.nayibit.phrasalito_domain.repository.DeckRepository
@@ -74,7 +75,7 @@ class DeckRepositoryImpl
     override suspend fun createInitialDeck(): Resource<Boolean> {
         try {
             deckDao.deleteAll()
-            deckDao.insertDeckWithPhrases(INITIAL_DECK, INITIAL_PHRASES)
+            deckDao.insertDeckWithPhrases(INITIAL_DECK, INITIAL_PHRASES_FR)
             return Resource.Success(true)
         }catch (e: Exception){
             return Resource.Error(e.localizedMessage ?: "Unknown error")

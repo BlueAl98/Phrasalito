@@ -1,5 +1,12 @@
 package com.nayibit.phrasalito_presentation.screens.deckScreen
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -29,12 +36,16 @@ class DeckScreenTest {
     ) {
         eventFlow = MutableSharedFlow()
         composeRule.setContent {
+            Surface(modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.systemBars), color = MaterialTheme.colorScheme.background) {
             DeckScreen(
                 state = state,
                 eventFlow = eventFlow,
                 onEvent = onEvent,
                 navigationToPhrases = { _, _ -> }
             )
+        }
         }
     }
 
@@ -101,6 +112,18 @@ class DeckScreenTest {
         composeRule.onNodeWithTag("text_field_insert_deck").performClick()
         composeRule.onNodeWithTag("text_field_base")
             .performTextInput("My Deck")
+    }
+
+    @Test
+    fun showTutorial_and_funcionality(){
+        val fakeDeck = listOf(createMockDeck(1, "Deck 1"))
+        setupScreen(createDefaultState(showTutorial = true, decks = fakeDeck))
+
+        composeRule.waitForIdle()
+
+        composeRule.onNodeWithTag("tutorial_base").assertExists()
+        composeRule.onNodeWithContentDescription("Add").assertExists()
+        composeRule.onNodeWithTag("deck_item").assertExists()
     }
 
 
