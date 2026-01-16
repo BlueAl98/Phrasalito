@@ -42,5 +42,5 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: com.nayibit.phrasalito
           releaseFiles: app/build/outputs/bundle/release/*.aab
-          track: closed
+          track: beta
           status: completed
