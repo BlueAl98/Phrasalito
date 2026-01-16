@@ -9,44 +9,55 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 📥 Checkout
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Make Gradle wrapper executable
+      # ☕ Setup JDK
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # 🔧 Gradle
+      - name: Make Gradle executable
         run: chmod +x ./gradlew
 
-      - name: Run Unit Tests
+      # 🧪 Tests
+      - name: Run unit tests
         run: ./gradlew testDebugUnitTest --no-daemon
 
-      # 🧪 Debug APK for develop
+      # 🧱 Debug APK (develop only)
       - name: Build debug APK
         if: github.ref == 'refs/heads/develop'
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug --no-daemon
 
       - name: Upload debug APK
         if: github.ref == 'refs/heads/develop'
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk
-          path: '**/build/outputs/**/*.apk'
+          path: app/build/outputs/apk/debug/*.apk
 
-      # 🔐 Decode keystore
+      # 🔐 Decode keystore (master only)
       - name: Decode keystore
         if: github.ref == 'refs/heads/master'
+        working-directory: app
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
+          ls -l keystore.jks
 
-      # 📦 Build release AAB
+      # 📦 Build signed AAB
       - name: Build release AAB
         if: github.ref == 'refs/heads/master'
         env:
-          ANDROID_KEYSTORE_PATH: keystore.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew bundleRelease
+        run: ./gradlew bundleRelease --no-daemon --stacktrace
 
-      # 🚀 Upload to Google Play (Closed Testing)
+      # 🚀 Upload to Google Play (Closed testing)
       - name: Upload to Google Play - Closed Testing
         if: github.ref == 'refs/heads/master'
         uses: r0adkll/upload-google-play@v1
