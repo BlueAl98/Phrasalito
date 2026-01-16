@@ -23,26 +23,8 @@ jobs:
 
       # 🔐 Decode keystore
       - name: Decode keystore
-        working-directory: app
+        if: github.ref == 'refs/heads/master'
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
           ls -l keystore.jks
 
-      # 📦 Build signed AAB
-      - name: Build release AAB
-        env:
-          ANDROID_KEYSTORE_PATH: app/keystore.jks
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew bundleRelease --no-daemon --stacktrace
-
-      # 🚀 Upload to Google Play (Closed Testing)
-      - name: Upload to Google Play
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
-          packageName: com.nayibit.phrasalito
-          releaseFiles: app/build/outputs/bundle/release/*.aab
-          track: closed
-          status: completed
