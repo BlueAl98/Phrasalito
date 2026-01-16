@@ -62,7 +62,7 @@ fun LanguageDropdownMenu(
             onValueChange = {},
             readOnly = true,
             label = { Text(label) },
-            trailingIcon = {
+         /*   trailingIcon = {
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
                     contentDescription = "Dropdown",
@@ -70,7 +70,7 @@ fun LanguageDropdownMenu(
                         expanded = !expanded
                     }
                 )
-            },
+            },*/
             colors = colors,
             modifier = Modifier
                 .menuAnchor()

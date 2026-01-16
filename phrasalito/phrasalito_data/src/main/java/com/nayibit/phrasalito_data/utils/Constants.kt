@@ -11,6 +11,15 @@ object Constants {
         languageName = ""
     )
 
+    val INITIAL_PHRASES = listOf(
+        PhraseEntity(targetLanguage = "Hello", translation = "Hola", example = "Hello world", deckId = 1),
+        PhraseEntity(targetLanguage = "Thank you", translation = "Gracias", example = "Thank you so much", deckId = 1),
+        PhraseEntity(targetLanguage = "Goodbye", translation = "Adiós", example = "Goodbye my friend", deckId = 1),
+        PhraseEntity(targetLanguage = "Please", translation = "Por favor", example = "Please come in", deckId = 1),
+        PhraseEntity(targetLanguage = "Sorry", translation = "Lo siento", example = "Sorry for the delay", deckId = 1),
+        PhraseEntity(targetLanguage = "Excuse me", translation = "Disculpe", example = "Excuse me, where is the bathroom?", deckId = 1)
+    )
+
   /*
   🇬🇧 English (en → es)
        val INITIAL_PHRASES = listOf(
@@ -106,13 +115,13 @@ object Constants {
     )*/
 
 
-    val INITIAL_PHRASES = listOf(
+  /*  val INITIAL_PHRASES = listOf(
         PhraseEntity(targetLanguage ="Merhaba", translation ="Hola", example ="Merhaba dünya", deckId = 1),
         PhraseEntity(targetLanguage ="Teşekkürler", translation ="Gracias", example ="Çok teşekkürler", deckId = 1),
         PhraseEntity(targetLanguage ="Hoşça kal", translation ="Adiós", example ="Hoşça kal arkadaşım", deckId = 1),
         PhraseEntity(targetLanguage ="Lütfen", translation ="Por favor", example ="Lütfen içeri gir", deckId = 1),
         PhraseEntity(targetLanguage ="Üzgünüm", translation ="Lo siento",example = "Gecikme için üzgünüm", deckId = 1)
-    )
+    )*/
 
 
 }
