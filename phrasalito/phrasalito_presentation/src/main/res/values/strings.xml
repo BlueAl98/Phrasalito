@@ -26,7 +26,7 @@
 
 
     <!-- PhraseScreen Strings -->
-    <string name="label_phrase">Frase</string>
+    <string name="label_phrase">Frase de idioma a aprender</string>
     <string name="label_traduction_phrase">Traducción</string>
     <string name="label_dont_have_phrases">No tienes frases agregadas</string>
     <string name="title_delete_phrase">Estas seguro de eliminar esta frase?</string>

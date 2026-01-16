@@ -1,9 +1,7 @@
-name: Simple Android Build
+name: Android CI + Play Closed Testing
 
 on:
   push:
-    branches: ["master", "develop"]
-  pull_request:
     branches: ["master", "develop"]
 
 jobs:
@@ -18,12 +16,12 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run Unit Tests
-        run: ./gradlew testDebugUnitTest --no-daemon --stacktrace
+        run: ./gradlew testDebugUnitTest --no-daemon
 
-      # 🧱 Build debug APK only on develop branch
+      # 🧪 Debug APK for develop
       - name: Build debug APK
         if: github.ref == 'refs/heads/develop'
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+        run: ./gradlew assembleDebug
 
       - name: Upload debug APK
         if: github.ref == 'refs/heads/develop'
@@ -32,20 +30,29 @@ jobs:
           name: debug-apk
           path: '**/build/outputs/**/*.apk'
 
+      # 🔐 Decode keystore
       - name: Decode keystore
         if: github.ref == 'refs/heads/master'
-        working-directory: app
         run: |
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > keystore.jks
-          ls -l keystore.jks
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
 
-      - name: Build signed release APK
+      # 📦 Build release AAB
+      - name: Build release AAB
         if: github.ref == 'refs/heads/master'
         env:
           ANDROID_KEYSTORE_PATH: keystore.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew assembleRelease --no-daemon --stacktrace
+        run: ./gradlew bundleRelease
+
+      # 🚀 Upload to Google Play (Closed Testing)
+      - name: Upload to Google Play - Closed Testing
+        if: github.ref == 'refs/heads/master'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.nayibit.phrasalito
+          releaseFiles: app/build/outputs/bundle/release/*.aab
+          track: closed
+          status: completed
