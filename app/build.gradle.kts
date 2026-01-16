@@ -33,41 +33,26 @@ android {
 
     }
 
-    // Load local.properties (if exists)
-    val localProps = Properties()
-    val localPropsFile = rootProject.file("local.properties")
-    if (localPropsFile.exists()) {
-        localProps.load(FileInputStream(localPropsFile))
-    }
-
-    fun getProp(name: String): String? =
-        if (localProps.containsKey(name)) localProps.getProperty(name)
-        else System.getenv(name)
-
     signingConfigs {
-        create("release") {
 
-            val keystorePath = getProp("KEYSTORE_PATH")
-                ?: getProp("ANDROID_KEYSTORE_PATH")
-                ?: error("❌ Keystore path not found")
+        val keystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
 
-            storeFile = file(keystorePath)
-
-            storePassword = getProp("KEYSTORE_PASSWORD")
-                ?: error("❌ KEYSTORE_PASSWORD not found")
-
-            keyAlias = getProp("KEY_ALIAS")
-                ?: error("❌ KEY_ALIAS not found")
-
-            keyPassword = getProp("KEY_PASSWORD")
-                ?: error("❌ KEY_PASSWORD not found")
+        if (keystorePath != null) {
+            create("release") {
+                storeFile = file(keystorePath)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
         }
     }
 
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfigs.findByName("release")?.let {
+                signingConfig = it
+            }
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
