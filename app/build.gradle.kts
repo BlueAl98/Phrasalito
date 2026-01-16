@@ -40,20 +40,27 @@ android {
         localProps.load(FileInputStream(localPropsFile))
     }
 
+    fun getProp(name: String): String? =
+        if (localProps.containsKey(name)) localProps.getProperty(name)
+        else System.getenv(name)
+
     signingConfigs {
         create("release") {
 
-            storeFile = localProps.getProperty("KEYSTORE_PATH")?.let { file(it) }
-                ?: System.getenv("ANDROID_KEYSTORE_PATH")?.let { file(it) }
+            val keystorePath = getProp("KEYSTORE_PATH")
+                ?: getProp("ANDROID_KEYSTORE_PATH")
+                ?: error("❌ Keystore path not found")
 
-            storePassword = localProps.getProperty("KEYSTORE_PASSWORD")
-                ?: System.getenv("KEYSTORE_PASSWORD")
+            storeFile = file(keystorePath)
 
-            keyAlias = localProps.getProperty("KEY_ALIAS")
-                ?: System.getenv("KEY_ALIAS")
+            storePassword = getProp("KEYSTORE_PASSWORD")
+                ?: error("❌ KEYSTORE_PASSWORD not found")
 
-            keyPassword = localProps.getProperty("KEY_PASSWORD")
-                ?: System.getenv("KEY_PASSWORD")
+            keyAlias = getProp("KEY_ALIAS")
+                ?: error("❌ KEY_ALIAS not found")
+
+            keyPassword = getProp("KEY_PASSWORD")
+                ?: error("❌ KEY_PASSWORD not found")
         }
     }
 
