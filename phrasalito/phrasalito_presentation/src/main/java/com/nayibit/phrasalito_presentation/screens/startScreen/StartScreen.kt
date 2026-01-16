@@ -18,6 +18,7 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -165,7 +166,9 @@ fun ContentLandscape(
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
 
                 when (page) {
-                    0 -> AnimatedIllustration(colors = colors)
+                    0 -> AnimatedIllustration(
+                        colors = colors,
+                        mainImageVector = Icons.Filled.Language)
                     1 -> AnimatedIllustration(
                         colors = colors,
                         mainImageVector = Icons.Filled.NotificationsActive
@@ -431,7 +434,7 @@ fun WelcomeTab(
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            AnimatedIllustration(colors = colors)
+             AnimatedIllustration(colors = colors, mainImageVector = Icons.Filled.Language)
         }
 
 

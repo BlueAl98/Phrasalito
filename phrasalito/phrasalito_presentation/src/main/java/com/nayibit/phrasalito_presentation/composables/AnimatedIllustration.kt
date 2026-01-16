@@ -15,9 +15,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.QuestionMark
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,7 +39,7 @@ fun AnimatedIllustration(
     modifier: Modifier = Modifier,
     colors: OnboardingColors,
     mainImageVector: ImageVector = Icons.Default.Check,
-    topIconVector: ImageVector = Icons.Default.Star,
+    topIconVector: ImageVector = Icons.Default.ChatBubble,
     bottomIconVector: ImageVector = Icons.Default.QuestionMark
     ) {
     val infiniteTransition = rememberInfiniteTransition(label = "illustration")

@@ -59,10 +59,10 @@
 
     <!-- StartScreen Strings -->
     <string name="welcome_title">Bienvenido a Frasalito</string>
-    <string name="description_welcome">Una app para aprender frases y palabras de manera sencilla</string>
+    <string name="description_welcome">Una app para aprender vocabulario y frases en distintos idiomas de forma sencilla, usando flashcards y ejercicios prácticos.</string>
     <string name="notification_description">Activa el permiso para recibir notificaciones</string>
     <string name="notification_title">Notificaciones</string>
-    <string name="notifications_text">Recibe notificaciones con frases de tus decks para seguir practicando cada día.</string>
+    <string name="notifications_text">Recibe notificaciones con frases de tus decks para practicar todos los días.</string>
 
 
 
@@ -73,11 +73,11 @@
     <string name="btn_update">Actualizar</string>
     <string name="btn_delete">Eliminar</string>
     <string name="label_emty_fields">Campos vacios</string>
-    <string name="error_example_not_contains_phrase">El ejemplo no contiene la frase ingresada</string>
-    <string name="error_example_is_not_longer_than_phrase">El ejemplo debe ser mas largo que la frase ingresada</string>
+    <string name="error_example_not_contains_phrase">El ejemplo no contiene la frase proporcionada.</string>
+    <string name="error_example_is_not_longer_than_phrase">El ejemplo debe tener más palabras que la frase ingresada.</string>
     <string name="correct_answers_label">Respuestas correctas: %1$s /  %2$s</string>
-    <string name="tutorial_floatButton_description">Boton para agregar tus decks</string>
-    <string name="tutorial_itemDeck_description">Tu lista de decks para editar o eliminar dezliza ala izquierda</string>
+    <string name="tutorial_floatButton_description">Botón para agregar tus decks.</string>
+    <string name="tutorial_itemDeck_description">Aquí encontrarás tu lista de decks. Desliza hacia la izquierda para editarlos o eliminarlos.</string>
 
 
 </resources>
