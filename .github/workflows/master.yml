@@ -23,10 +23,9 @@ jobs:
 
       # 🔐 Decode keystore
       - name: Decode keystore
-        if: github.ref == 'refs/heads/master'
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
-          ls -l keystore.jks
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > app/keystore.jks
+          ls -l app/keystore.jks
 
       - name: Build release AAB
         env:
