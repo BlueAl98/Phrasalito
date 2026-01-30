@@ -46,6 +46,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -66,6 +67,30 @@ enum class DeckBadgeType {
     NONE,
     NEW,
     COMPLETE
+}
+
+
+@Preview
+@Composable
+fun SwipeableDeckItemPreview() {
+
+    Column(
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
+    ) {
+
+   SwipeableDeckItem(
+       modifier = Modifier.height(140.dp),
+       deck = DeckUI(
+           id = 1,
+           name = "Test",
+           numCards = 50),
+       onEdit = {},
+       onDelete = {},
+       onClick = {},
+       isSwiped = false,
+       onSwipe = {}
+   )
+}
 }
 
 
