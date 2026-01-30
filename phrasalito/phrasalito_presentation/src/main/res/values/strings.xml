@@ -59,7 +59,7 @@
 
     <!-- StartScreen Strings -->
     <string name="welcome_title">Bienvenido a Frasalito</string>
-    <string name="description_welcome">Una app para aprender vocabulario y frases en distintos idiomas de forma sencilla, usando flashcards y ejercicios prácticos.</string>
+    <string name="description_welcome">Aprende vocabulario y frases en inglés con flashcards y ejercicios prácticos.</string>
     <string name="notification_description">Activa el permiso para recibir notificaciones</string>
     <string name="notification_title">Notificaciones</string>
     <string name="notifications_text">Recibe notificaciones con frases de tus decks para practicar todos los días.</string>

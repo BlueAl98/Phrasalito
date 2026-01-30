@@ -70,29 +70,6 @@ enum class DeckBadgeType {
 }
 
 
-@Preview
-@Composable
-fun SwipeableDeckItemPreview() {
-
-    Column(
-        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
-    ) {
-
-   SwipeableDeckItem(
-       modifier = Modifier.height(140.dp),
-       deck = DeckUI(
-           id = 1,
-           name = "Test",
-           numCards = 50),
-       onEdit = {},
-       onDelete = {},
-       onClick = {},
-       isSwiped = false,
-       onSwipe = {}
-   )
-}
-}
-
 
 @OptIn(ExperimentalWearMaterialApi::class)
 @Composable
@@ -292,6 +269,8 @@ fun CardDeck(
                         totalCards = totalCards,
                         progress = progress
                     )
+
+
                     Spacer(modifier.size(3.dp))
                 }
             }
@@ -361,30 +340,13 @@ private fun DeckProgress(
             fontWeight = FontWeight.Medium,
         )
 
-        // Progress bar
         Box(
             modifier = Modifier
                 .weight(1f)
-                .height(6.dp)
-                .background(
-                    color = progressBackground,
-                    shape = RoundedCornerShape(3.dp)
-                )
+                .height(12.dp)
+
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth(progress)
-                    .background(
-                        brush = Brush.horizontalGradient(
-                            colors = listOf(
-                                primaryGradientStart,
-                                primaryGradientEnd
-                            )
-                        ),
-                        shape = RoundedCornerShape(3.dp)
-                    )
-            )
+            LinearProgressExpressive(progress)
         }
     }
 }
