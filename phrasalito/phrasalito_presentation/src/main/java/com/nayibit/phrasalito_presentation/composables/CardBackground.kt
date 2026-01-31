@@ -21,7 +21,6 @@ fun CardBackground(
         modifier = modifier
             .clip(RoundedCornerShape(20.dp))
             .drawBehind {
-
                 // Base gradient background
                 drawRect(
                     brush = Brush.linearGradient(
