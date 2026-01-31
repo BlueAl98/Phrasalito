@@ -11,14 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
 
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun LinearProgressExpressive(
     progress: Float,
+    color: Color = Color.White
 ){
     //var progress by remember { mutableFloatStateOf(0.1f) }
     val animatedProgress by
@@ -28,7 +29,8 @@ fun LinearProgressExpressive(
     )
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        LinearWavyProgressIndicator(progress = { animatedProgress }, color = primaryGradientEnd)
+        LinearWavyProgressIndicator(progress = { animatedProgress },
+            trackColor = Color.Gray.copy(0.4f), color = color)
         Spacer(Modifier.requiredHeight(30.dp))
     }
 }

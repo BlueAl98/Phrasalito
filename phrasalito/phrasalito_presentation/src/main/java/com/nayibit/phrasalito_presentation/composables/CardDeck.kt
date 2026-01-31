@@ -46,7 +46,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,7 +58,6 @@ import com.nayibit.phrasalito_presentation.ui.theme.badgeComplete
 import com.nayibit.phrasalito_presentation.ui.theme.badgeNew
 import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
 import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientStart
-import com.nayibit.phrasalito_presentation.ui.theme.progressBackground
 import kotlin.math.roundToInt
 
 
@@ -168,12 +166,6 @@ fun CardDeck(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
-    val elevation by animateDpAsState(
-        targetValue = if (isPressed) 2.dp else 40.dp,
-        animationSpec = tween(durationMillis = 150),
-        label = "elevation"
-    )
-
     val offsetY by animateDpAsState(
         targetValue = if (isPressed) (-2).dp else (-4).dp,
         animationSpec = tween(durationMillis = 150),
@@ -182,16 +174,12 @@ fun CardDeck(
 
     val progress = if (totalCards > 0) currentCards.toFloat() / totalCards.toFloat() else 0f
 
+
+
     Card(
         modifier = modifier
             .fillMaxWidth()
             .offset(y = offsetY)
-            .shadow(
-                elevation = elevation,
-                shape = RoundedCornerShape(20.dp),
-                spotColor = MaterialTheme.colorScheme.inversePrimary,
-                ambientColor = MaterialTheme.colorScheme.inversePrimary
-            )
 
             .clickable(
                 interactionSource = interactionSource,
@@ -201,11 +189,8 @@ fun CardDeck(
         ,
         shape = RoundedCornerShape(20.dp)
     ) {
-        Box(modifier = Modifier.fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
-
-        ) {
-            // Left gradient border
+        Box(modifier = Modifier.fillMaxWidth()) {
+            CardBackground{
             Box(
                 modifier = Modifier
                     .width(4.dp)
@@ -234,7 +219,7 @@ fun CardDeck(
                 Icon(
                     imageVector = if (isNotified) Icons.Outlined.Notifications else Icons.Outlined.NotificationsOff,
                     contentDescription = if (isNotified) "Notifications On" else "Notifications Off",
-                    tint = if (isNotified) primaryGradientStart else Color.Gray.copy(alpha = 0.7f),
+                    tint = if (isNotified) Color.White else Color.Gray.copy(alpha = 0.7f),
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(top = 12.dp, end = 12.dp)
@@ -261,7 +246,8 @@ fun CardDeck(
                         text = title,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        lineHeight = 24.sp
+                        lineHeight = 24.sp,
+                        color = Color.White
                     )
 
                     DeckProgress(
@@ -286,6 +272,7 @@ fun CardDeck(
                         .padding(top = 5.dp, end = 12.dp, bottom = 8.dp)
                 )
             }
+        }
         }
     }
 }
@@ -338,6 +325,7 @@ private fun DeckProgress(
             text = "$currentCards / $totalCards",
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
+            color = Color.White
         )
 
         Box(
