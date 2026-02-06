@@ -170,19 +170,13 @@ fun LanguagePhraseCard(
                                     Spacer(modifier = Modifier.weight(1f))
 
                                     if (isTTsReady){
-                                        IconButton(
-                                            onClick = { onEvent(
-                                                OP_EXAMPLE_LANGUAGE
-                                            )},
-                                            enabled = !isSpeaking
-                                        ) {
                                             Icon(
+                                                modifier = Modifier.clickable {if (!isSpeaking) onEvent(OP_EXAMPLE_LANGUAGE) },
                                                 imageVector = if (isSpeaking) Icons.Default.Update else Icons.Default.PlayArrow,
                                                 contentDescription = "Play",
                                                 tint = phrase.color
                                             )
                                         }
-                              }
 
 
                                 }
@@ -337,6 +331,7 @@ fun LanguagePhraseCardLandscape(
                                         Spacer(modifier = Modifier.weight(1f))
 
                                         if (isTTsReady) {
+
                                             IconButton(
                                                 onClick = { onEvent(OP_EXAMPLE_LANGUAGE) },
                                                 enabled = !isSpeaking

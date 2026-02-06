@@ -338,11 +338,15 @@ class PhraseViewModel
             isTTsAvailableUseCase().collect { ttsResult ->
                 when (ttsResult) {
                     is Resource.Error -> {
-                        _state.update { it.copy(isTTsReady = false) }
+                        _state.update { it.copy(isTTsReady = false, isTtsSpeaking = false) }
                     }
                     is Resource.Success -> {
-                        _state.update { it.copy(isTTsReady = true) }
+                        if (ttsResult.data){
+                         _state.update { it.copy(isTTsReady = true) }
                          isProgressSpeaking()
+                        }else{
+                            _state.update { it.copy(isTtsSpeaking = false) }
+                        }
                     }
                 }
             }
