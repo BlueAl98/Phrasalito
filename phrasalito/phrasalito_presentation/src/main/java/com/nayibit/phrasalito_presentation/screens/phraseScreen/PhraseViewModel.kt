@@ -1,5 +1,6 @@
 package com.nayibit.phrasalito_presentation.screens.phraseScreen
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -60,23 +61,19 @@ class PhraseViewModel
     ) : ViewModel()  {
 
     val idDeck = savedStateHandle.get<Int>("idDeck") ?: -1
-    val lngCode = savedStateHandle.get<String>("lngCode") ?: ""
 
     private val _state = MutableStateFlow(PhraseStateUi(
-        idDeck = idDeck,
-        lngCode = lngCode
+        idDeck = idDeck
     ))
     val state: StateFlow<PhraseStateUi> = _state.asStateFlow()
 
     private val _eventFlow = MutableSharedFlow< PhraseUiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    private var isTtsPrewarmed = false
-
 
     init {
          getAllPhrases(idDeck)
-         ttsSetUp()
+         setupConfiguration()
      }
 
     fun onEvent(event: PhraseUiEvent) {
@@ -239,27 +236,10 @@ class PhraseViewModel
             }
 
             is PhraseUiEvent.SpeakText -> {
-                speakTextUseCase(event.text, lngCode)
+                _state.update { it.copy(isTtsSpeaking = true) }
+                speakTextUseCase(event.text, "")
             }
         }
-    }
-
-
-     private suspend fun getStateTTS(){
-             isTTsAvailableUseCase().collect { result ->
-                 when (result) {
-                     is Resource.Error -> {
-                         _state.update { it.copy(isTTsReady = false) }
-                     }
-
-                     is Resource.Success<*> -> {
-                         _state.update {
-                             it.copy(isTTsReady = true)
-                         }
-                         prewarmTts()
-                     }
-                 }
-             }
     }
 
     fun insertPhrase(phrase: Phrase){
@@ -307,8 +287,7 @@ class PhraseViewModel
 
     }
 
-
-     fun getAllPhrases(idDeck: Int) {
+    fun getAllPhrases(idDeck: Int) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             getAllPhrasesUseCase(idDeck)
@@ -352,30 +331,30 @@ class PhraseViewModel
       }
     }
 
-    private fun prewarmTts() {
-        if (isTtsPrewarmed) return
-        isTtsPrewarmed = true
-        viewModelScope.launch {
-            speakTextUseCase(" ", lngCode)
-        }
-    }
 
-    private suspend fun observeTtsSpeaking() {
-            isSpeakingUseCase()
-                .drop(2)
-                .collect { isSpeaking ->
-                if (isTtsPrewarmed)
-                   _state.update { it.copy(isTtsSpeaking = isSpeaking) }
+
+    private fun setupConfiguration(){
+        viewModelScope.launch {
+            isTTsAvailableUseCase().collect { ttsResult ->
+                when (ttsResult) {
+                    is Resource.Error -> {
+                        _state.update { it.copy(isTTsReady = false) }
+                    }
+                    is Resource.Success -> {
+                        _state.update { it.copy(isTTsReady = true) }
+                         isProgressSpeaking()
+                    }
+                }
             }
-
+        }
     }
 
-    private fun ttsSetUp(){
-        viewModelScope.launch {
-            if (lngCode != ""){
-              getStateTTS()
-              observeTtsSpeaking()
-        }
+    private suspend fun isProgressSpeaking(){
+            isSpeakingUseCase().collect { progressSpeak->
+                if (progressSpeak)
+                    _state.update { it.copy(isTtsSpeaking = true) }
+                else
+                    _state.update { it.copy(isTtsSpeaking = false) }
             }
     }
 

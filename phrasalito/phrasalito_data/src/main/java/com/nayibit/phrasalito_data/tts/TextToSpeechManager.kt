@@ -65,15 +65,14 @@ class TextToSpeechManager @Inject constructor(
 
     }
 
-    fun speak(text: String, langCode: String = "en_US") {
+    fun speak(text: String, langCode: Locale = Locale.US) {
         if (!::tts.isInitialized) {
             Log.e("TTS", "TTS not initialized")
             _isReady.value = Resource.Error("TTS not initialized")
             return
         }
 
-        val locale = Locale(langCode)
-        val result = tts.setLanguage(locale)
+        val result = tts.setLanguage(langCode)
 
         if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
             Log.e("TTS", "Language not supported: $langCode")
@@ -81,7 +80,7 @@ class TextToSpeechManager @Inject constructor(
             return
         }
 
-        Log.d("TTS", "Speaking in language: $langCode (${locale.displayName})")
+        Log.d("TTS", "Speaking in language: $langCode (${langCode.displayName})")
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "tts-${System.currentTimeMillis()}")
     }
 

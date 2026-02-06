@@ -64,11 +64,12 @@ fun LanguagePhraseCard(
                 .padding(24.dp),
             contentAlignment = Alignment.Center
         ) {
-            if (isTTsReady && isLanguageVoiceSet) {
+          if (isTTsReady) {
               Box(contentAlignment = Alignment.TopEnd, modifier = Modifier.fillMaxSize()){
                     IconButton(
                         onClick = { onEvent(OP_TARGET_LANGUAGE) },
-                        modifier = Modifier.align(Alignment.TopEnd)
+                        modifier = Modifier.align(Alignment.TopEnd),
+                        enabled = !isSpeaking
                     ) {
                         Icon(
                             imageVector = if (isSpeaking) Icons.Default.Update else Icons.AutoMirrored.Filled.VolumeUp,
@@ -78,7 +79,7 @@ fun LanguagePhraseCard(
                         )
                     }
                 }
-            }
+           }
 
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -168,14 +169,20 @@ fun LanguagePhraseCard(
                                     )
                                     Spacer(modifier = Modifier.weight(1f))
 
-                                    if (isTTsReady && isLanguageVoiceSet){
-                                    Icon(
-                                        modifier = Modifier.clickable { onEvent(OP_EXAMPLE_LANGUAGE) },
-                                        imageVector = if (isSpeaking) Icons.Default.Update else Icons.Default.PlayArrow,
-                                        contentDescription = "Play",
-                                        tint = phrase.color
-                                    )
-                                    }
+                                    if (isTTsReady){
+                                        IconButton(
+                                            onClick = { onEvent(
+                                                OP_EXAMPLE_LANGUAGE
+                                            )},
+                                            enabled = !isSpeaking
+                                        ) {
+                                            Icon(
+                                                imageVector = if (isSpeaking) Icons.Default.Update else Icons.Default.PlayArrow,
+                                                contentDescription = "Play",
+                                                tint = phrase.color
+                                            )
+                                        }
+                              }
 
 
                                 }
@@ -221,11 +228,12 @@ fun LanguagePhraseCardLandscape(
             contentAlignment = Alignment.Center
         ) {
 
-            if (isTTsReady && isLanguageVoiceSet) {
+            if (isTTsReady) {
                 Box(contentAlignment = Alignment.TopEnd, modifier = Modifier.fillMaxSize()){
                     IconButton(
                         onClick = { onEvent(OP_TARGET_LANGUAGE) },
-                        modifier = Modifier.align(Alignment.TopEnd)
+                        modifier = Modifier.align(Alignment.TopEnd),
+                        enabled = !isSpeaking
                     ) {
                         Icon(
                             imageVector = if (isSpeaking) Icons.Default.Update else Icons.AutoMirrored.Filled.VolumeUp,
@@ -328,13 +336,17 @@ fun LanguagePhraseCardLandscape(
                                         )
                                         Spacer(modifier = Modifier.weight(1f))
 
-                                        if (isTTsReady && isLanguageVoiceSet) {
-                                            Icon(
-                                                modifier = Modifier.clickable { onEvent(OP_EXAMPLE_LANGUAGE) },
-                                                imageVector = if (isSpeaking) Icons.Default.Update else Icons.Default.PlayArrow,
-                                                contentDescription = "Play",
-                                                tint = phrase.color
-                                            )
+                                        if (isTTsReady) {
+                                            IconButton(
+                                                onClick = { onEvent(OP_EXAMPLE_LANGUAGE) },
+                                                enabled = !isSpeaking
+                                            ) {
+                                                Icon(
+                                                    imageVector = if (isSpeaking) Icons.Default.Update else Icons.Default.PlayArrow,
+                                                    contentDescription = "Play",
+                                                    tint = phrase.color
+                                                )
+                                            }
                                         }
                                     }
 
