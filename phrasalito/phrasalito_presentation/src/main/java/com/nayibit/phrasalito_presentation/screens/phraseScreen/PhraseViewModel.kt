@@ -258,14 +258,13 @@ class PhraseViewModel
                          }
                          prewarmTts()
                      }
-
-                     Resource.Loading -> {}
                  }
              }
     }
 
     fun insertPhrase(phrase: Phrase){
-        viewModelScope.launch {
+        _state.update { it.copy(isLoadingButton = true) }
+       viewModelScope.launch {
         insertPhraseUseCase(phrase).collect { result ->
             when (result) {
                 is Resource.Error -> {
@@ -274,9 +273,6 @@ class PhraseViewModel
                             firstPhrase = "", translation = "")
                     }
                     _eventFlow.emit(ShowSnackbar(DynamicString(result.message)))
-                }
-                Resource.Loading -> {
-                    _state.update { it.copy(isLoadingButton = true) }
                 }
                 is Resource.Success<*> -> {
                     _state.update {
@@ -293,12 +289,10 @@ class PhraseViewModel
     }
 
     fun updatePhrase(phrase: Phrase){
+        _state.update { it.copy(isLoadingButton = true) }
         viewModelScope.launch {
            updatePhraseByIdUseCase(phrase).collect { result ->
                when (result) {
-                   is Resource.Loading -> {
-                       _state.update { it.copy(isLoadingButton = true) }
-                   }
                    is Resource.Error -> {
                        _state.update { it.copy(isLoadingButton = false, showModal = false, phraseToUpdate = null) }
                        _eventFlow.emit(ShowSnackbar(DynamicString(result.message)))
@@ -316,10 +310,10 @@ class PhraseViewModel
 
      fun getAllPhrases(idDeck: Int) {
         viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
             getAllPhrasesUseCase(idDeck)
                 .collect { result ->
                     when (result) {
-                        is Resource.Loading -> _state.update { it.copy(isLoading = true) }
                         is Resource.Success -> {
                             _state.update {
                             it.copy(
@@ -341,14 +335,12 @@ class PhraseViewModel
 
     fun deletePhrase(id: Int) {
         viewModelScope.launch {
+            _state.update { it.copy(isLoadingButton = true) }
             deletePhraseUseCase(id).collect {
                 when (it) {
                     is Resource.Error -> {
                         _state.update { it.copy(isLoadingButton = false, showModal = false, phraseToUpdate = null) }
                         _eventFlow.emit(ShowSnackbar(DynamicString(it.message)))
-                    }
-                    Resource.Loading -> {
-                      _state.update { it.copy(isLoadingButton = true) }
                     }
                     is Resource.Success<*> -> {
                         _state.update { it.copy(isLoadingButton = false, showModal = false, phraseToUpdate = null) }

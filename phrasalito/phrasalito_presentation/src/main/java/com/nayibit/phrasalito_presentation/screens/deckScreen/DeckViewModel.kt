@@ -55,7 +55,6 @@ class DeckViewModel @Inject
     private val getDecksUseCase : GetAllDecksUseCase,
     private val deleteDeckUseCase: DeleteDeckUseCase,
     private val updateDeckUseCase: UpdateDeckUseCase,
-    private val getAvailableLanguagesUseCase: GetAvailableLanguagesUseCase,
     private val isTextSpeechReadyUseCase: IsTextSpeechReadyUseCase,
     private val isTutorialDeckUseCase: IsTutorialDeckUseCase,
     private val insertTutorialDeckUseCase: InsertTutorialDeckUseCase)
@@ -72,7 +71,6 @@ class DeckViewModel @Inject
     init {
         getAllDecks()
         getTutorialState()
-        getAvailableLanguages()
     }
 
 
@@ -210,9 +208,7 @@ class DeckViewModel @Inject
             }
 
             DeckUiEvent.TutorialFinish -> {
-                viewModelScope.launch {
-                    insertTutorialDeckUseCase()
-                }
+                finishTutorial()
             }
 
             DeckUiEvent.onNextStep -> {
@@ -253,7 +249,6 @@ class DeckViewModel @Inject
                     _eventFlow.emit(ShowToast(DynamicString("Deck actualizado")))
                 }
 
-                else -> {}
             }
         }
     }
@@ -275,8 +270,6 @@ class DeckViewModel @Inject
                     )
                     _eventFlow.emit(ShowToast(DynamicString("Deck eliminado")))
                 }
-
-                else -> {}
             }
         }
     }
@@ -284,17 +277,14 @@ class DeckViewModel @Inject
 
     fun insertDeck(deck: Deck) {
         viewModelScope.launch {
+            _state.value = _state.value.copy(
+                isLoading = false,
+                successInsertedDeck = null,
+                errorMessage = null,
+                isLoadingButton = true
+            )
             insertDeckUseCase(deck).collect { result ->
                 when (result) {
-                    is Resource.Loading -> {
-                        _state.value = _state.value.copy(
-                            isLoading = false,
-                            successInsertedDeck = null,
-                            errorMessage = null,
-                            isLoadingButton = true
-                        )
-                    }
-
                     is Resource.Success -> {
                         _state.value = _state.value.copy(
                             isLoading = false,
@@ -323,8 +313,7 @@ class DeckViewModel @Inject
 
     fun getTutorialState(){
         viewModelScope.launch {
-            isTutorialDeckUseCase().collect{ result ->
-                when (result){
+                when (val result = isTutorialDeckUseCase() ){
                     is Resource.Success -> {
                         _state.value = _state.value.copy(
                             showTutorial = result.data
@@ -333,24 +322,27 @@ class DeckViewModel @Inject
                     else -> {}
                 }
             }
+    }
+
+    fun finishTutorial(){
+        viewModelScope.launch {
+            _state.value = _state.value.copy(
+                showTutorial = false
+            )
+            insertTutorialDeckUseCase()
         }
     }
 
-
     fun getAllDecks() {
         viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true)
             getDecksUseCase().collect { result ->
                 when (result) {
-                    is Resource.Loading -> {
-                        _state.value = _state.value.copy(
-                            isLoading = true
-                        )
-                    }
-
                     is Resource.Success -> {
-
                         _state.value = _state.value.copy(
-                            decks = result.data.map { it.toDeckUI() })
+                            decks = result.data.map { it.toDeckUI() },
+                            isLoading = false
+                        )
                     }
 
                     is Resource.Error -> {
@@ -366,49 +358,7 @@ class DeckViewModel @Inject
 
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-     fun getAvailableLanguages() {
-    viewModelScope.launch {
-            isTextSpeechReadyUseCase()
-                .flatMapLatest { result ->
-                    when (result) {
-                        is Resource.Success -> {
-                            // Only proceed if TTS is ready
-                            getAvailableLanguagesUseCase()
-                        }
-                        is Resource.Error -> {
-                            _state.value = _state.value.copy(isLoading = false)
-                            flowOf(Resource.Error(result.message))
-                        }
-                        else -> {
-                            flowOf(Resource.Loading)
-                        }
-                    }
-                }
-                .collect { result ->
-                    when (result) {
-                        is Resource.Success -> {
-                            _state.value = _state.value.copy(
-                                isLoading = false,
-                                listLanguages = if (result.data.isNotEmpty()){
-                                    listOf(Language(id = -1, language = FIRST_ELEMENT_DROP_LANGUAGE_LIST, alias = "")) + result.data.map { it.toLanguage() }
-                                } else emptyList()
-                            )
-                        }
 
-                        is Resource.Error -> {
-                            _state.value = _state.value.copy(
-                                isLoading = false,
-                                errorMessage = result.message
-                            )
-                            _eventFlow.emit(ShowToast(DynamicString("Error: ${result.message}")))
-                        }
-
-                        is Resource.Loading -> {
-                            _state.value = _state.value.copy(isLoading = true)
-                        }
-                    }
-                }
-        }
-}
     }
+
+

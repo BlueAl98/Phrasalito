@@ -16,8 +16,6 @@ class PhraseRepositoryImpl @Inject
 
     override suspend fun insert(item: Phrase): Flow<Resource<Boolean>> = flow {
        try {
-           emit(Resource.Loading)
-           delay(2000)
            phraseDao.insert(item.toEntity())
            emit(Resource.Success(true))
 
@@ -27,7 +25,6 @@ class PhraseRepositoryImpl @Inject
     }
 
     override suspend fun delete(item: Phrase) = flow {
-        emit(Resource.Loading)
         delay(1000)
         try {
 
@@ -41,7 +38,6 @@ class PhraseRepositoryImpl @Inject
 
     override suspend fun update(item: Phrase): Flow<Resource<Boolean>> = flow {
         try {
-            emit(Resource.Loading)
             phraseDao.update(item.toEntity())
             emit(Resource.Success(true))
         }catch (e: Exception) {
@@ -54,8 +50,6 @@ class PhraseRepositoryImpl @Inject
     }
 
     override suspend fun getAllPhrasesByDeckId(idDeck: Int): Flow<Resource<List<Phrase>>> = flow {
-        emit(Resource.Loading)
-        delay(2000)
         try {
             phraseDao.getAllByDeckId(idDeck)
                 .collect { entities ->

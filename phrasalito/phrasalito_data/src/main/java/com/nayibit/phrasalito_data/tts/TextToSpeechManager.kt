@@ -21,7 +21,7 @@ import javax.inject.Singleton
 class TextToSpeechManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-    private val _isReady = MutableStateFlow<Resource<Boolean>>(Resource.Loading)
+    private val _isReady = MutableStateFlow<Resource<Boolean>>(Resource.Success(false))
     val isReady: StateFlow<Resource<Boolean>> = _isReady.asStateFlow()
 
 
@@ -94,8 +94,6 @@ class TextToSpeechManager @Inject constructor(
 
     fun getAvailableLanguages(): Flow<Resource<List<Locale>>> = flow {
         try {
-            emit(Resource.Loading)
-
             // Get all available and valid TTS languages on the device
             val allLanguages = tts.availableLanguages
                 ?.filter { tts.isLanguageAvailable(it) >= TextToSpeech.LANG_AVAILABLE }

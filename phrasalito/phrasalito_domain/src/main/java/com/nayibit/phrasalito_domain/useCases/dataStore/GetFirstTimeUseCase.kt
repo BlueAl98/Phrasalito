@@ -13,7 +13,6 @@ class GetFirstTimeUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<Resource<Boolean>> = flow {
         try {
-            emit(Resource.Loading)
             dataStoreRepository.getData(FIRST_TIME, false)
                 .collect { value ->
                     emit(Resource.Success(value ?: false))

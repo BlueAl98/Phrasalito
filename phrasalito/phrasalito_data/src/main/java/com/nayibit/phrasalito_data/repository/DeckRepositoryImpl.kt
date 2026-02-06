@@ -22,8 +22,6 @@ class DeckRepositoryImpl
     @Inject constructor(private val deckDao: DeckDao) : DeckRepository  {
 
         override suspend fun insert(deck: Deck): Flow<Resource<Deck>> = flow {
-            emit(Resource.Loading)
-            delay(1000)
          try {
              deckDao.insert(deck.toEntity())
              emit(Resource.Success(deck))
@@ -37,9 +35,6 @@ class DeckRepositoryImpl
             .map { entities ->
                 val decks = entities.map { it.toPhrase() }
                 Resource.Success(decks) as Resource<List<Deck>>
-            }
-            .onStart {
-                emit(Resource.Loading)
             }
             .catch { e ->
                 emit(Resource.Error(e.localizedMessage ?: "Unknown error"))

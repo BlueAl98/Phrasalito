@@ -12,7 +12,6 @@ class InsertFirstTimeUseCase @Inject constructor(
 
     operator fun invoke() = flow {
         try {
-            emit(Resource.Loading)
             dataStoreRepository.saveData(Constants.FIRST_TIME, true)
             emit(Resource.Success(true))
         } catch (e: Exception) {

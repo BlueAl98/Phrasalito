@@ -68,14 +68,12 @@ class StartViewModel @Inject constructor(
 
     fun getFirstTime() {
         viewModelScope.launch {
+            updateState { it.copy(isLoading = true) }
             getFirstTimeUseCase()
                 .collect { result ->
                     when (result) {
                         is Resource.Error -> {
                             updateState { it.copy(isLoading = false, errorMessage = result.message) }
-                        }
-                        Resource.Loading -> {
-                            updateState { it.copy(isLoading = true) }
                         }
                         is Resource.Success -> {
                             updateState { it.copy(isFirstTime = result.data, isLoading = false) }
@@ -103,20 +101,17 @@ class StartViewModel @Inject constructor(
                 is Resource.Success -> {
                     insertFirstTime()
                 }
-                Resource.Loading -> {}
             }
         }
     }
 
         fun insertFirstTime() {
             viewModelScope.launch {
+                _state.value = _state.value.copy(
+                    isLoading = true
+                )
                 insertFirstTimeUseCase().collect { result ->
                     when (result) {
-                        is Resource.Loading -> {
-                            _state.value = _state.value.copy(
-                                isLoading = true
-                            )
-                        }
 
                         is Resource.Error -> {
                             _state.value = _state.value.copy(

@@ -12,7 +12,6 @@ class InsertLanguageUseCase @Inject constructor(
 ) {
     operator fun invoke(language: String) = flow {
         try {
-            emit(Resource.Loading)
             dataStoreRepository.saveData(Constants.LANGUAGE, language)
             emit(Resource.Success(true))
         } catch (e: Exception) {

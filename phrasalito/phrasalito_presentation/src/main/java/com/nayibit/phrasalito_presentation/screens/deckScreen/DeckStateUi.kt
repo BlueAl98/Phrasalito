@@ -14,7 +14,7 @@ data class DeckStateUi (
     val currentDeck: DeckUI = DeckUI(name = "", numCards = 0),
     val listLanguages : List<Language> = emptyList(),
     val currentStep : Int = 0,
-    val showTutorial : Boolean = true
+    val showTutorial : Boolean = false
 )
 
 data class DeckUI(

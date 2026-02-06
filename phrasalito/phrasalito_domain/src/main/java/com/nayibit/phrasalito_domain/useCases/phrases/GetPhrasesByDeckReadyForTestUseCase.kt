@@ -16,7 +16,6 @@ class GetPhrasesByDeckReadyForTestUseCase @Inject constructor
             .map { result ->
                 when (result) {
                     is Resource.Error -> Resource.Error(result.message)
-                    Resource.Loading -> Resource.Loading
                     is Resource.Success -> {
                         val filtered = result.data.filter {
                             (it.translation != null && it.example != null) &&

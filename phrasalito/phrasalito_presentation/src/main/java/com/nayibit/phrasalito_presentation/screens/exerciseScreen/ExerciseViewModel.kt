@@ -161,10 +161,10 @@ class ExerciseViewModel @Inject constructor(
 
     fun getAllPhrases(idDeck: Int) {
         viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
                 getAllPhrasesByDeckUseCase(idDeck)
                     .collect { result ->
                         when (result) {
-                            is Resource.Loading -> _state.update { it.copy(isLoading = true) }
                             is Resource.Success -> {
                                if (_state.value.phrases.isEmpty()) {
                                    _state.update {
@@ -217,8 +217,6 @@ class ExerciseViewModel @Inject constructor(
                     }
                     prewarmTts()
                 }
-
-                Resource.Loading -> {}
             }
         }
     }
