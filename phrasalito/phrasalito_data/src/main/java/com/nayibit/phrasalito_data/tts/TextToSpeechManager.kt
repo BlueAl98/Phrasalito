@@ -2,7 +2,6 @@ package com.nayibit.phrasalito_data.tts
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
-import android.util.Log
 import com.nayibit.common.util.Constants.LIST_OF_LANGUAGES
 import com.nayibit.common.util.Constants.NUM_OF_LANGUAGES
 import com.nayibit.common.util.Resource
@@ -35,15 +34,11 @@ class TextToSpeechManager @Inject constructor(
     }
 
 
-
-
     private fun initTts() {
         tts = TextToSpeech(context) { status ->
             if (status == TextToSpeech.SUCCESS) {
-                Log.d("TTS", "TTS initialized successfully")
                 _isReady.value = Resource.Success(true)
             } else {
-                Log.e("TTS", "Initialization failed")
                 _isReady.value = Resource.Error("Initialization failed")
             }
         }
@@ -67,7 +62,6 @@ class TextToSpeechManager @Inject constructor(
 
     fun speak(text: String, langCode: Locale = Locale.US) {
         if (!::tts.isInitialized) {
-            Log.e("TTS", "TTS not initialized")
             _isReady.value = Resource.Error("TTS not initialized")
             return
         }
@@ -75,12 +69,10 @@ class TextToSpeechManager @Inject constructor(
         val result = tts.setLanguage(langCode)
 
         if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-            Log.e("TTS", "Language not supported: $langCode")
             _isReady.value = Resource.Error("Language not supported: $langCode")
             return
         }
 
-        Log.d("TTS", "Speaking in language: $langCode (${langCode.displayName})")
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "tts-${System.currentTimeMillis()}")
     }
 
@@ -112,11 +104,9 @@ class TextToSpeechManager @Inject constructor(
                 allLanguages.any { it.language == code }
             }
             if (missing.isNotEmpty()) {
-                Log.w("TTS", "Missing TTS voices for: $missing")
             }
 
         } catch (e: Exception) {
-            Log.e("TTS", "Error fetching languages: ${e.message}")
             emit(Resource.Error(e.message ?: "Unknown error"))
         }
     }
