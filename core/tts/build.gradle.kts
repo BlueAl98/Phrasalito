@@ -1,13 +1,12 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
 
 android {
-    namespace = "com.ie.feature_startscreen"
+    namespace = "com.nayibit.tts"
     compileSdk = 35
 
     defaultConfig {
@@ -33,40 +32,15 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    buildFeatures {
-        compose = true
-        buildConfig = true
-        viewBinding = true
-    }
 }
 
 dependencies {
-
     implementation(project(":core:utils"))
-    implementation(project(":core:datastore"))
-    implementation(project(":core:tts"))
+
+
 
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.android)
-    implementation (libs.androidx.lifecycle.runtime.compose)
-    implementation (libs.androidx.hilt.navigation.compose)
-
-
-
-    implementation(libs.androidx.foundation)
-
-    implementation( libs.material.icons.extended)
-
-    implementation(libs.androidx.compose.material3)
-
-
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
