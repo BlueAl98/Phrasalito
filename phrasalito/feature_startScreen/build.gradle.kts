@@ -2,11 +2,12 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
-
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
-    namespace = "com.nayibit.utils"
+    namespace = "com.ie.feature_startscreen"
     compileSdk = 35
 
     defaultConfig {
@@ -32,7 +33,6 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-
     buildFeatures {
         compose = true
         buildConfig = true
@@ -42,13 +42,21 @@ android {
 
 dependencies {
 
+    implementation(project(":core:utils"))
+    implementation(project(":core:datastore"))
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    ksp(libs.hilt.android.compiler)
+    implementation(libs.hilt.android)
+    implementation (libs.androidx.lifecycle.runtime.compose)
+    implementation (libs.androidx.hilt.navigation.compose)
+
+
+
+    implementation(libs.androidx.foundation)
+
+    implementation( libs.material.icons.extended)
+
+    implementation(libs.androidx.compose.material3)
 
 
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -57,10 +65,12 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
-
-    implementation(libs.androidx.compose.material3)
 
 
-
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }

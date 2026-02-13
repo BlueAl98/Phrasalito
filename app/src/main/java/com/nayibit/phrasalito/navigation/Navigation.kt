@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.ie.feature_startscreen.presentation.startScreen.FeatureStartScreen
 
 @Composable
 fun Navigation() {
@@ -21,9 +22,9 @@ fun Navigation() {
 
         composable <Routes.DeckScreen>{
 
-            Box(Modifier.fillMaxSize()) {
-                Text(text = "DeckScreen")
-            }
+           FeatureStartScreen {
+               println("BUKELE")
+           }
 
          /*   val viewModel: DeckViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()

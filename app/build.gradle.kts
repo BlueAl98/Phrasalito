@@ -89,7 +89,7 @@ dependencies {
    // implementation(project(":phrasalito:phrasalito_presentation"))
     implementation(project(":phrasalito:phrasalito_data"))
     implementation(project(":core:utils"))
-    implementation(project(":core:datastore"))
+    implementation(project(":phrasalito:feature_startScreen"))
 
 
 
