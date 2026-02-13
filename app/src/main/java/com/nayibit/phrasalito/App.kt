@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import androidx.work.WorkManager
-import com.nayibit.phrasalito_presentation.workers.helpers.RandomPhraseWorkerScheduler
+//import com.nayibit.phrasalito_presentation.workers.helpers.RandomPhraseWorkerScheduler
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -31,7 +31,7 @@ class App: Application(){
             ).build()
         )
 
-        RandomPhraseWorkerScheduler.start(this)
+      //  RandomPhraseWorkerScheduler.start(this)
 
 
     }
