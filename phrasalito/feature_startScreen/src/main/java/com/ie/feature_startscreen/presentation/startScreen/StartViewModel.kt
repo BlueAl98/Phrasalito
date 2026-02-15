@@ -97,12 +97,9 @@ class StartViewModel @Inject constructor(
                 .collect { result ->
                     when (result) {
                         is Resource.Error -> {
-                            println("NAJIB L ${"Error: ${result.message}"}")
-
                             updateState { it.copy(isLoading = false, errorMessage = result.message) }
                         }
                         is Resource.Success -> {
-                            println("NAJIB L ${result.data}")
                             updateState { it.copy(isFirstTime = result.data, isLoading = false) }
                             if (result.data) {
                                 _eventFlow.emit(StartUiEvent.Navigate)
@@ -110,7 +107,6 @@ class StartViewModel @Inject constructor(
                         }
                     }
                 }
-
         }
     }
 
