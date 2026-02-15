@@ -14,7 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.ie.feature_startscreen.presentation.utils.NotificationPermissionManager
+import com.ie.feature_startscreen.utils.NotificationPermissionManager
 
 
 @Composable

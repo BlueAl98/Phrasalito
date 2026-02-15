@@ -1,7 +1,7 @@
-package com.ie.feature_startscreen.presentation.utils
+package com.ie.feature_startscreen.utils
 
 import android.Manifest
-import android.content.ContentValues.TAG
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,8 +10,6 @@ import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import androidx.core.content.ContextCompat
-
-
 
 class NotificationPermissionManager(private val context: Context) {
 
@@ -25,10 +23,10 @@ class NotificationPermissionManager(private val context: Context) {
                 context,
                 Manifest.permission.POST_NOTIFICATIONS
             ) == PackageManager.PERMISSION_GRANTED
-            Log.d(TAG, "Permission granted: $granted")
+            Log.d(ContentValues.TAG, "Permission granted: $granted")
             granted
         } else {
-            Log.d(TAG, "Android < 13, permission not needed")
+            Log.d(ContentValues.TAG, "Android < 13, permission not needed")
             true
         }
     }
@@ -45,12 +43,12 @@ class NotificationPermissionManager(private val context: Context) {
         val currentCount = getDenialCount()
         val newCount = currentCount + 1
         prefs.edit().putInt(DENIAL_COUNT_KEY, newCount).apply()
-        Log.d(TAG, "Denial count incremented: $currentCount -> $newCount")
+        Log.d(ContentValues.TAG, "Denial count incremented: $currentCount -> $newCount")
     }
 
     fun resetDenialCount() {
         prefs.edit().putInt(DENIAL_COUNT_KEY, 0).apply()
-        Log.d(TAG, "Denial count reset")
+        Log.d(ContentValues.TAG, "Denial count reset")
     }
 
     fun shouldRedirectToSettings(): Boolean {
@@ -63,6 +61,6 @@ class NotificationPermissionManager(private val context: Context) {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
         context.startActivity(intent)
-        Log.d(TAG, "Opening app settings")
+        Log.d(ContentValues.TAG, "Opening app settings")
     }
 }

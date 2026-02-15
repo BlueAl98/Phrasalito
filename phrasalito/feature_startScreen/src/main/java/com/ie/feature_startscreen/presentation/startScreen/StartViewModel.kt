@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ie.feature_startscreen.domain.usecases.GetFirstTimeUseCase
 import com.ie.feature_startscreen.domain.usecases.InsertFirstTimeUseCase
+import com.nayibit.tts.domain.TtsManager
 import com.nayibit.utils.helpers.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -17,6 +18,7 @@ import javax.inject.Inject
 class StartViewModel @Inject constructor(
     private val insertFirstTimeUseCase: InsertFirstTimeUseCase,
     private val getFirstTimeUseCase: GetFirstTimeUseCase,
+    private val ttsManager: TtsManager
    // private val insertFirstDeckUseCase: InsertFirstDeckUseCase
 ): ViewModel() {
 
@@ -28,8 +30,35 @@ class StartViewModel @Inject constructor(
 
    init {
        getFirstTime()
+       getAvaliablesLanguages()
+     //  insertFirstTime()
    }
 
+    fun getAvaliablesLanguages() {
+        viewModelScope.launch {
+            ttsManager.isTtsReady().collect { isReady->
+                when (isReady) {
+                    is Resource.Error -> {
+                        println("Error: ${isReady.message}")
+                    }
+                    is Resource.Success -> {
+                        println("Success: ${isReady.data}")
+                        ttsManager.getLanguagesSuported().collect { languages ->
+                            when (languages) {
+                                is Resource.Error -> {
+                                    println("Error: ${languages.message}")
+                                }
+                                is Resource.Success -> {
+                                    println("Success: ${languages.data}")
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     fun onEvent(event: StartUiEvent) {
         when (event) {
@@ -68,12 +97,15 @@ class StartViewModel @Inject constructor(
                 .collect { result ->
                     when (result) {
                         is Resource.Error -> {
+                            println("NAJIB L ${"Error: ${result.message}"}")
+
                             updateState { it.copy(isLoading = false, errorMessage = result.message) }
                         }
                         is Resource.Success -> {
+                            println("NAJIB L ${result.data}")
                             updateState { it.copy(isFirstTime = result.data, isLoading = false) }
                             if (result.data) {
-                                viewModelScope.launch { _eventFlow.emit(StartUiEvent.Navigate) }
+                                _eventFlow.emit(StartUiEvent.Navigate)
                             }
                         }
                     }

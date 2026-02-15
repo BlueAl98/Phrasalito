@@ -4,6 +4,7 @@ import com.nayibit.datastore.data.GenericDataStore
 import com.nayibit.datastore.domain.repositories.DataStoreRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import kotlin.reflect.KClass
 
 class DataStoreRepositoryImpl @Inject constructor(
     private val dataStore: GenericDataStore
@@ -13,11 +14,12 @@ class DataStoreRepositoryImpl @Inject constructor(
         dataStore.saveData(key, value)
     }
 
-    override fun <T> getData(
+    override fun <T: Any> getData(
         key: String,
-        defaultValue: T
-    ): Flow<T?> {
-        return dataStore.getData(key, defaultValue)
+        defaultValue: T,
+        clazz: KClass<T>
+    ): Flow<T> {
+        return  dataStore.getData(key, defaultValue, clazz)
     }
 
     override suspend fun clearData(key: String) {
@@ -30,3 +32,4 @@ class DataStoreRepositoryImpl @Inject constructor(
 
 
 }
+
