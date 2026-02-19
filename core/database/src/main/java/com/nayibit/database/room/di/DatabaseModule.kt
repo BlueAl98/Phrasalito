@@ -2,7 +2,7 @@ package com.nayibit.database.room.di
 
 import android.content.Context
 import androidx.room.Room
-import com.nayibit.database.room.AppDatabase
+import com.nayibit.database.AppDatabase
 import com.nayibit.database.utils.Constants
 import dagger.Module
 import dagger.Provides

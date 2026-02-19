@@ -90,6 +90,8 @@ dependencies {
    // implementation(project(":phrasalito:phrasalito_data"))
     implementation(project(":core:utils"))
     implementation(project(":phrasalito:feature_startScreen"))
+    implementation(project(":phrasalito:feature_categories"))
+  //  implementation(project(":phrasalito:feature_deckScreen"))
 
 
 

@@ -19,9 +19,8 @@ import javax.inject.Inject
 class StartViewModel @Inject constructor(
     private val insertFirstTimeUseCase: InsertFirstTimeUseCase,
     private val getFirstTimeUseCase: GetFirstTimeUseCase,
-    private val ttsManager: TtsManager,
-    private val repository: DeckRepository
-   // private val insertFirstDeckUseCase: InsertFirstDeckUseCase
+    private val ttsManager: TtsManager
+    // private val insertFirstDeckUseCase: InsertFirstDeckUseCase
 ): ViewModel() {
 
     private val _state = MutableStateFlow(StartStateUi())
@@ -33,24 +32,14 @@ class StartViewModel @Inject constructor(
    init {
        getFirstTime()
        getAvaliablesLanguages()    //  insertFirstTime()
-       getCat()
    }
-
-    fun getCat(){
-        viewModelScope.launch {
-            repository.insetDeck()
-        }
-    }
 
     fun getAvaliablesLanguages() {
         viewModelScope.launch {
             ttsManager.isTtsReady().collect { isReady->
                 when (isReady) {
-                    is Resource.Error -> {
-                        println("Error: ${isReady.message}")
-                    }
+                    is Resource.Error -> {}
                     is Resource.Success -> {
-                        println("Success: ${isReady.data}")
                         ttsManager.getLanguagesSuported().collect { languages ->
                             when (languages) {
                                 is Resource.Error -> {
@@ -87,9 +76,12 @@ class StartViewModel @Inject constructor(
             }
 
             StartUiEvent.NextPage -> {
-                _state.value = _state.value.copy(
+              /*  _state.value = _state.value.copy(
                     currentPage = _state.value.currentPage + 1
-                )
+                )*/
+                viewModelScope.launch {
+                    _eventFlow.emit(StartUiEvent.Navigate)
+                }
             }
         }
      }

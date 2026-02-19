@@ -1,4 +1,4 @@
-package com.nayibit.database.room
+package com.nayibit.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -7,7 +7,6 @@ import com.nayibit.database.room.dao.DeckDao
 import com.nayibit.database.room.entities.CategoryEntity
 import com.nayibit.database.room.entities.DeckEntity
 import com.nayibit.database.room.entities.PhraseEntity
-
 
 @Database(
     entities = [DeckEntity::class, CategoryEntity::class, PhraseEntity::class],

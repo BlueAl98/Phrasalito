@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.nayibit.feature_deckscreen"
+    namespace = "com.nayibit.feature_categories"
     compileSdk = 35
 
     defaultConfig {
@@ -33,20 +33,12 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-
-    buildFeatures {
-        compose = true
-        buildConfig = true
-        viewBinding = true
-    }
 }
 
 dependencies {
 
     implementation(project(":core:database"))
     implementation(project(":core:utils"))
-
-
 
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.android)
@@ -61,6 +53,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+
+
 
 
     implementation(libs.androidx.core.ktx)

@@ -6,5 +6,11 @@ import kotlinx.serialization.Serializable
 object Routes {
 
     @Serializable
+    object StartScreen
+
+    @Serializable
+    object CategoryScreen
+
+    @Serializable
     object DeckScreen
 }

@@ -1,6 +1,6 @@
 package com.nayibit.database.room.di
 
-import com.nayibit.database.room.AppDatabase
+import com.nayibit.database.AppDatabase
 import com.nayibit.database.room.dao.CategoryDao
 import com.nayibit.database.room.dao.DeckDao
 import dagger.Module
