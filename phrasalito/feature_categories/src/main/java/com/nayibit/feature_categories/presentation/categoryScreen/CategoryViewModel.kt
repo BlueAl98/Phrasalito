@@ -29,12 +29,12 @@ class CategoryViewModel @Inject constructor(): ViewModel() {
 
     init {
         val topics = listOf(
-            CategoryUi("Family", "Familia", 0.8f, Icons.Default.AccountTree),
-            CategoryUi("Travel", "Viajes", 0.2f, Icons.Default.Flight),
-            CategoryUi("Business", "Negocios", 0f, Icons.Default.Work),
-            CategoryUi("Daily Life", "Vida Diaria", 0.45f, Icons.Default.WbSunny),
-            CategoryUi("Food", "Comida", 0.95f, Icons.Default.Restaurant),
-            CategoryUi("Technology", "Tecnologia", 0.1f, Icons.Default.Memory)
+            CategoryUi(1,"Family", "Familia", 0.8f, Icons.Default.AccountTree),
+            CategoryUi(2,"Travel", "Viajes", 0.2f, Icons.Default.Flight),
+            CategoryUi(3,"Business", "Negocios", 0f, Icons.Default.Work),
+            CategoryUi(4,"Daily Life", "Vida Diaria", 0.45f, Icons.Default.WbSunny),
+            CategoryUi(5,"Food", "Comida", 0.95f, Icons.Default.Restaurant),
+            CategoryUi(6,"Technology", "Tecnologia", 0.1f, Icons.Default.Memory)
         )
         updateState { it.copy(categories = topics) }
     }
@@ -48,7 +48,7 @@ class CategoryViewModel @Inject constructor(): ViewModel() {
 
            is CategoryUiEvent.Navigate -> {
                 viewModelScope.launch {
-                    _eventFlow.emit(CategoryUiEvent.Navigate)
+                    _eventFlow.emit(CategoryUiEvent.Navigate(event.id))
                 }
             }
             is CategoryUiEvent.ShowToast -> {
@@ -59,12 +59,6 @@ class CategoryViewModel @Inject constructor(): ViewModel() {
             }
 
             CategoryUiEvent.NextPage -> {
-              /*  _state.value = _state.value.copy(
-                    currentPage = _state.value.currentPage + 1
-                )*/
-                viewModelScope.launch {
-                    _eventFlow.emit(CategoryUiEvent.Navigate)
-                }
             }
         }
      }

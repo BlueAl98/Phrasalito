@@ -2,6 +2,7 @@ package com.nayibit.feature_categories.presentation.categoryScreen
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,14 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountTree
-import androidx.compose.material.icons.filled.Flight
-import androidx.compose.material.icons.filled.Memory
-import androidx.compose.material.icons.filled.Restaurant
-import androidx.compose.material.icons.filled.WbSunny
-import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,8 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nayibit.feature_categories.presentation.composables.AnimatedCategoryCard
-import com.nayibit.feature_categories.presentation.composables.CategoryCard
-import com.nayibit.feature_categories.presentation.model.CategoryUi
 import com.nayibit.feature_categories.presentation.model.LearningColors
 import kotlinx.coroutines.flow.Flow
 
@@ -41,7 +32,7 @@ fun CategoryScreen(
     state: CategoryStateUi,
     eventFlow: Flow<CategoryUiEvent>,
     onEvent: (CategoryUiEvent) -> Unit,
-    navigation: () -> Unit
+    navigation: (Int) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -51,7 +42,7 @@ fun CategoryScreen(
         eventFlow.collect { event ->
             when (event) {
                 is CategoryUiEvent.Navigate -> {
-                    navigation()
+                    navigation(event.id)
                 }
 
                 is CategoryUiEvent.ShowToast -> {
@@ -93,11 +84,14 @@ fun CategoryScreen(
             verticalArrangement = Arrangement.spacedBy(18.dp),
             horizontalArrangement = Arrangement.spacedBy(18.dp)
         ) {
-            itemsIndexed(state.categories) { index, category ->
+            items(state.categories) { category ->
                 AnimatedCategoryCard(
+                    modifier = Modifier.clickable{
+                        onEvent(CategoryUiEvent.Navigate(category.id))
+                    },
                     category = category,
                     colors = colors,
-                    index = index
+                    index = category.id
                 )
             }
         }

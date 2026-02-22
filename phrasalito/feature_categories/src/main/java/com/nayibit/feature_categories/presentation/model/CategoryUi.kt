@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 
 data class CategoryUi(
+    val id: Int,
     val title: String,
     val subtitle: String,
     val progress: Float, // 0f - 1f

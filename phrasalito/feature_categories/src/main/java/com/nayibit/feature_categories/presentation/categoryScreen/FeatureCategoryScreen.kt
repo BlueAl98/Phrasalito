@@ -7,7 +7,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun FeatureCategoryScreen(
-    navigation: () -> Unit
+    navigation: (Int) -> Unit
 ){
     val viewModel: CategoryViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -16,7 +16,7 @@ fun FeatureCategoryScreen(
         state = state,
         eventFlow = viewModel.eventFlow,
         onEvent = viewModel::onEvent
-    ) {
-       navigation()
+    ) { id->
+       navigation(id)
     }
 }

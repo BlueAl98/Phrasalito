@@ -40,6 +40,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun AnimatedCategoryCard(
+    modifier: Modifier = Modifier,
     category: CategoryUi,
     colors: LearningColors,
     index: Int
@@ -63,19 +64,21 @@ fun AnimatedCategoryCard(
             animationSpec = tween(500)
         )
     ) {
-        CategoryCard(category, colors)
+        CategoryCard(modifier,category, colors)
     }
 }
 
 
 @Composable
 fun CategoryCard(
+    modifier: Modifier,
     topic: CategoryUi,
     colors: LearningColors
 ){
     val percent = (topic.progress * 100).toInt()
 
     Card(
+        modifier = modifier,
         colors = CardDefaults.cardColors(
             containerColor = colors.card
         ),
