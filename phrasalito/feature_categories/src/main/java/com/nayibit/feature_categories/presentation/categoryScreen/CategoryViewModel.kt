@@ -1,7 +1,15 @@
 package com.nayibit.feature_categories.presentation.categoryScreen
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountTree
+import androidx.compose.material.icons.filled.Flight
+import androidx.compose.material.icons.filled.Memory
+import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material.icons.filled.Work
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nayibit.feature_categories.presentation.model.CategoryUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +27,17 @@ class CategoryViewModel @Inject constructor(): ViewModel() {
     private val _eventFlow = MutableSharedFlow<CategoryUiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
+    init {
+        val topics = listOf(
+            CategoryUi("Family", "Familia", 0.8f, Icons.Default.AccountTree),
+            CategoryUi("Travel", "Viajes", 0.2f, Icons.Default.Flight),
+            CategoryUi("Business", "Negocios", 0f, Icons.Default.Work),
+            CategoryUi("Daily Life", "Vida Diaria", 0.45f, Icons.Default.WbSunny),
+            CategoryUi("Food", "Comida", 0.95f, Icons.Default.Restaurant),
+            CategoryUi("Technology", "Tecnologia", 0.1f, Icons.Default.Memory)
+        )
+        updateState { it.copy(categories = topics) }
+    }
 
 
     fun onEvent(event: CategoryUiEvent) {
