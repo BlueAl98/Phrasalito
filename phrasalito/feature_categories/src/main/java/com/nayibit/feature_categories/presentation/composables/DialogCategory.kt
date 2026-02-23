@@ -20,7 +20,7 @@ fun DialogCategory(
     BaseDialog(showDialog = showDialog) {
         TextFieldBase(value = state.title, onValueChange = { onEvent(CategoryUiEvent.OnTextChangeTitle(it)) }, label = "Titulo categoria")
         TextFieldBase(value = state.subtitle, onValueChange = { onEvent(CategoryUiEvent.OnTextChangeSubtitle(it)) }, label = "Subtitulo (opcional)")
-        ButtonBase(text = "Aceptar", onClick = {  }, backgroundColor = colorButtons)
+        ButtonBase(text = "Aceptar", onClick = { onEvent(CategoryUiEvent.InsertCategory(state.title, state.subtitle))  }, backgroundColor = colorButtons)
         ButtonBase(text = "Cancelar", onClick ={onEvent(CategoryUiEvent.ShowDialog(false))} , backgroundColor = colorButtons)
     }
 }

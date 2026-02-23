@@ -8,5 +8,7 @@ data class CategoryEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val name: String,
-    val isNotified: Boolean = false
+    val subtitle: String = "",
+    val maxDecks: Int = 20,
+    val uuid : Long = 0
 )

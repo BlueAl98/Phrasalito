@@ -1,16 +1,19 @@
 package com.nayibit.feature_categories.presentation.categoryScreen
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountTree
-import androidx.compose.material.icons.filled.Flight
-import androidx.compose.material.icons.filled.Memory
-import androidx.compose.material.icons.filled.Restaurant
-import androidx.compose.material.icons.filled.WbSunny
-import androidx.compose.material.icons.filled.Work
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nayibit.feature_categories.presentation.categoryScreen.CategoryUiEvent.*
-import com.nayibit.feature_categories.presentation.model.CategoryUi
+import com.nayibit.feature_categories.domain.repositories.CategoryRepository
+import com.nayibit.feature_categories.model.Category
+import com.nayibit.feature_categories.presentation.categoryScreen.CategoryUiEvent.InsertSkipTutorial
+import com.nayibit.feature_categories.presentation.categoryScreen.CategoryUiEvent.Navigate
+import com.nayibit.feature_categories.presentation.categoryScreen.CategoryUiEvent.NextPage
+import com.nayibit.feature_categories.presentation.categoryScreen.CategoryUiEvent.OnTextChangeSubtitle
+import com.nayibit.feature_categories.presentation.categoryScreen.CategoryUiEvent.OnTextChangeTitle
+import com.nayibit.feature_categories.presentation.categoryScreen.CategoryUiEvent.ShowDialog
+import com.nayibit.feature_categories.presentation.categoryScreen.CategoryUiEvent.ShowToast
+import com.nayibit.feature_categories.presentation.mappers.toUI
+import com.nayibit.utils.helpers.onError
+import com.nayibit.utils.helpers.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +23,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CategoryViewModel @Inject constructor(): ViewModel() {
+class CategoryViewModel @Inject constructor(
+    private val categoryRepository: CategoryRepository
+): ViewModel() {
 
     private val _state = MutableStateFlow(CategoryStateUi())
     val state = _state.asStateFlow()
@@ -29,15 +34,7 @@ class CategoryViewModel @Inject constructor(): ViewModel() {
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        val topics = listOf(
-            CategoryUi(1,"Family", "Familia", 0.8f, Icons.Default.AccountTree),
-            CategoryUi(2,"Travel", "Viajes", 0.2f, Icons.Default.Flight),
-            CategoryUi(3,"Business", "Negocios", 0f, Icons.Default.Work),
-            CategoryUi(4,"Daily Life", "Vida Diaria", 0.45f, Icons.Default.WbSunny),
-            CategoryUi(5,"Food", "Comida", 0.95f, Icons.Default.Restaurant),
-            CategoryUi(6,"Technology", progress = 0.1f,  icon = Icons.Default.Memory)
-        )
-        updateState { it.copy(categories = topics) }
+       getCategories()
     }
 
 
@@ -73,6 +70,9 @@ class CategoryViewModel @Inject constructor(): ViewModel() {
                 updateState { it.copy(title = event.title) }
             }
 
+            is CategoryUiEvent.InsertCategory -> {
+                insertCategory(Category(name = event.title, subtitle = event.subtitle))
+            }
         }
      }
 
@@ -80,6 +80,30 @@ class CategoryViewModel @Inject constructor(): ViewModel() {
     // Helper function to reduce boilerplate
     private fun updateState(block: (CategoryStateUi) -> CategoryStateUi) {
         _state.value = block(_state.value)
+    }
+
+
+    fun insertCategory(category: Category){
+        viewModelScope.launch {
+            categoryRepository.insertCategory(category).onSuccess {
+                updateState { it.copy(showDialog = false) }
+            }.onError { error ->
+                println(error)
+            }
+        }
+    }
+
+    fun getCategories(){
+        viewModelScope.launch {
+            categoryRepository.getCategories().collect { result ->
+                result.onSuccess { categories ->
+                    updateState { it.copy(categories = categories.map { ct-> ct.toUI() }) }
+                }.onError {
+                    println(it)
+                }
+
+            }
+        }
     }
 
 }

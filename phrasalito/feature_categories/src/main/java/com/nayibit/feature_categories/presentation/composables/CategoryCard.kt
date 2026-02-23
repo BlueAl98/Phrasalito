@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -101,7 +102,7 @@ fun CategoryCard(
     val percent = (topic.progress * 100).toInt()
 
     Card(
-        modifier = modifier.height(210.dp),
+        modifier = modifier.sizeIn(minHeight = 222.dp),
         colors = CardDefaults.cardColors(
             containerColor = colors.card
         ),
@@ -229,9 +230,8 @@ fun CategoryBack(
     colors: LearningColors
 ) {
     Card(
-        modifier = modifier.height(210.dp)
-            .fillMaxWidth()
-        ,
+        modifier = modifier.height( 222.dp)
+            .fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = colors.card
         ),
