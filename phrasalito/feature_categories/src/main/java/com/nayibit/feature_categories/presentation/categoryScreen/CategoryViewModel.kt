@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.Work
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nayibit.feature_categories.presentation.categoryScreen.CategoryUiEvent.*
 import com.nayibit.feature_categories.presentation.model.CategoryUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -34,7 +35,7 @@ class CategoryViewModel @Inject constructor(): ViewModel() {
             CategoryUi(3,"Business", "Negocios", 0f, Icons.Default.Work),
             CategoryUi(4,"Daily Life", "Vida Diaria", 0.45f, Icons.Default.WbSunny),
             CategoryUi(5,"Food", "Comida", 0.95f, Icons.Default.Restaurant),
-            CategoryUi(6,"Technology", "Tecnologia", 0.1f, Icons.Default.Memory)
+            CategoryUi(6,"Technology", progress = 0.1f,  icon = Icons.Default.Memory)
         )
         updateState { it.copy(categories = topics) }
     }
@@ -42,23 +43,27 @@ class CategoryViewModel @Inject constructor(): ViewModel() {
 
     fun onEvent(event: CategoryUiEvent) {
         when (event) {
-            is CategoryUiEvent.InsertSkipTutorial -> {
+            is InsertSkipTutorial -> {
              //  insertInitialConfiguration()
             }
 
-           is CategoryUiEvent.Navigate -> {
+           is Navigate -> {
                 viewModelScope.launch {
-                    _eventFlow.emit(CategoryUiEvent.Navigate(event.id))
+                    _eventFlow.emit(Navigate(event.id))
                 }
             }
-            is CategoryUiEvent.ShowToast -> {
+            is ShowToast -> {
                 viewModelScope.launch {
-                    _eventFlow.emit(CategoryUiEvent.ShowToast(event.message))
+                    _eventFlow.emit(ShowToast(event.message))
 
                 }
             }
 
-            CategoryUiEvent.NextPage -> {
+            NextPage -> {
+            }
+
+            is ShowDialog -> {
+                updateState { it.copy(showDialog = event.show) }
             }
         }
      }

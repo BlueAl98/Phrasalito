@@ -24,13 +24,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -92,6 +91,7 @@ fun AnimatedCategoryCard(
 }
 
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun CategoryCard(
     modifier: Modifier,
@@ -147,8 +147,9 @@ fun CategoryCard(
 
                 Spacer(Modifier.height(14.dp))
 
-                LinearProgressIndicator(
-                    progress = topic.progress,
+
+                LinearWavyProgressIndicator(
+                    progress = {topic.progress},
                     color = colors.primary,
                     trackColor = colors.progressTrack,
                     modifier = Modifier

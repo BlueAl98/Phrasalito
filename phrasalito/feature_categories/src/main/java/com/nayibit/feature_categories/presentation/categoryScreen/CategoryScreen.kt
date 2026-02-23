@@ -2,7 +2,6 @@ package com.nayibit.feature_categories.presentation.categoryScreen
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nayibit.feature_categories.presentation.composables.AnimatedCategoryCard
+import com.nayibit.feature_categories.presentation.composables.DialogCategory
 import com.nayibit.feature_categories.presentation.model.LearningColors
 import kotlinx.coroutines.flow.Flow
 
@@ -55,46 +60,62 @@ fun CategoryScreen(
     }
 
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-            .padding(20.dp)
-    ) {
-
-        Text(
-            text = "¿Listo para aprender?",
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.inversePrimary
-        )
-
-        Spacer(Modifier.height(6.dp))
-
-        Text(
-            text = "Selecciona una categoria para empezar",
-            fontSize = 16.sp,
-            color = MaterialTheme.colorScheme.inversePrimary.copy(alpha = 0.8f)
-        )
-
-        Spacer(Modifier.height(24.dp))
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(18.dp),
-            horizontalArrangement = Arrangement.spacedBy(18.dp)
-        ) {
-            items(state.categories) { category ->
-                AnimatedCategoryCard(
-                    category = category,
-                    colors = colors,
-                    index = category.id,
-                    onClickItem = {
-                        onEvent(CategoryUiEvent.Navigate(category.id))
-                    }
-                )
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { onEvent(CategoryUiEvent.ShowDialog(true)) },
+                containerColor = Color(0xFF0047AB)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.White)
             }
         }
+    ) { padding ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(20.dp)
+        ) {
+
+            Text(
+                text = "¿Listo para aprender?",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.inversePrimary
+            )
+
+            Spacer(Modifier.height(6.dp))
+
+            Text(
+                text = "Selecciona una categoria para empezar",
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.inversePrimary.copy(alpha = 0.8f)
+            )
+
+            Spacer(Modifier.height(24.dp))
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                verticalArrangement = Arrangement.spacedBy(18.dp),
+                horizontalArrangement = Arrangement.spacedBy(18.dp)
+            ) {
+                items(state.categories) { category ->
+                    AnimatedCategoryCard(
+                        category = category,
+                        colors = colors,
+                        index = category.id,
+                        onClickItem = {
+                            onEvent(CategoryUiEvent.Navigate(category.id))
+                        }
+                    )
+                }
+            }
+        }
+        DialogCategory(
+            colorButtons = colors.primary,
+            showDialog = state.showDialog,
+            onDismiss = { onEvent(CategoryUiEvent.ShowDialog(false)) },
+            onAccept = { /*TODO*/ })
     }
 }
 
