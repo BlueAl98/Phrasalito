@@ -1,24 +1,35 @@
 package com.nayibit.feature_categories.presentation.composables
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +41,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,6 +56,9 @@ fun AnimatedCategoryCard(
     modifier: Modifier = Modifier,
     category: CategoryUi,
     colors: LearningColors,
+    onEdit: () -> Unit = {},
+    onDelete: () -> Unit = {},
+    onClickItem: () -> Unit,
     index: Int
 ) {
     var visible by remember { mutableStateOf(false) }
@@ -64,7 +80,14 @@ fun AnimatedCategoryCard(
             animationSpec = tween(500)
         )
     ) {
-        CategoryCard(modifier,category, colors)
+       FlippableCategoryCard(
+           modifier = modifier,
+           topic = category,
+           colors = colors,
+           onEdit = onEdit,
+           onDelete = onDelete,
+           onClickItem = onClickItem
+       )
     }
 }
 
@@ -78,7 +101,7 @@ fun CategoryCard(
     val percent = (topic.progress * 100).toInt()
 
     Card(
-        modifier = modifier,
+        modifier = modifier.height(210.dp),
         colors = CardDefaults.cardColors(
             containerColor = colors.card
         ),
@@ -137,6 +160,114 @@ fun CategoryCard(
 
             ProgressBadge(percent, colors, Modifier.align(Alignment.TopEnd))
         }
+    }
+}
+
+
+@Composable
+fun FlippableCategoryCard(
+    modifier: Modifier = Modifier,
+    topic: CategoryUi,
+    colors: LearningColors,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+    onClickItem: () -> Unit
+) {
+    var flipped by remember { mutableStateOf(false) }
+
+    val rotation by animateFloatAsState(
+        targetValue = if (flipped) 180f else 0f,
+        label = "card_rotation"
+    )
+
+    Box(
+        modifier = modifier
+            .graphicsLayer {
+                rotationY = rotation
+                cameraDistance = 12f * density
+            }
+            .combinedClickable(
+                onClick = {onClickItem()},
+                onLongClick = { flipped = !flipped }
+            )
+    ) {
+
+        if (rotation <= 90f) {
+            CategoryFront(topic, colors)
+        } else {
+            Box(
+                modifier = Modifier.graphicsLayer {
+                    rotationY = 180f
+                }
+            ) {
+                CategoryBack(
+                    onEdit = onEdit,
+                    onDelete = onDelete,
+                    colors = colors
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+fun CategoryFront(topic: CategoryUi, colors: LearningColors) {
+    CategoryCard(
+        modifier = Modifier.fillMaxWidth(),
+        topic = topic,
+        colors = colors
+    )
+}
+
+@Composable
+fun CategoryBack(
+    modifier : Modifier = Modifier,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+    colors: LearningColors
+) {
+    Card(
+        modifier = modifier.height(210.dp)
+            .fillMaxWidth()
+        ,
+        colors = CardDefaults.cardColors(
+            containerColor = colors.card
+        ),
+        border = BorderStroke(1.dp, colors.cardBorder),
+        shape = RoundedCornerShape(20.dp)
+    ) {
+
+        Box(
+            modifier = Modifier.padding(18.dp)
+        ) {
+
+            Row(Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+                ) {
+
+            IconButton(onClick = {onEdit()}) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = null,
+                    tint = colors.primary,
+                    modifier = Modifier.size(30.dp)
+
+                )
+            }
+
+             IconButton(onClick = {onDelete()}) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = null,
+                    tint = Color.Red,
+                    modifier = Modifier.size(30.dp)
+
+                )
+            }
+        }
+    }
     }
 }
 

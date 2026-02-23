@@ -86,12 +86,12 @@ fun CategoryScreen(
         ) {
             items(state.categories) { category ->
                 AnimatedCategoryCard(
-                    modifier = Modifier.clickable{
-                        onEvent(CategoryUiEvent.Navigate(category.id))
-                    },
                     category = category,
                     colors = colors,
-                    index = category.id
+                    index = category.id,
+                    onClickItem = {
+                        onEvent(CategoryUiEvent.Navigate(category.id))
+                    }
                 )
             }
         }
