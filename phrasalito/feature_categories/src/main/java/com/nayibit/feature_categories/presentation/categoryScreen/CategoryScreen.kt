@@ -3,6 +3,7 @@ package com.nayibit.feature_categories.presentation.categoryScreen
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -29,6 +31,8 @@ import androidx.compose.ui.unit.sp
 import com.nayibit.feature_categories.presentation.composables.AnimatedCategoryCard
 import com.nayibit.feature_categories.presentation.composables.DialogCategory
 import com.nayibit.feature_categories.presentation.model.LearningColors
+import com.nayibit.feature_categories.presentation.model.TypeModal
+import com.nayibit.utils.ui.composables.LoadingScreen
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -70,11 +74,18 @@ fun CategoryScreen(
             }
         }
     ) { padding ->
-        Column(
+
+       if (state.categories.isEmpty()){
+           Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+               Text(text = "No hay categorias")
+           }
+       }else
+         Column(
             modifier = modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .padding(20.dp)
+                .padding(padding)
         ) {
 
             Text(
@@ -106,6 +117,12 @@ fun CategoryScreen(
                         index = category.id,
                         onClickItem = {
                             onEvent(CategoryUiEvent.Navigate(category.id))
+                        },
+                        onEdit = {
+                            onEvent(CategoryUiEvent.ShowDialog(true, TypeModal.UPDATE, category))
+                           },
+                        onDelete = {
+                            onEvent(CategoryUiEvent.ShowDialog(true, TypeModal.DELETE, category))
                         }
                     )
                 }
@@ -115,8 +132,13 @@ fun CategoryScreen(
             colorButtons = colors.primary,
             showDialog = state.showDialog,
             state = state,
-            onEvent = onEvent
+            onEvent = onEvent,
+            currentCategory = state.currentCategory,
+            typeModal = state.typeModal
         )
+
+        if (state.isLoading)
+            LoadingScreen()
     }
 }
 

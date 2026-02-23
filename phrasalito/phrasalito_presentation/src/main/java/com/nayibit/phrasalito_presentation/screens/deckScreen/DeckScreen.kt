@@ -242,6 +242,9 @@ fun DeckScreen(
                 }
 
             }
+            if (state.isLoading){
+                LoadingScreen(backgroundColor = MaterialTheme.colorScheme.background)
+            }
 
 
         }, floatingActionButton = {
@@ -262,9 +265,7 @@ fun DeckScreen(
     )
 }
 
-    if (state.isLoading){
-        LoadingScreen(backgroundColor = MaterialTheme.colorScheme.background)
-    }
+
 
 
 }

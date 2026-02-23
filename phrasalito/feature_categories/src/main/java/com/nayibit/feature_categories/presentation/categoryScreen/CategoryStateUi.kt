@@ -1,6 +1,7 @@
 package com.nayibit.feature_categories.presentation.categoryScreen
 
 import com.nayibit.feature_categories.presentation.model.CategoryUi
+import com.nayibit.feature_categories.presentation.model.TypeModal
 
 
 data class CategoryStateUi(
@@ -8,5 +9,6 @@ data class CategoryStateUi(
     val categories: List<CategoryUi> = emptyList(),
     val showDialog: Boolean = false,
     val title: String = "",
-    val subtitle: String = ""
-)
+    val subtitle: String = "",
+    val currentCategory: CategoryUi? = null,
+    val typeModal: TypeModal = TypeModal.CREATE)

@@ -4,14 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.feature_categories.domain.repositories.CategoryRepository
 import com.nayibit.feature_categories.model.Category
-import com.nayibit.feature_categories.presentation.categoryScreen.CategoryUiEvent.InsertSkipTutorial
-import com.nayibit.feature_categories.presentation.categoryScreen.CategoryUiEvent.Navigate
-import com.nayibit.feature_categories.presentation.categoryScreen.CategoryUiEvent.NextPage
-import com.nayibit.feature_categories.presentation.categoryScreen.CategoryUiEvent.OnTextChangeSubtitle
-import com.nayibit.feature_categories.presentation.categoryScreen.CategoryUiEvent.OnTextChangeTitle
-import com.nayibit.feature_categories.presentation.categoryScreen.CategoryUiEvent.ShowDialog
-import com.nayibit.feature_categories.presentation.categoryScreen.CategoryUiEvent.ShowToast
+import com.nayibit.feature_categories.presentation.categoryScreen.CategoryUiEvent.*
+import com.nayibit.feature_categories.presentation.mappers.toDomain
 import com.nayibit.feature_categories.presentation.mappers.toUI
+import com.nayibit.feature_categories.presentation.model.TypeModal
 import com.nayibit.utils.helpers.onError
 import com.nayibit.utils.helpers.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -60,7 +56,16 @@ class CategoryViewModel @Inject constructor(
             }
 
             is ShowDialog -> {
-                updateState { it.copy(showDialog = event.show) }
+                when(event.type){
+                    TypeModal.CREATE -> updateState { it.copy(showDialog = event.show, typeModal = event.type) }
+                    else -> updateState {
+                        it.copy(showDialog = event.show,
+                            typeModal = event.type,
+                            currentCategory = event.category,
+                            title = event.category?.title ?: "",
+                            subtitle = event.category?.subtitle ?: ""
+                            )}
+                }
             }
 
             is OnTextChangeSubtitle -> {
@@ -70,8 +75,21 @@ class CategoryViewModel @Inject constructor(
                 updateState { it.copy(title = event.title) }
             }
 
-            is CategoryUiEvent.InsertCategory -> {
+            is InsertCategory -> {
                 insertCategory(Category(name = event.title, subtitle = event.subtitle))
+            }
+
+            is DeleteCategory -> {
+                deleteCategory(event.category.toDomain())
+            }
+            is UpdateCategory -> {
+                val category = event.category.copy(title = _state.value.title, subtitle = _state.value.subtitle)
+                updateCategory(category.toDomain())
+            }
+
+            DissmissDialog -> {
+                updateState { it.copy(showDialog = false, currentCategory = null,
+                    title = "", subtitle = "") }
             }
         }
      }
@@ -92,18 +110,36 @@ class CategoryViewModel @Inject constructor(
             }
         }
     }
+    fun updateCategory(category: Category){
+        viewModelScope.launch {
+            categoryRepository.updateCategory(category).onSuccess {
+                updateState { it.copy(showDialog = false, currentCategory = null, title = "", subtitle = "") }
+            }.onError { error ->
+                println(error)
+            }
+        }
+    }
+    fun deleteCategory(category: Category){
+        viewModelScope.launch {
+            categoryRepository.deleteCategory(category).onSuccess {
+                updateState { it.copy(showDialog = false, currentCategory = null, title = "", subtitle = "") }
+            }.onError { error ->
+                println(error)
+            }
+        }
+    }
 
     fun getCategories(){
         viewModelScope.launch {
+            updateState { it.copy(isLoading = true) }
             categoryRepository.getCategories().collect { result ->
                 result.onSuccess { categories ->
-                    updateState { it.copy(categories = categories.map { ct-> ct.toUI() }) }
+                    updateState { it.copy(categories = categories.map { ct-> ct.toUI() }, isLoading = false) }
                 }.onError {
-                    println(it)
+                    updateState { it.copy(isLoading = false) } }
                 }
 
             }
         }
     }
 
-}

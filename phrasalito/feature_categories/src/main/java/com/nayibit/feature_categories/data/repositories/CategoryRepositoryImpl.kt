@@ -37,5 +37,35 @@ class CategoryRepositoryImpl @Inject constructor(
        }
     }
 
+    override suspend fun updateCategory(category: Category): Result<Unit, DatabaseError> {
+        try {
+            val findCategory = categoryDao.getCategoryById(category.id).category
+            val catUpdate = findCategory.copy(name = category.name, subtitle = category.subtitle)
+            categoryDao.updateCategory(catUpdate)
+            return Result.Success(Unit)
+        }catch (e: Exception){
+            return Result.Error(DatabaseError.Sql(e))
+        }
+    }
+
+    override suspend fun deleteCategory(category: Category): Result<Unit, DatabaseError> {
+        try {
+            val category = categoryDao.getCategoryById(category.id).category
+            categoryDao.deleteCategory(category)
+            return Result.Success(Unit)
+        }catch (e: Exception){
+            return Result.Error(DatabaseError.Sql(e))
+        }
+    }
+
+    override suspend fun getCategoryById(id: Int): Result<Category, DatabaseError> {
+        try {
+            val category = categoryDao.getCategoryById(id)
+            return Result.Success(category.toCategory())
+        }catch (e: Exception){
+            return Result.Error(DatabaseError.Sql(e))
+        }
+    }
+
 
 }

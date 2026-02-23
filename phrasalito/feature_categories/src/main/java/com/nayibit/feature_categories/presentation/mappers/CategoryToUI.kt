@@ -11,5 +11,9 @@ fun Category.toUI() = CategoryUi(
      subtitle = subtitle,
      progress = progress,
      icon = Icons.Default.AccountTree
-
 )
+
+fun CategoryUi.toDomain() = Category(
+     id = id,
+     name = title,
+     subtitle = subtitle)

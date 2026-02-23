@@ -248,7 +248,9 @@ fun CategoryBack(
                 verticalAlignment = Alignment.CenterVertically
                 ) {
 
-            IconButton(onClick = {onEdit()}) {
+            IconButton(onClick = {
+                onEdit()
+            }) {
                 Icon(
                     imageVector = Icons.Default.Edit,
                     contentDescription = null,
