@@ -65,6 +65,14 @@ class CategoryViewModel @Inject constructor(): ViewModel() {
             is ShowDialog -> {
                 updateState { it.copy(showDialog = event.show) }
             }
+
+            is OnTextChangeSubtitle -> {
+                updateState { it.copy(subtitle = event.subtitle) }
+            }
+            is OnTextChangeTitle -> {
+                updateState { it.copy(title = event.title) }
+            }
+
         }
      }
 

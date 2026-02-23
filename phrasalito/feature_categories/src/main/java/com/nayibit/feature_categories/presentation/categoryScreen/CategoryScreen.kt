@@ -114,8 +114,9 @@ fun CategoryScreen(
         DialogCategory(
             colorButtons = colors.primary,
             showDialog = state.showDialog,
-            onDismiss = { onEvent(CategoryUiEvent.ShowDialog(false)) },
-            onAccept = { /*TODO*/ })
+            state = state,
+            onEvent = onEvent
+        )
     }
 }
 

@@ -6,5 +6,6 @@ sealed class CategoryUiEvent {
     data class ShowToast(val message: String) : CategoryUiEvent()
     object NextPage: CategoryUiEvent()
     data class ShowDialog(val show: Boolean): CategoryUiEvent()
-
+    data class OnTextChangeTitle(val title: String): CategoryUiEvent()
+    data class OnTextChangeSubtitle(val subtitle: String): CategoryUiEvent()
 }
