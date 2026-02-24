@@ -8,7 +8,9 @@ data class CategoryUi(
     val title: String,
     val subtitle: String = "",
     val progress: Float, // 0f - 1f
-    val icon: ImageVector)
+    val icon: ImageVector,
+    val isFlipped: Boolean = false
+    )
 
 enum class TypeModal {
     CREATE,

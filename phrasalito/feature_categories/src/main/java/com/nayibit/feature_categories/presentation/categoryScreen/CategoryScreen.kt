@@ -115,6 +115,8 @@ fun CategoryScreen(
                         category = category,
                         colors = colors,
                         index = category.id,
+                        flippedCard = { onEvent(CategoryUiEvent.FlipCard(category,it)) },
+                        isFlipped = category.isFlipped,
                         onClickItem = {
                             onEvent(CategoryUiEvent.Navigate(category.id))
                         },

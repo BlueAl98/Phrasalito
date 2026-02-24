@@ -10,6 +10,8 @@ import com.nayibit.feature_categories.presentation.mappers.toUI
 import com.nayibit.feature_categories.presentation.model.TypeModal
 import com.nayibit.utils.helpers.onError
 import com.nayibit.utils.helpers.onSuccess
+import com.nayibit.utils.helpers.transformAll
+import com.nayibit.utils.helpers.update
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -88,8 +90,22 @@ class CategoryViewModel @Inject constructor(
             }
 
             DissmissDialog -> {
-                updateState { it.copy(showDialog = false, currentCategory = null,
-                    title = "", subtitle = "") }
+                updateState { state ->
+                    state.copy(showDialog = false, currentCategory = null,
+                    title = "", subtitle = "", categories = state.categories.transformAll {
+                        it.copy(isFlipped = false)
+                        }) }
+            }
+
+            is FlipCard -> {
+                updateState { state ->
+                    state.copy(
+                        categories = state.categories.update(
+                            predicate = { it.id == event.category.id },
+                            transform = { it.copy(isFlipped = event.flipped) }
+                        )
+                    )
+                }
             }
         }
      }

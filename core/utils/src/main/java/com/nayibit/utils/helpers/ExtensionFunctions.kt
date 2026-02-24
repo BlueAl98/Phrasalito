@@ -33,3 +33,12 @@ fun String.countValidChar(): Int {
 }
 
  fun Char.isPunctuation(): Boolean = this in listOf(',', '.', '!', '?', ';', ':', '"', '\'', '(', ')')
+
+inline fun <T> List<T>.update(
+    predicate: (T) -> Boolean,
+    transform: (T) -> T
+): List<T> = map { if (predicate(it)) transform(it) else it }
+
+inline fun <T> List<T>.transformAll(
+    transform: (T) -> T
+): List<T> = map(transform)

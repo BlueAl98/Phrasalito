@@ -32,8 +32,18 @@ fun DialogCategory(
              ButtonBase(text = "Cancelar", onClick = { onEvent(CategoryUiEvent.DissmissDialog)}, backgroundColor = colorButtons)
          }
         else ->  {
-             TextFieldBase(value = state.title, onValueChange = { onEvent(CategoryUiEvent.OnTextChangeTitle(it)) }, label = "Titulo categoria")
-             TextFieldBase(value = state.subtitle, onValueChange = { onEvent(CategoryUiEvent.OnTextChangeSubtitle(it)) }, label = "Subtitulo (opcional)")
+             TextFieldBase(value = state.title,
+                 onValueChange = { onEvent(CategoryUiEvent.OnTextChangeTitle(it)) },
+                 label = "Titulo categoria",
+                 maxChar = 20,
+                 showCharCounter = true
+                 )
+             TextFieldBase(value = state.subtitle,
+                 onValueChange = { onEvent(CategoryUiEvent.OnTextChangeSubtitle(it)) },
+                 label = "Subtitulo (opcional)",
+                 maxChar = 20,
+                 showCharCounter = true
+                 )
              ButtonBase(text = "Aceptar",
                  onClick = {
                      if (typeModal == TypeModal.CREATE)

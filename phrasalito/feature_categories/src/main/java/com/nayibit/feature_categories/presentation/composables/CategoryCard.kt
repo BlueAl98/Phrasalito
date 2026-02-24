@@ -59,6 +59,8 @@ fun AnimatedCategoryCard(
     onEdit: () -> Unit = {},
     onDelete: () -> Unit = {},
     onClickItem: () -> Unit,
+    isFlipped: Boolean = false,
+    flippedCard : (Boolean) -> Unit = {},
     index: Int
 ) {
     var visible by remember { mutableStateOf(false) }
@@ -82,6 +84,8 @@ fun AnimatedCategoryCard(
     ) {
        FlippableCategoryCard(
            modifier = modifier,
+           flipped = isFlipped,
+           flippedCard = flippedCard,
            topic = category,
            colors = colors,
            onEdit = onEdit,
@@ -171,11 +175,13 @@ fun FlippableCategoryCard(
     modifier: Modifier = Modifier,
     topic: CategoryUi,
     colors: LearningColors,
+    flipped: Boolean =false,
+    flippedCard : (Boolean) -> Unit = {},
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     onClickItem: () -> Unit
 ) {
-    var flipped by remember { mutableStateOf(false) }
+  //  var flipped by remember { mutableStateOf(false) }
 
     val rotation by animateFloatAsState(
         targetValue = if (flipped) 180f else 0f,
@@ -190,7 +196,7 @@ fun FlippableCategoryCard(
             }
             .combinedClickable(
                 onClick = {onClickItem()},
-                onLongClick = { flipped = !flipped }
+                onLongClick = { flippedCard(!flipped) }
             )
     ) {
 

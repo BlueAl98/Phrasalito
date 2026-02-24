@@ -14,5 +14,6 @@ sealed interface CategoryUiEvent {
     data class InsertCategory(val title: String, val subtitle: String): CategoryUiEvent
     data class UpdateCategory(val category: CategoryUi): CategoryUiEvent
     data class DeleteCategory(val category: CategoryUi): CategoryUiEvent
+    data class FlipCard(val category: CategoryUi ,val flipped: Boolean): CategoryUiEvent
     object DissmissDialog: CategoryUiEvent
 }
