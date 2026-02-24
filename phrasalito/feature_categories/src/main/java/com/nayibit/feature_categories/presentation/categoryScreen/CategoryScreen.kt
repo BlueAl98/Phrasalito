@@ -30,9 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nayibit.feature_categories.presentation.composables.AnimatedCategoryCard
 import com.nayibit.feature_categories.presentation.composables.DialogCategory
-import com.nayibit.feature_categories.presentation.model.LearningColors
 import com.nayibit.feature_categories.presentation.model.TypeModal
 import com.nayibit.utils.ui.composables.LoadingScreen
+import com.nayibit.utils.ui.theme.learningColors
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -45,7 +45,7 @@ fun CategoryScreen(
 ) {
 
     val context = LocalContext.current
-    val colors = learningColors(Color(0xFF0047AB), MaterialTheme.colorScheme.inversePrimary)
+    val colors = learningColors(textPrimary = MaterialTheme.colorScheme.inversePrimary)
 
     LaunchedEffect(Unit) {
         eventFlow.collect { event ->
@@ -147,13 +147,3 @@ fun CategoryScreen(
 
 
 
-fun learningColors(primary: Color, textPrimary: Color = Color.White) = LearningColors(
-    background = primary.copy(alpha = 0.08f),
-    card = primary.copy(alpha = 0.14f),
-    cardBorder = primary.copy(alpha = 0.25f),
-    primary = primary,
-    textPrimary = textPrimary,
-    textSecondary = Color(0xFFB0B8C9),
-    progressTrack = primary.copy(alpha = 0.18f),
-    badge = primary.copy(alpha = 0.22f)
-)

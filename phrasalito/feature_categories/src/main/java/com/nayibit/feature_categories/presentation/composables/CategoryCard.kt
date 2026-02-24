@@ -47,7 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nayibit.feature_categories.presentation.model.CategoryUi
-import com.nayibit.feature_categories.presentation.model.LearningColors
+import com.nayibit.utils.ui.model.LearningColors
 import kotlinx.coroutines.delay
 
 

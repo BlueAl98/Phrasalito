@@ -1,4 +1,4 @@
-package com.nayibit.feature_categories.presentation.model
+package com.nayibit.utils.ui.model
 
 import androidx.compose.ui.graphics.Color
 
