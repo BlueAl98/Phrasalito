@@ -1,5 +1,6 @@
 package com.nayibit.feature_deckscreen.presentation.deckScreen
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.feature_deckscreen.R
@@ -31,19 +32,21 @@ class DeckViewModel @Inject
     private val insertDeckUseCase: InsertDeckUseCase,
     private val getDecksUseCase : GetAllDecksUseCase,
     private val deleteDeckUseCase: DeleteDeckUseCase,
-    private val updateDeckUseCase: UpdateDeckUseCase)
+    private val updateDeckUseCase: UpdateDeckUseCase,
+    savedStateHandle: SavedStateHandle)
     : ViewModel() {
+
+    val idCategory = savedStateHandle.get<Int>("id") ?: 0
 
     private val _state = MutableStateFlow(DeckStateUi()) // Initial default state
     val state: StateFlow<DeckStateUi> = _state.asStateFlow()
-
 
     private val _eventFlow = MutableSharedFlow<DeckUiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
 
     init {
-        getAllDecks()
+        getAllDecks(idCategory)
         //getAllDecks()
         //getTutorialState()
     }
@@ -204,9 +207,9 @@ class DeckViewModel @Inject
         }
     }
 
-    fun getAllDecks(){
+    fun getAllDecks(id: Int){
         viewModelScope.launch {
-            getDecksUseCase().collect { result ->
+            getDecksUseCase(id).collect { result ->
                 result.onSuccess { decks ->
                     _state.value = _state.value.copy(
                         decks = decks.map { it.toDeckUI() },

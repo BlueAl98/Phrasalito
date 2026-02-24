@@ -25,10 +25,10 @@ class DeckRepositoryImpl
       }
 
 
-    override fun getAllDecks(): Flow<Result<List<Deck>, DatabaseError>> =
-        deckDao.getAll()
-            .map { entities ->
-                val decks = entities.map { it.toDeck() }
+    override fun getAllDecks(id: Int): Flow<Result<List<Deck>, DatabaseError>> =
+        deckDao.getAll(id)
+            .map { entity ->
+                val decks = entity.decks.map { it.deck.toDeck(it.phrases.size)}
                 Result.Success(decks) as Result<List<Deck>, DatabaseError>
             }
             .catch { e ->

@@ -28,7 +28,7 @@ fun Navigation() {
 
          composable <Routes.CategoryScreen>{
              FeatureCategoryScreen { id ->
-              navController.navigate(Routes.DeckScreen)
+              navController.navigate(Routes.DeckScreen(id))
             }
         }
 

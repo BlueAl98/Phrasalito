@@ -10,8 +10,8 @@ import javax.inject.Inject
 class GetAllDecksUseCase @Inject
     constructor(private val repository: DeckRepository){
 
-    operator fun invoke(): Flow<Result<List<Deck>, DatabaseError>> {
-        return repository.getAllDecks()
+    operator fun invoke(id: Int): Flow<Result<List<Deck>, DatabaseError>> {
+        return repository.getAllDecks(id)
     }
 
  }

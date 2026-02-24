@@ -7,5 +7,6 @@ data class Deck(
     val maxCards: Int = 20,
     val lngCode: String,
     val languageName: String,
-    val isNotified: Boolean = false
+    val isNotified: Boolean = false,
+    val currentPhrases: Int = 0
 )

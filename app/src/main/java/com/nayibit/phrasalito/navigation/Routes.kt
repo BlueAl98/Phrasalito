@@ -12,5 +12,5 @@ object Routes {
     object CategoryScreen
 
     @Serializable
-    object DeckScreen
+    data class DeckScreen(val id:Int)
 }

@@ -9,7 +9,7 @@ fun Deck.toDeckUI(): DeckUI {
         id = this.id,
         name = this.name,
         maxCards = this.maxCards,
-        numCards = /*this.currentCards*/ 0,
+        numCards = this.currentPhrases,
         isNotified = this.isNotified,
         selectedLanguage = Language(this.id, this.languageName, this.lngCode),
         idCategory = this.idCategory

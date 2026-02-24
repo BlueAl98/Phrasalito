@@ -14,14 +14,12 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface DeckDao {
 
-    @Query("SELECT * FROM categories")
-    fun getCategories(): Flow<List<CategoryWithDeckEntity>>
+    @Transaction
+    @Query("SELECT * FROM categories WHERE id = :id")
+    fun getAll(id: Int): Flow<CategoryWithDeckEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: DeckEntity): Long
-
-    @Query("SELECT * FROM decks")
-    fun getAll(): Flow<List<DeckEntity>>
 
     @Delete
     suspend fun deleteDeck(deck: DeckEntity)

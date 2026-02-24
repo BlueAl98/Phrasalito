@@ -5,16 +5,12 @@ import androidx.room.Relation
 
 data class CategoryWithDeckEntity(
     @Embedded
-    val category : CategoryEntity,
+    val category: CategoryEntity,
+
     @Relation(
+        entity = DeckEntity::class,
         parentColumn = "id",
         entityColumn = "idCategory"
     )
-    val decks: List<DeckEntity>,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "deckId"
-    )
-    val phrases: List<PhraseEntity>
-
+    val decks: List<DeckWithPhrases>
 )
