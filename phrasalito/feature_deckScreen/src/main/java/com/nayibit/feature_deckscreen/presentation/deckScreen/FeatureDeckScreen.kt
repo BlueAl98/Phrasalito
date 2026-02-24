@@ -15,7 +15,6 @@ fun FeatureDeckScreen() {
         eventFlow = viewModel.eventFlow,
         onEvent = viewModel::onEvent,
         navigationToPhrases = { idDeck, lngCode ->
-            println("idDeck: $idDeck, lngCode: $lngCode")
         }
     )
 
