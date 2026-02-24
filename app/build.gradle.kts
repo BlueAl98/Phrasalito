@@ -91,7 +91,7 @@ dependencies {
     implementation(project(":core:utils"))
     implementation(project(":phrasalito:feature_startScreen"))
     implementation(project(":phrasalito:feature_categories"))
-  //  implementation(project(":phrasalito:feature_deckScreen"))
+    implementation(project(":phrasalito:feature_deckScreen"))
 
 
 

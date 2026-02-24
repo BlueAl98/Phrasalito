@@ -1,6 +1,6 @@
 package com.nayibit.feature_deckscreen.presentation.deckScreen
 
-import com.nayibit.phrasalito_presentation.model.Language
+import com.nayibit.feature_deckscreen.presentation.model.Language
 
 
 data class DeckStateUi (
@@ -24,7 +24,8 @@ data class DeckUI(
     val isSwiped: Boolean = false,
     val isNotified: Boolean = false,
     val selectedLanguage: Language? = null,
-    val maxCards: Int = 0
+    val maxCards: Int = 0,
+    val idCategory: Int = 0
 )
 
 enum class BodyDeckModalEnum() {

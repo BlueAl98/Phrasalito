@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- DeckScreen Strings -->
+    <string name="label_learn_phrase">Nombre del Deck</string>
+    <string name="phrase_deleted_successfully">Frase eliminada con éxito</string>
+    <string name="label_modal_start_exercise">¿Estas listo para ponerte a prueba?</string>
+    <string name="label_dont_cards_enough">Necesitas minimo 3 frases completas para comenzar</string>
+    <string name="label_deck">Deck</string>
+    <string name="title_update_deck">Actualizar deck</string>
+    <string name="title_delete_deck">Estas seguro de eliminar </string>
+    <string name="label_empty_deck_name">Ingrese un nombre para el deck</string>
+    <string name="label_choose_language">Elige un idioma</string>
+    <string name="available_voice_languages">Idiomas disponibles voz</string>
+    <string name="active_notifications_label">Activar notificationes</string>
+    <string name="label_short_deck_name">El nombre del deck debe tener minimo 5 caracteres</string>
+
+
+    <!-- GLOBAL Strings -->
+    <string name="btn_save">Guardar</string>
+    <string name="btn_accept">Aceptar</string>
+    <string name="btn_cancel">Cancelar</string>
+    <string name="btn_update">Actualizar</string>
+    <string name="btn_delete">Eliminar</string>
+    <string name="label_emty_fields">Campos vacios</string>
+    <string name="error_example_not_contains_phrase">El ejemplo no contiene la frase proporcionada.</string>
+    <string name="error_example_is_not_longer_than_phrase">El ejemplo debe tener más palabras que la frase ingresada.</string>
+    <string name="correct_answers_label">Respuestas correctas: %1$s /  %2$s</string>
+    <string name="tutorial_floatButton_description">Botón para agregar tus decks.</string>
+    <string name="tutorial_itemDeck_description">Aquí encontrarás tu lista de decks. Desliza hacia la izquierda para editarlos o eliminarlos.</string>
+
+
+
+</resources>

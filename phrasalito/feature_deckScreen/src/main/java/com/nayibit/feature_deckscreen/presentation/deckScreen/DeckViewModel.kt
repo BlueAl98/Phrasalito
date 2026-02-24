@@ -2,32 +2,11 @@ package com.nayibit.feature_deckscreen.presentation.deckScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nayibit.common.util.Constants.MIN_CHAR_NAME_DECK
-import com.nayibit.common.util.Resource
-import com.nayibit.common.util.UiText.DynamicString
-import com.nayibit.common.util.UiText.StringResource
-import com.nayibit.common.util.countValidChar
+import com.nayibit.feature_deckscreen.R
 import com.nayibit.feature_deckscreen.domain.useCases.decks.DeleteDeckUseCase
 import com.nayibit.feature_deckscreen.domain.useCases.decks.GetAllDecksUseCase
 import com.nayibit.feature_deckscreen.domain.useCases.decks.InsertDeckUseCase
 import com.nayibit.feature_deckscreen.domain.useCases.decks.UpdateDeckUseCase
-import com.nayibit.phrasalito_domain.model.Deck
-import com.nayibit.phrasalito_presentation.R
-import com.nayibit.phrasalito_presentation.mappers.toDeck
-import com.nayibit.phrasalito_presentation.mappers.toDeckUI
-import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.DeleteDeck
-import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.DismissModal
-import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.InsertDeck
-import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.NavigationToPhrases
-import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.OpenPrompt
-import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.ResetAllSwiped
-import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.ShowModal
-import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.ShowSnackbar
-import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.ShowToast
-import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.UpdateDeck
-import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.UpdateDeckList
-import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.UpdateTextFieldInsert
-import com.nayibit.phrasalito_presentation.screens.deckScreen.DeckUiEvent.UpdateTextFieldUpdate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,6 +16,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import javax.inject.Inject
+import com.nayibit.feature_deckscreen.presentation.deckScreen.DeckUiEvent.*
+import com.nayibit.feature_deckscreen.presentation.mappers.toDeckUI
+import com.nayibit.utils.Constants.MIN_CHAR_NAME_DECK
+import com.nayibit.utils.helpers.UiText.*
+import com.nayibit.utils.helpers.UiText.StringResource
+import com.nayibit.utils.helpers.countValidChar
+import com.nayibit.utils.helpers.onError
+import com.nayibit.utils.helpers.onSuccess
 
 @HiltViewModel
 class DeckViewModel @Inject
@@ -44,10 +31,7 @@ class DeckViewModel @Inject
     private val insertDeckUseCase: InsertDeckUseCase,
     private val getDecksUseCase : GetAllDecksUseCase,
     private val deleteDeckUseCase: DeleteDeckUseCase,
-    private val updateDeckUseCase: UpdateDeckUseCase,
-   /* private val isTextSpeechReadyUseCase: IsTextSpeechReadyUseCase,
-    private val isTutorialDeckUseCase: IsTutorialDeckUseCase,
-    private val insertTutorialDeckUseCase: InsertTutorialDeckUseCase*/)
+    private val updateDeckUseCase: UpdateDeckUseCase)
     : ViewModel() {
 
     private val _state = MutableStateFlow(DeckStateUi()) // Initial default state
@@ -60,7 +44,8 @@ class DeckViewModel @Inject
 
     init {
         getAllDecks()
-        getTutorialState()
+        //getAllDecks()
+        //getTutorialState()
     }
 
 
@@ -110,7 +95,7 @@ class DeckViewModel @Inject
                     
 
                     else -> {
-                        insertDeck(_state.value.currentDeck.toDeck())
+                     //   insertDeck(_state.value.currentDeck.toDeck())
                     }
                 }
 
@@ -137,7 +122,7 @@ class DeckViewModel @Inject
                 }
             }
 
-            is DeleteDeck -> deleteDeck(event.id)
+            is DeleteDeck ->{} //deleteDeck(event.id)
 
             is UpdateDeck ->{
 
@@ -155,7 +140,7 @@ class DeckViewModel @Inject
                     }
 
                     else -> {
-                        updateDeck(_state.value.currentDeck)
+                      //  updateDeck(_state.value.currentDeck)
                     }
                 }
             }
@@ -198,7 +183,7 @@ class DeckViewModel @Inject
             }
 
             DeckUiEvent.TutorialFinish -> {
-                finishTutorial()
+               // finishTutorial()
             }
 
             DeckUiEvent.onNextStep -> {
@@ -219,7 +204,24 @@ class DeckViewModel @Inject
         }
     }
 
-    fun updateDeck(
+    fun getAllDecks(){
+        viewModelScope.launch {
+            getDecksUseCase().collect { result ->
+                result.onSuccess { decks ->
+                    _state.value = _state.value.copy(
+                        decks = decks.map { it.toDeckUI() },
+                        isLoading = false
+                    )
+
+                }.onError { error ->
+                    println(error)
+                }
+            }
+        }
+    }
+
+
+  /*  fun updateDeck(
        deckUI: DeckUI
     ) {
         viewModelScope.launch {
@@ -346,7 +348,7 @@ class DeckViewModel @Inject
             }
         }
 
-    }
+    }*/
 
 
     }

@@ -46,6 +46,10 @@ dependencies {
     implementation(project(":core:database"))
     implementation(project(":core:utils"))
 
+    implementation( libs.material.icons.extended)
+    implementation (libs.compose.swipeable.cards)
+    implementation(libs.compose.material)
+
 
 
     ksp(libs.hilt.android.compiler)

@@ -46,23 +46,23 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import com.nayibit.common.util.Constants.MIN_CHAR_NAME_DECK
-import com.nayibit.common.util.asString
-import com.nayibit.common.util.countValidChar
-import com.nayibit.phrasalito_presentation.R
-import com.nayibit.phrasalito_presentation.composables.BaseDialog
-import com.nayibit.phrasalito_presentation.composables.ButtonBase
-import com.nayibit.phrasalito_presentation.composables.LanguageDropdownMenu
-import com.nayibit.phrasalito_presentation.composables.LoadingScreen
-import com.nayibit.phrasalito_presentation.composables.SwipeableDeckItem
-import com.nayibit.phrasalito_presentation.composables.SwitchBase
-import com.nayibit.phrasalito_presentation.composables.TextFieldBase
-import com.nayibit.phrasalito_presentation.composables.TutorialBase
-import com.nayibit.phrasalito_presentation.composables.isLandscape
-import com.nayibit.phrasalito_presentation.composables.rememberNotificationPermissionHandler
-import com.nayibit.phrasalito_presentation.model.TutorialStep
-import com.nayibit.phrasalito_presentation.ui.theme.primaryGradientEnd
-import com.nayibit.phrasalito_presentation.utils.LabelPosition
+import com.nayibit.feature_deckscreen.R
+import com.nayibit.feature_deckscreen.presentation.composables.LanguageDropdownMenu
+import com.nayibit.feature_deckscreen.presentation.composables.SwipeableDeckItem
+import com.nayibit.feature_deckscreen.presentation.composables.SwitchBase
+import com.nayibit.feature_deckscreen.presentation.composables.TutorialBase
+import com.nayibit.feature_deckscreen.presentation.model.TutorialStep
+import com.nayibit.utils.Constants.MIN_CHAR_NAME_DECK
+import com.nayibit.utils.helpers.LabelPosition
+import com.nayibit.utils.helpers.asString
+import com.nayibit.utils.helpers.countValidChar
+import com.nayibit.utils.ui.composables.BaseDialog
+import com.nayibit.utils.ui.composables.ButtonBase
+import com.nayibit.utils.ui.composables.LoadingScreen
+import com.nayibit.utils.ui.composables.TextFieldBase
+import com.nayibit.utils.ui.composables.isLandscape
+import com.nayibit.utils.ui.composables.rememberNotificationPermissionHandler
+import com.nayibit.utils.ui.theme.primaryGradientEnd
 import kotlinx.coroutines.flow.Flow
 
 
@@ -83,7 +83,7 @@ fun DeckScreen(
 
     val steps = listOf(
         TutorialStep(
-            rect = rectFab ,
+            rect = rectFab,
             description = stringResource(R.string.tutorial_floatButton_description),
             labelPosition = LabelPosition.Left
         ),

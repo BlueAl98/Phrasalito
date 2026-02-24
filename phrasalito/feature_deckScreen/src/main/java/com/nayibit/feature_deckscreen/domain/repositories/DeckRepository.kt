@@ -1,15 +1,15 @@
 package com.nayibit.feature_deckscreen.domain.repositories
 
-import com.nayibit.phrasalito_domain.model.Deck
-import com.nayibit.phrasalito_domain.model.DeckWithPhrases
-import com.nayibit.utils.helpers.Resource
+
+import com.nayibit.feature_deckscreen.domain.model.Deck
+import com.nayibit.utils.helpers.DatabaseError
+import com.nayibit.utils.helpers.Result
 import kotlinx.coroutines.flow.Flow
 
 interface DeckRepository {
-   suspend fun insert(deck: Deck): Flow<Resource<Deck>>
-    fun getAllDecks(): Flow<Resource<List<Deck>>>
-   suspend fun deleteDeck(id: Int): Resource<Unit>
-   suspend fun updateDeck(deck: Deck): Resource<Unit>
-   suspend fun getPhrasesForNotification(): Resource<List<DeckWithPhrases?>>
-   suspend fun createInitialDeck(): Resource<Boolean>
+   suspend fun insert(deck: Deck):Result<Deck, DatabaseError>
+   fun getAllDecks(): Flow<Result<List<Deck>,DatabaseError>>
+   suspend fun deleteDeck(id: Int): Result<Unit,DatabaseError>
+   suspend fun updateDeck(deck: Deck): Result<Unit,DatabaseError>
+
 }
