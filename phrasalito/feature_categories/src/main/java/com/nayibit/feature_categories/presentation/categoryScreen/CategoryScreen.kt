@@ -110,7 +110,7 @@ fun CategoryScreen(
                 verticalArrangement = Arrangement.spacedBy(18.dp),
                 horizontalArrangement = Arrangement.spacedBy(18.dp)
             ) {
-                items(state.categories) { category ->
+                items(state.categories, key = { it.id }) { category ->
                     AnimatedCategoryCard(
                         category = category,
                         colors = colors,
