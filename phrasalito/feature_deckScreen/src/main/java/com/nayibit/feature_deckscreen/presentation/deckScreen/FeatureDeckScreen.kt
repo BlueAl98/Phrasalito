@@ -15,7 +15,6 @@ fun FeatureDeckScreen() {
         eventFlow = viewModel.eventFlow,
         onEvent = viewModel::onEvent,
         navigationToPhrases = { idDeck, lngCode ->
-            //navController.navigate(PhraseScreenNav(idDeck, lngCode))
             println("idDeck: $idDeck, lngCode: $lngCode")
         }
     )
