@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.nayibit.database.room.dao.CategoryDao
 import com.nayibit.database.room.dao.DeckDao
+import com.nayibit.database.room.dao.PhraseDao
 import com.nayibit.database.room.entities.CategoryEntity
 import com.nayibit.database.room.entities.DeckEntity
 import com.nayibit.database.room.entities.PhraseEntity
@@ -16,5 +17,7 @@ import com.nayibit.database.room.entities.PhraseEntity
 abstract  class AppDatabase : RoomDatabase() {
     abstract fun deckDao(): DeckDao
     abstract fun categoryDao(): CategoryDao
+    abstract fun phraseDao(): PhraseDao
+
 
 }
