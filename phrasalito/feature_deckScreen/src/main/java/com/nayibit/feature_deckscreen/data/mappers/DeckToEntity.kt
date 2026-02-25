@@ -4,6 +4,7 @@ import com.nayibit.database.room.entities.DeckEntity
 import com.nayibit.feature_deckscreen.domain.model.Deck
 
 fun Deck.toEntity() = DeckEntity(
+    id = id,
     idCategory = idCategory,
     name =  name,
     lngCode = lngCode,

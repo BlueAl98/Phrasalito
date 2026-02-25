@@ -50,7 +50,7 @@ class DeckRepositoryImpl
     override suspend fun updateDeck(deck: Deck): Result<Unit, DatabaseError> {
         return try {
             deckDao.updateDeck(deck.toEntity())
-             Result.Success(Unit)
+            Result.Success(Unit)
         }catch (e : Exception){
             Result.Error(DatabaseError.Sql(e))
         }

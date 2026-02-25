@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import javax.inject.Inject
 import com.nayibit.feature_deckscreen.presentation.deckScreen.DeckUiEvent.*
+import com.nayibit.feature_deckscreen.presentation.mappers.toDeck
 import com.nayibit.feature_deckscreen.presentation.mappers.toDeckUI
 import com.nayibit.utils.Constants.MIN_CHAR_NAME_DECK
 import com.nayibit.utils.helpers.UiText.*
@@ -25,6 +26,7 @@ import com.nayibit.utils.helpers.UiText.StringResource
 import com.nayibit.utils.helpers.countValidChar
 import com.nayibit.utils.helpers.onError
 import com.nayibit.utils.helpers.onSuccess
+import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class DeckViewModel @Inject
@@ -55,19 +57,19 @@ class DeckViewModel @Inject
     fun onEvent(event: DeckUiEvent) {
         when (event) {
             is ShowModal -> {
-                _state.value = _state.value.copy(
+                _state.update { it.copy(
                     showModal = true,
                     bodyModal = event.type,
                     currentDeck = event.deck)
+                }
             }
-
             is DismissModal -> {
-                _state.value = _state.value.copy(
+                _state.update { it.copy(
                     showModal = false,
                     isLoadingButton = false,
-                    decks = _state.value.decks.map { it.copy(isSwiped = false) },
+                    decks = it.decks.map { d-> d.copy(isSwiped = false) },
                     currentDeck = DeckUI()
-                )
+                )}
             }
 
             is ShowToast -> {
@@ -77,9 +79,9 @@ class DeckViewModel @Inject
             }
 
             is UpdateTextFieldInsert -> {
-                _state.value = _state.value.copy(
-                    currentDeck = _state.value.currentDeck.copy(name = event.text)
-                )
+                _state.update { it.copy(
+                    currentDeck = it.currentDeck.copy(name = event.text)
+                )}
             }
 
             is InsertDeck -> {
@@ -106,9 +108,9 @@ class DeckViewModel @Inject
 
             is NavigationToPhrases -> {
                 viewModelScope.launch {
-                    _state.value = _state.value.copy(
-                        decks = _state.value.decks.map { it.copy(isSwiped = false) }
-                    )
+                    _state.update { it.copy(
+                        decks = _state.value.decks.map {d-> d.copy(isSwiped = false) }
+                    )}
                     _eventFlow.emit(NavigationToPhrases(event.id, event.lngCode))
                 }
             }
@@ -143,14 +145,12 @@ class DeckViewModel @Inject
                     }
 
                     else -> {
-                      //  updateDeck(_state.value.currentDeck)
+                         updateDeck(_state.value.currentDeck)
                     }
                 }
             }
             is UpdateTextFieldUpdate -> {
-                _state.value = _state.value.copy(
-                    currentDeck  = _state.value.currentDeck.copy(name = event.text)
-                )
+                _state.update {state-> state.copy(currentDeck = state.currentDeck.copy(name = event.text)) }
             }
 
             is UpdateDeckList -> {
@@ -158,13 +158,11 @@ class DeckViewModel @Inject
                     if (it.id == event.idDeck) it.copy(isSwiped = event.isSwiped)
                     else it.copy(isSwiped = false)
                 }
-                _state.value = state.value.copy(decks = listDecks)
+                _state.update {it.copy(decks = listDecks)}
             }
 
             is ResetAllSwiped -> {
-                _state.value = _state.value.copy(
-                    decks = _state.value.decks.map { it.copy(isSwiped = false) }
-                )
+                _state.update { it.copy(decks = _state.value.decks.map { d-> d.copy(isSwiped = false) })}
             }
 
             is ShowSnackbar -> {
@@ -173,26 +171,26 @@ class DeckViewModel @Inject
                 }
             }
 
-            is DeckUiEvent.OnLanguageSelected -> {
-                _state.value = _state.value.copy(
-                    currentDeck = _state.value.currentDeck.copy(selectedLanguage = event.language)
-                )
+            is OnLanguageSelected -> {
+                _state.update { it.copy(
+                    currentDeck = it.currentDeck.copy(selectedLanguage = event.language)
+                )}
             }
 
-            is DeckUiEvent.UpdateNotificationState -> {
-                _state.value = _state.value.copy(
-                    currentDeck = _state.value.currentDeck.copy(isNotified = event.isNotified)
-                )
+            is UpdateNotificationState -> {
+                _state.update { it.copy(
+                    currentDeck = it.currentDeck.copy(isNotified = event.isNotified)
+                )}
             }
 
-            DeckUiEvent.TutorialFinish -> {
+            TutorialFinish -> {
                // finishTutorial()
             }
 
-            DeckUiEvent.onNextStep -> {
-                _state.value = _state.value.copy(
-                    currentStep = _state.value.currentStep + 1
-                )
+            onNextStep -> {
+                _state.update{ it.copy(
+                    currentStep = it.currentStep + 1
+                )}
             }
         }
     }
@@ -211,15 +209,28 @@ class DeckViewModel @Inject
         viewModelScope.launch {
             getDecksUseCase(id).collect { result ->
                 result.onSuccess { decks ->
-                    _state.value = _state.value.copy(
-                        decks = decks.map { it.toDeckUI() },
-                        isLoading = false
-                    )
+                    _state.update {
+                        it.copy(decks = decks.map { deck -> deck.toDeckUI()}, isLoading = false)
+                    }
 
                 }.onError { error ->
-                    println(error)
+                    _eventFlow.emit(ShowToast(DynamicString("Error: $error")))
                 }
             }
+        }
+    }
+
+    fun updateDeck(
+        deckUI: DeckUI
+    ) {
+        viewModelScope.launch {
+          updateDeckUseCase(deckUI.toDeck())
+              .onSuccess {
+                  _state.update { it.copy(showModal = false) }
+                  _eventFlow.emit(ShowToast(DynamicString("Deck actualizado")))
+               }.onError { error ->
+                  _eventFlow.emit(ShowToast(DynamicString("Error: $error")))
+              }
         }
     }
 

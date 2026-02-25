@@ -2,6 +2,7 @@ package com.nayibit.feature_deckscreen.presentation.composables
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -28,8 +29,11 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,6 +59,7 @@ import com.nayibit.feature_deckscreen.presentation.deckScreen.DeckUI
 import com.nayibit.utils.ui.composables.LinearWaveExpImpl
 import com.nayibit.utils.ui.theme.badgeComplete
 import com.nayibit.utils.ui.theme.badgeNew
+import com.nayibit.utils.ui.theme.learningColors
 import com.nayibit.utils.ui.theme.primaryGradientEnd
 import com.nayibit.utils.ui.theme.primaryGradientStart
 import kotlin.math.roundToInt
@@ -163,6 +168,7 @@ fun CardDeck(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+    val colors = learningColors()
 
     val offsetY by animateDpAsState(
         targetValue = if (isPressed) (-2).dp else (-4).dp,
@@ -178,29 +184,23 @@ fun CardDeck(
         modifier = modifier
             .fillMaxWidth()
             .offset(y = offsetY)
-
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
                 onClick = onClickToTest
-            )
-        ,
-        shape = RoundedCornerShape(20.dp)
+            ),
+        shape = RoundedCornerShape(20.dp),
+        border = BorderStroke(1.dp, colors.cardBorder),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.background
+        )
     ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            CardBackground{
+        Box(modifier = Modifier.fillMaxWidth()
+            .background(colors.card)) {
                 Box(
                     modifier = Modifier
                         .width(4.dp)
                         .fillMaxHeight()
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    primaryGradientStart,
-                                    primaryGradientEnd
-                                )
-                            )
-                        )
                         .align(Alignment.CenterStart)
                 )
 
@@ -233,7 +233,7 @@ fun CardDeck(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     // Icon
-                    DeckIcon(icon = icon)
+                    DeckIcon(icon = icon, colors.primary)
 
                     // Content
                     Column(
@@ -245,13 +245,14 @@ fun CardDeck(
                             fontSize = 18.sp,
                             fontWeight = FontWeight.SemiBold,
                             lineHeight = 24.sp,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.inversePrimary
                         )
 
                         DeckProgress(
                             currentCards = currentCards,
                             totalCards = totalCards,
-                            progress = progress
+                            progress = progress,
+                            color = colors.primary
                         )
 
 
@@ -264,14 +265,14 @@ fun CardDeck(
                     Text(
                         text = bottomRightText,
                         fontSize = 12.sp,
-                        color = Color.Gray,
+                        color = colors.textPrimary,
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(top = 5.dp, end = 12.dp, bottom = 8.dp)
                     )
                 }
             }
-        }
+
     }
 }
 
@@ -279,7 +280,8 @@ fun CardDeck(
 
 @Composable
 private fun DeckIcon(
-    icon: ImageVector
+    icon: ImageVector,
+    color: Color = Color.White
 ) {
     Box(
         modifier = Modifier
@@ -289,15 +291,8 @@ private fun DeckIcon(
                 shape = RoundedCornerShape(16.dp),
                 spotColor = primaryGradientStart.copy(alpha = 0.3f)
             )
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        primaryGradientStart,
-                        primaryGradientEnd
-                    )
-                ),
-                shape = RoundedCornerShape(16.dp)
-            ),
+            .background(color),
+
         contentAlignment = Alignment.Center
     ) {
         Icon(
@@ -313,7 +308,8 @@ private fun DeckIcon(
 private fun DeckProgress(
     currentCards: Int,
     totalCards: Int,
-    progress: Float
+    progress: Float,
+    color: Color = Color.White
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -323,7 +319,7 @@ private fun DeckProgress(
             text = "$currentCards / $totalCards",
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
-            color = Color.White
+            color = MaterialTheme.colorScheme.inversePrimary
         )
 
         Box(
@@ -332,7 +328,7 @@ private fun DeckProgress(
                 .height(12.dp)
 
         ) {
-            LinearWaveExpImpl(progress)
+            LinearWaveExpImpl(progress, color = color)
         }
     }
 }

@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -113,7 +114,7 @@ class CategoryViewModel @Inject constructor(
 
     // Helper function to reduce boilerplate
     private fun updateState(block: (CategoryStateUi) -> CategoryStateUi) {
-        _state.value = block(_state.value)
+        _state.update { block(it) }
     }
 
 

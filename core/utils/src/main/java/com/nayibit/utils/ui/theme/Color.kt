@@ -9,6 +9,7 @@ val BluePrimary = Color(0xFF040794)
 val BluePrimaryContainer = Color(0xFFDBE0FF)
 val BlueOnPrimary = Color.White
 val BlueOnPrimaryContainer = Color(0xFF000258)
+val superMainColor = Color(0xFF0047AB)
 
 val Secondary = Color(0xFF5C5D72)
 
@@ -19,8 +20,9 @@ val primaryGradientStart: Color = Color(0xFF1ca9c9)
 val primaryGradientEnd: Color = Color(0xFF0047ab)
 val progressBackground: Color = Color(0xFFE0E0E0)
 val badgeNew: Brush = Brush.horizontalGradient(
-    colors = listOf(primaryGradientStart, primaryGradientEnd)
+    colors = listOf(superMainColor, superMainColor.copy(alpha = 0.5f))
 )
 val badgeComplete: Brush = Brush.horizontalGradient(
     colors = listOf(Color(0xFF10B981), Color(0xFF059669))
 )
+
