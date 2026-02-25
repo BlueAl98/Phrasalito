@@ -7,7 +7,6 @@ data class DeckStateUi (
     val isLoading: Boolean = false,
     val successInsertedDeck: DeckUI? = null,
     val decks: List<DeckUI> = emptyList(),
-    val errorMessage: String? = null,
     val showModal: Boolean = false,
     val isLoadingButton: Boolean = false,
     val bodyModal: BodyDeckModalEnum = BodyDeckModalEnum.BODY_INSERT_DECK,
