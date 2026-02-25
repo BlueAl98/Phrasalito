@@ -6,7 +6,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
-fun FeatureDeckScreen() {
+fun FeatureDeckScreen(
+    navigationToPhrases: (idDeck: Int) -> Unit
+) {
     val viewModel: DeckViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -14,7 +16,8 @@ fun FeatureDeckScreen() {
         state = state,
         eventFlow = viewModel.eventFlow,
         onEvent = viewModel::onEvent,
-        navigationToPhrases = { idDeck, lngCode ->
+        navigationToPhrases = { idDeck, _ ->
+            navigationToPhrases(idDeck)
         }
     )
 

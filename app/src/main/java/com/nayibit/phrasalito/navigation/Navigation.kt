@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.ie.feature_startscreen.presentation.startScreen.FeatureStartScreen
 import com.nayibit.feature_categories.presentation.categoryScreen.FeatureCategoryScreen
 import com.nayibit.feature_deckscreen.presentation.deckScreen.FeatureDeckScreen
+import com.nayibit.feature_phrases.presentation.phraseScreen.FeaturePhraseScreen
 
 
 @Composable
@@ -33,7 +34,14 @@ fun Navigation() {
         }
 
         composable<Routes.DeckScreen>{
-            FeatureDeckScreen()
+            FeatureDeckScreen{ idDeck ->
+                navController.navigate(Routes.PhraseScreen(idDeck))
+            }
+        }
+
+        composable<Routes.PhraseScreen> {
+            FeaturePhraseScreen {
+            }
         }
 
     }

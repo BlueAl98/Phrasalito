@@ -62,52 +62,7 @@ class PhraseRepositoryImpl @Inject
             }
 
 
-    /*override suspend fun insert(item: Phrase): Flow<Resource<Boolean>> = flow {
-      try {
-          phraseDao.insert(item.toEntity())
-          emit(Resource.Success(true))
-
-      }catch (e: Exception){
-          emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
-      }
-   }
-
-   override suspend fun delete(item: Phrase) = flow {
-       delay(1000)
-       try {
-
-           phraseDao.delete(item.toEntity())
-           emit(Resource.Success(true))
-       }catch (e: Exception) {
-           emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
-       }
-
-   }
-
-   override suspend fun update(item: Phrase): Flow<Resource<Boolean>> = flow {
-       try {
-           phraseDao.update(item.toEntity())
-           emit(Resource.Success(true))
-       }catch (e: Exception) {
-           emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
-       }
-   }
-
-   override suspend fun getById(id: Int): Phrase? {
-       return phraseDao.getById(id)?.toPhrase()
-   }
-
-   override suspend fun getAllPhrasesByDeckId(idDeck: Int): Flow<Resource<List<Phrase>>> = flow {
-       try {
-           phraseDao.getAllByDeckId(idDeck)
-               .collect { entities ->
-                   val phrases = entities.map { it.toPhrase() }
-                   emit(Resource.Success(phrases))
-               }
-
-       }catch (e: Exception){
-           emit(Resource.Error(e.localizedMessage ?: "Unknown error"))}
-   }
+    /*
 
    override suspend fun getRandomPhrase(): Phrase? {
        return phraseDao.getAll().map { it.toPhrase() }.randomOrNull()

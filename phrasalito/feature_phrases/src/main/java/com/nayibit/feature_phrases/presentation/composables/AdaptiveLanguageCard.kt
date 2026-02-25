@@ -1,4 +1,4 @@
-package com.nayibit.phrasalito_presentation.composables
+package com.nayibit.feature_phrases.presentation.composables
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,10 +36,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.nayibit.common.util.Constants.OP_EXAMPLE_LANGUAGE
-import com.nayibit.common.util.Constants.OP_TARGET_LANGUAGE
-import com.nayibit.phrasalito_presentation.screens.phraseScreen.PhraseUi
-
+import com.nayibit.feature_phrases.presentation.phraseScreen.PhraseUi
+import com.nayibit.utils.Constants.OP_EXAMPLE_LANGUAGE
+import com.nayibit.utils.Constants.OP_TARGET_LANGUAGE
 
 
 @Composable

@@ -13,4 +13,7 @@ object Routes {
 
     @Serializable
     data class DeckScreen(val id:Int)
+
+    @Serializable
+    data class PhraseScreen(val id:Int)
 }

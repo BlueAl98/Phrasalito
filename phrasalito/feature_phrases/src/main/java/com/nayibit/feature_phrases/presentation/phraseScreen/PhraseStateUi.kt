@@ -1,0 +1,46 @@
+package com.nayibit.feature_phrases.presentation.phraseScreen
+
+import androidx.compose.ui.graphics.Color
+import com.nayibit.utils.Constants.NUM_CARDS_FOR_EXAM
+
+data class PhraseStateUi(
+    val isLoading: Boolean = false,
+    val phrases: List<PhraseUi> = emptyList(),
+    val isLoadingButton: Boolean = false,
+    val showModal: Boolean = false,
+    //val successInsertedPhrase: Deck? = null,
+    val firstPhrase: String = "",
+    val translation: String = "",
+    val example: String = "",
+    val bodyModal: BodyModalEnum = BodyModalEnum.BODY_INSERT_PHRASE,
+    val phraseToUpdate: PhraseUi? = null,
+    val curentCardPhrase : Int = 0,
+    val idDeck: Int = 0,
+    val isTTsReady: Boolean = false,
+    val lngCode : String = "",
+    val isTtsSpeaking : Boolean = false,
+    val currentSpeakingPhraseId: Int = 0
+
+){
+    val isReadyForTest: Boolean
+        get() = phrases.count {
+            !it.translation.isNullOrBlank() && !it.example.isNullOrBlank() && it.targetLanguage.isNotBlank()
+        } >= NUM_CARDS_FOR_EXAM
+}
+
+data class PhraseUi(
+    val id: Int,
+    val targetLanguage: String,
+    val translation: String? = null,
+    val isOptionsRevealed: Boolean = false,
+    val example: String? = null,
+    val color: Color = Color(0xFF4CAF50),
+    val isTtsSpeaking: Boolean = false
+)
+
+enum class BodyModalEnum() {
+    BODY_INSERT_PHRASE,
+    BODY_UPDATE_PHRASE,
+    BODY_DELETE_PHRASE,
+    BODY_START_EXERCISE
+}

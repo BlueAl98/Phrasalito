@@ -50,6 +50,8 @@ dependencies {
 
     implementation(libs.androidx.compose.material3)
 
+    //Lib for swipe cards
+    implementation (libs.compose.swipeable.cards)
 
 
 
