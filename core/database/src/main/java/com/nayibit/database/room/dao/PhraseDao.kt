@@ -18,8 +18,8 @@ interface PhraseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(items: List<PhraseEntity>)
 
-    @Delete
-    suspend fun delete(item: PhraseEntity)
+    @Query("DELETE FROM phrases WHERE id = :id")
+    suspend fun delete(id: Int)
 
     @Update
     suspend fun update(item: PhraseEntity)

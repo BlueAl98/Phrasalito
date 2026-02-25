@@ -25,9 +25,9 @@ class PhraseRepositoryImpl @Inject
         }
     }
 
-    override suspend fun delete(item: Phrase): Result<Boolean, DatabaseError> {
+    override suspend fun delete(id: Int): Result<Boolean, DatabaseError> {
         return try {
-            phraseDao.delete(item.toEntity())
+            phraseDao.delete(id)
             Result.Success(true)
         }catch (e : Exception){
             Result.Error(DatabaseError.Sql(e))

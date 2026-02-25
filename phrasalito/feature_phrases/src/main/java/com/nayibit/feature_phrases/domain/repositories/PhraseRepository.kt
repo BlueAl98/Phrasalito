@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 interface PhraseRepository {
     suspend fun insert(item: Phrase):Result<Boolean, DatabaseError>
   //  suspend fun insertAll(items: List<Phrase>)
-    suspend fun delete(item: Phrase) : Result<Boolean, DatabaseError>
+    suspend fun delete(id: Int) : Result<Boolean, DatabaseError>
     suspend fun update(item: Phrase) : Result<Boolean, DatabaseError>
     suspend fun getById(id: Int): Phrase?
     suspend fun getAllPhrasesByDeckId(idDeck: Int): Flow<Result<List<Phrase>, DatabaseError>>

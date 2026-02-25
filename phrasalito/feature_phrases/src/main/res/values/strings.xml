@@ -42,6 +42,8 @@
     <string name="correct_answers_label">Respuestas correctas: %1$s /  %2$s</string>
     <string name="tutorial_floatButton_description">Botón para agregar tus decks.</string>
     <string name="tutorial_itemDeck_description">Aquí encontrarás tu lista de decks. Desliza hacia la izquierda para editarlos o eliminarlos.</string>
+    <string name="phrase_deleted_successfully">Frase eliminada con exito</string>
+    <string name="phrase_delete_successfully">Frase eliminada con exito</string>
 
 
 </resources>

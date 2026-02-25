@@ -20,7 +20,6 @@ fun Navigation() {
         startDestination = Routes.StartScreen
     ) {
 
-
         composable <Routes.StartScreen>{
             FeatureStartScreen {
                 navController.navigate(Routes.CategoryScreen)
