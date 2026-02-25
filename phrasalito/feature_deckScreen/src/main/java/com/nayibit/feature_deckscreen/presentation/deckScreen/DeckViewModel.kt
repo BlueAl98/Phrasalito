@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.feature_deckscreen.R
+import com.nayibit.feature_deckscreen.domain.model.Deck
 import com.nayibit.feature_deckscreen.domain.useCases.decks.DeleteDeckUseCase
 import com.nayibit.feature_deckscreen.domain.useCases.decks.GetAllDecksUseCase
 import com.nayibit.feature_deckscreen.domain.useCases.decks.InsertDeckUseCase
@@ -100,7 +101,7 @@ class DeckViewModel @Inject
                     
 
                     else -> {
-                     //   insertDeck(_state.value.currentDeck.toDeck())
+                        insertDeck(_state.value.currentDeck.toDeck())
                     }
                 }
 
@@ -127,7 +128,7 @@ class DeckViewModel @Inject
                 }
             }
 
-            is DeleteDeck ->{} //deleteDeck(event.id)
+            is DeleteDeck ->{deleteDeck(event.id)}
 
             is UpdateDeck ->{
 
@@ -235,88 +236,50 @@ class DeckViewModel @Inject
     }
 
 
-  /*  fun updateDeck(
-       deckUI: DeckUI
-    ) {
+    fun insertDeck(deck: Deck) {
         viewModelScope.launch {
-            when (val result = updateDeckUseCase(deckUI.toDeck())) {
-                is Resource.Error -> {
-                    _state.value = _state.value.copy(
+            _state.update { it.copy(
+                isLoading = false,
+                successInsertedDeck = null,
+                isLoadingButton = true)
+            }
+            insertDeckUseCase(deck, idCategory)
+                .onSuccess { deck ->
+                    _state.update { it.copy(
+                        isLoading = false,
+                        successInsertedDeck = deck.toDeckUI(),
                         showModal = false,
-                        errorMessage = result.message
-                    )
-                    _eventFlow.emit(ShowToast(DynamicString("Error: ${result.message}")))
+                        isLoadingButton = false
+                    ) }
                 }
+                .onError { error ->
+                    _state.update { it.copy(
+                        isLoading = false,
+                        showModal = false,
+                        isLoadingButton = false) }
 
-                is Resource.Success<*> -> {
-                    _state.value = _state.value.copy(
-                        showModal = false
-                    )
-                    _eventFlow.emit(ShowToast(DynamicString("Deck actualizado")))
+                    _eventFlow.emit(ShowToast(DynamicString("Error: $error")))
+
                 }
-
             }
         }
-    }
 
     fun deleteDeck(id: Int) {
         viewModelScope.launch {
-            val result = deleteDeckUseCase(id)
-            when (result) {
-                is Resource.Error -> {
-                    _state.value = _state.value.copy(
-                        showModal = false
-                    )
-                    _eventFlow.emit(ShowToast(DynamicString("Error: ${result.message}")))
-                }
-
-                is Resource.Success<*> -> {
-                    _state.value = _state.value.copy(
-                        showModal = false
-                    )
-                    _eventFlow.emit(ShowToast(DynamicString("Deck eliminado")))
-                }
-            }
+          deleteDeckUseCase(id)
+          .onSuccess {
+              _state.update { it.copy(showModal = false)}
+              _eventFlow.emit(ShowToast(DynamicString("Deck eliminado")))
+          }.onError { error ->
+             _state.update {  it.copy(showModal = false)
+             }
+             _eventFlow.emit(ShowToast(DynamicString("Error: $error")))
+          }
         }
     }
 
 
-    fun insertDeck(deck: Deck) {
-        viewModelScope.launch {
-            _state.value = _state.value.copy(
-                isLoading = false,
-                successInsertedDeck = null,
-                errorMessage = null,
-                isLoadingButton = true
-            )
-            insertDeckUseCase(deck).collect { result ->
-                when (result) {
-                    is Resource.Success -> {
-                        _state.value = _state.value.copy(
-                            isLoading = false,
-                            successInsertedDeck = result.data.toDeckUI(),
-                            errorMessage = null,
-                            showModal = false,
-                            isLoadingButton = false)
-                        _eventFlow.emit(ShowToast(DynamicString("Deck inserted successfully")))
-                    }
-
-                    is Resource.Error -> {
-                        _state.value = _state.value.copy(
-                            isLoading = false,
-                            errorMessage = result.message,
-                            showModal = false,
-                            isLoadingButton = false
-                        )
-                        _eventFlow.emit(ShowToast(DynamicString("Error: ${result.message}")))
-                    }
-
-                }
-
-            }
-        }
-    }
-
+    /*
     fun getTutorialState(){
         viewModelScope.launch {
                 when (val result = isTutorialDeckUseCase() ){

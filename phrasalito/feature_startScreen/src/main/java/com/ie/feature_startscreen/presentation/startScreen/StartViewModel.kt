@@ -2,10 +2,8 @@ package com.ie.feature_startscreen.presentation.startScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ie.feature_startscreen.domain.repositories.DeckRepository
 import com.ie.feature_startscreen.domain.usecases.GetFirstTimeUseCase
 import com.ie.feature_startscreen.domain.usecases.InsertFirstTimeUseCase
-import com.nayibit.tts.domain.TtsManager
 import com.nayibit.utils.helpers.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,7 +17,7 @@ import javax.inject.Inject
 class StartViewModel @Inject constructor(
     private val insertFirstTimeUseCase: InsertFirstTimeUseCase,
     private val getFirstTimeUseCase: GetFirstTimeUseCase,
-    private val ttsManager: TtsManager
+  //  private val ttsManager: TtsManager
     // private val insertFirstDeckUseCase: InsertFirstDeckUseCase
 ): ViewModel() {
 
@@ -31,10 +29,10 @@ class StartViewModel @Inject constructor(
 
    init {
        getFirstTime()
-       getAvaliablesLanguages()    //  insertFirstTime()
+      // getAvaliablesLanguages()    //  insertFirstTime()
    }
 
-    fun getAvaliablesLanguages() {
+ /*   fun getAvaliablesLanguages() {
         viewModelScope.launch {
             ttsManager.isTtsReady().collect { isReady->
                 when (isReady) {
@@ -55,7 +53,7 @@ class StartViewModel @Inject constructor(
                 }
             }
         }
-    }
+    }*/
 
     fun onEvent(event: StartUiEvent) {
         when (event) {

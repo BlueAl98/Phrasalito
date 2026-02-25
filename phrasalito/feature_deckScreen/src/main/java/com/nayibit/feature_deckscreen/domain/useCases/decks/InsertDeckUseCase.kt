@@ -11,7 +11,7 @@ import javax.inject.Inject
 class InsertDeckUseCase  @Inject constructor(
     private val repository: DeckRepository
 ) {
-    suspend operator fun invoke(deck: Deck): Result<Deck , DatabaseError> {
-        return repository.insert(deck)
+    suspend operator fun invoke(deck: Deck, idCategory: Int): Result<Deck , DatabaseError> {
+        return repository.insert(deck.copy(idCategory= idCategory))
     }
 }

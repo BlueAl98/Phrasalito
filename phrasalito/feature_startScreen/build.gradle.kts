@@ -44,7 +44,7 @@ dependencies {
 
     implementation(project(":core:utils"))
     implementation(project(":core:datastore"))
-    implementation(project(":core:tts"))
+  //  implementation(project(":core:tts"))
     implementation(project(":core:database"))
 
 
