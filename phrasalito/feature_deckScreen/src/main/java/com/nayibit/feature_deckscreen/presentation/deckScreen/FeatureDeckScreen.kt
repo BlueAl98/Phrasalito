@@ -16,7 +16,7 @@ fun FeatureDeckScreen(
         state = state,
         eventFlow = viewModel.eventFlow,
         onEvent = viewModel::onEvent,
-        navigationToPhrases = { idDeck, _ ->
+        navToPhrases = { idDeck, _ ->
             navigationToPhrases(idDeck)
         }
     )

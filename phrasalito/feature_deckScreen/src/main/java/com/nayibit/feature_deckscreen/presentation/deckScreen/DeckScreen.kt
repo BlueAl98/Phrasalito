@@ -72,7 +72,7 @@ fun DeckScreen(
     state: DeckStateUi,
     eventFlow: Flow<DeckUiEvent>,
     onEvent: (DeckUiEvent) -> Unit,
-    navigationToPhrases: (id: Int, lngCode: String) -> Unit
+    navToPhrases: (id: Int, lngCode: String) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -103,7 +103,7 @@ fun DeckScreen(
                 }
 
                 is DeckUiEvent.NavigationToPhrases -> {
-                    navigationToPhrases(event.id, event.lngCode ?: "en_US")
+                    navToPhrases(event.id, event.lngCode ?: "en_US")
                 }
 
                 is DeckUiEvent.ShowSnackbar -> {

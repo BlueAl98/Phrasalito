@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.feature_phrases.R
+import com.nayibit.feature_phrases.domain.repositories.PhraseRepository
+import com.nayibit.feature_phrases.presentation.mappers.toPhraseUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +22,8 @@ import com.nayibit.utils.helpers.removeLonelySigns
 import com.nayibit.utils.helpers.validateExample
 import  com.nayibit.utils.helpers.UiText.*
 import com.nayibit.utils.helpers.normalizeSpaces
+import com.nayibit.utils.helpers.onError
+import com.nayibit.utils.helpers.onSuccess
 
 @HiltViewModel
 class PhraseViewModel
@@ -31,6 +35,7 @@ class PhraseViewModel
         private val speakTextUseCase: SpeakTextUseCase,
         private val isTTsAvailableUseCase: IsTextSpeechReadyUseCase,
         private val isSpeakingUseCase: IsSpeakingUseCase,*/
+       private val repo: PhraseRepository,
         savedStateHandle: SavedStateHandle
     ) : ViewModel()  {
 
@@ -46,8 +51,7 @@ class PhraseViewModel
 
 
     init {
-      //   getAllPhrases(idDeck)
-       //  setupConfiguration()
+       getAllPhrases(idDeck)
      }
 
     fun onEvent(event: PhraseUiEvent) {
@@ -215,6 +219,46 @@ class PhraseViewModel
             }
         }
     }
+
+
+    fun getAllPhrases(idDeck: Int) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            repo.getAllPhrasesByDeckId(idDeck)
+                .collect { result ->
+                    result.onSuccess { phrases ->
+                        _state.update { it.copy(
+                            isLoading = false,
+                            phrases = phrases.map{ phrase ->
+                                phrase.toPhraseUi()
+                            }
+                        ) }
+                    }.onError {
+
+                    }
+
+
+                  /*  when (result) {
+                        is Resource.Success -> {
+                            _state.update {
+                                it.copy(
+                                    isLoading = false,
+                                    phrases = result.data.map { phrase ->
+                                        phrase.toPhraseUi()
+                                    }
+                                )
+                            }
+                        }
+                        is Resource.Error -> {
+                            _state.update { it.copy(isLoading = false) }
+                            _eventFlow.emit(ShowSnackbar(DynamicString(result.message)))
+                        }
+                    }*/
+                }
+        }
+    }
+
+
 /*
     fun insertPhrase(phrase: Phrase){
         _state.update { it.copy(isLoadingButton = true) }

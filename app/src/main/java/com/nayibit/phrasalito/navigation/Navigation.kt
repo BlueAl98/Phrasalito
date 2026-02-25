@@ -40,7 +40,7 @@ fun Navigation() {
         }
 
         composable<Routes.PhraseScreen> {
-            FeaturePhraseScreen {
+             FeaturePhraseScreen {
             }
         }
 

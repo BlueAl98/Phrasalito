@@ -15,5 +15,5 @@ object Routes {
     data class DeckScreen(val id:Int)
 
     @Serializable
-    data class PhraseScreen(val id:Int)
+    data class PhraseScreen(val idDeck:Int)
 }
