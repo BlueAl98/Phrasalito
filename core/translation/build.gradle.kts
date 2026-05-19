@@ -1,13 +1,12 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
 
 android {
-    namespace = "com.nayibit.feature_phrases"
+    namespace = "com.nayibit.translation"
     compileSdk = 35
 
     defaultConfig {
@@ -36,41 +35,16 @@ android {
 }
 
 dependencies {
-
-    implementation(project(":core:database"))
     implementation(project(":core:utils"))
-    implementation(project(":core:translation"))
 
+    implementation(libs.mlkit.translate)
+    implementation(libs.kotlinx.coroutines.play.services)
 
-    ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.android)
-    implementation (libs.androidx.lifecycle.runtime.compose)
-    implementation (libs.androidx.hilt.navigation.compose)
-
-
-    implementation( libs.material.icons.extended)
-
-    implementation(libs.androidx.compose.material3)
-
-    //Lib for swipe cards
-    implementation (libs.compose.swipeable.cards)
-
-
-
-    //COMPOSE LIBS
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
-
-
+    ksp(libs.hilt.android.compiler)
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

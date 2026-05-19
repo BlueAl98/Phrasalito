@@ -10,3 +10,6 @@ phrasalito/phrasalito_presentation/build
 local.properties
 .keystore/
 app/release/
+.claude
+CLAUDE.md
+.claude-flow
