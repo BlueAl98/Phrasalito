@@ -4,111 +4,155 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 // =============================================================
-// DESIGN SYSTEM: Modern Linguistic
-// Single source of truth for all app colors.
+// DESIGN SYSTEM: Deep Violet (single-color — same for both themes)
 // Change values here to update the entire app.
 // =============================================================
 
-// --- Dark scheme (from DESIGN.md) ---
-val Dark_Background              = Color(0xFF131313)
-val Dark_Surface                 = Color(0xFF131313)
-val Dark_SurfaceDim              = Color(0xFF131313)
-val Dark_SurfaceBright           = Color(0xFF393939)
-val Dark_SurfaceContainerLowest  = Color(0xFF0E0E0E)
-val Dark_SurfaceContainerLow     = Color(0xFF1B1B1B)
-val Dark_SurfaceContainer        = Color(0xFF1F1F1F)
-val Dark_SurfaceContainerHigh    = Color(0xFF2A2A2A)
-val Dark_SurfaceContainerHighest = Color(0xFF353535)
-val Dark_SurfaceVariant          = Color(0xFF353535)
-val Dark_OnSurface               = Color(0xFFE2E2E2)
-val Dark_OnSurfaceVariant        = Color(0xFFC2C6D6)
-val Dark_InverseSurface          = Color(0xFFE2E2E2)
-val Dark_InverseOnSurface        = Color(0xFF303030)
-val Dark_Outline                 = Color(0xFF8C909F)
-val Dark_OutlineVariant          = Color(0xFF424654)
-val Dark_Primary                 = Color(0xFFB0C6FF)
-val Dark_OnPrimary               = Color(0xFF002D6E)
-val Dark_PrimaryContainer        = Color(0xFF1D66DB)
-val Dark_OnPrimaryContainer      = Color(0xFFEAEDFF)
-val Dark_InversePrimary          = Color(0xFF0058CA)
-val Dark_Secondary               = Color(0xFFBEC6DF)
-val Dark_OnSecondary             = Color(0xFF283044)
-val Dark_SecondaryContainer      = Color(0xFF41495E)
-val Dark_OnSecondaryContainer    = Color(0xFFB0B8D1)
-val Dark_Tertiary                = Color(0xFF7CD0FF)
-val Dark_OnTertiary              = Color(0xFF00354A)
-val Dark_TertiaryContainer       = Color(0xFF00749D)
-val Dark_OnTertiaryContainer     = Color(0xFFDEF1FF)
-val Dark_Error                   = Color(0xFFFFB4AB)
-val Dark_OnError                 = Color(0xFF690005)
-val Dark_ErrorContainer          = Color(0xFF93000A)
-val Dark_OnErrorContainer        = Color(0xFFFFDAD6)
-val Dark_SurfaceTint             = Color(0xFFB0C6FF)
+// --- Shared background / surface / text tokens ---
+// These are used identically in both DarkColorScheme and LightColorScheme.
 
-// --- Light scheme (derived from DESIGN.md fixed/inverse tokens) ---
-val Light_Background              = Color(0xFFFAFAFF)
-val Light_Surface                 = Color(0xFFFAFAFF)
-val Light_SurfaceDim              = Color(0xFFDADAE4)
-val Light_SurfaceBright           = Color(0xFFFAFAFF)
-val Light_SurfaceContainerLowest  = Color(0xFFFFFFFF)
-val Light_SurfaceContainerLow     = Color(0xFFF5F5FF)
-val Light_SurfaceContainer        = Color(0xFFEFEFFA)
-val Light_SurfaceContainerHigh    = Color(0xFFE9E9F4)
-val Light_SurfaceContainerHighest = Color(0xFFE3E3EE)
-val Light_SurfaceVariant          = Color(0xFFE3E3EF)
-val Light_OnSurface               = Color(0xFF1A1C20)
-val Light_OnSurfaceVariant        = Color(0xFF45474F)
-val Light_InverseSurface          = Color(0xFF2F3033)
-val Light_InverseOnSurface        = Color(0xFFF1F0F4)
-val Light_Outline                 = Color(0xFF767780)
-val Light_OutlineVariant          = Color(0xFFC6C6D3)
-val Light_Primary                 = Color(0xFF0058CA)   // Dark_InversePrimary
-val Light_OnPrimary               = Color.White
-val Light_PrimaryContainer        = Color(0xFFD9E2FF)   // primary-fixed
-val Light_OnPrimaryContainer      = Color(0xFF001944)   // on-primary-fixed
-val Light_InversePrimary          = Color(0xFFB0C6FF)   // Dark_Primary
-val Light_Secondary               = Color(0xFF3F465B)   // on-secondary-fixed-variant
-val Light_OnSecondary             = Color.White
-val Light_SecondaryContainer      = Color(0xFFDAE2FC)   // secondary-fixed
-val Light_OnSecondaryContainer    = Color(0xFF131B2E)   // on-secondary-fixed
-val Light_Tertiary                = Color(0xFF004C69)   // on-tertiary-fixed-variant
-val Light_OnTertiary              = Color.White
-val Light_TertiaryContainer       = Color(0xFFC4E7FF)   // tertiary-fixed
-val Light_OnTertiaryContainer     = Color(0xFF001E2C)   // on-tertiary-fixed
-val Light_Error                   = Color(0xFFBA1A1A)
-val Light_OnError                 = Color.White
-val Light_ErrorContainer          = Color(0xFFFFDAD6)
-val Light_OnErrorContainer        = Color(0xFF410002)
-val Light_SurfaceTint             = Color(0xFF0058CA)
+val ColorBackground              = Color(0xFF120B32)   // deep navy-purple page bg
+val ColorSurface                 = Color(0xFF120B32)
+val ColorSurfaceDim              = Color(0xFF0A0720)
+val ColorSurfaceBright           = Color(0xFF3D2E82)
+val ColorSurfaceContainerLowest  = Color(0xFF080518)
+val ColorSurfaceContainerLow     = Color(0xFF1C1248)   // card layer 1
+val ColorSurfaceContainer        = Color(0xFF251A5C)   // card layer 2
+val ColorSurfaceContainerHigh    = Color(0xFF2E2270)   // card layer 3 — language cards
+val ColorSurfaceContainerHighest = Color(0xFF362A7E)   // card layer 4
+val ColorSurfaceVariant          = Color(0xFF362A7E)
+val ColorOnSurface               = Color(0xFFEDE8FF)   // off-white lavender text
+val ColorOnSurfaceVariant        = Color(0xFFC8BDEE)   // muted lavender text
+val ColorInverseSurface          = Color(0xFFEDE8FF)
+val ColorInverseOnSurface        = Color(0xFF32295A)
+val ColorOutline                 = Color(0xFF9585C8)
+val ColorOutlineVariant          = Color(0xFF4A3D7A)
+
+// --- Primary (brand / action) ---
+val ColorPrimary                 = Color(0xFFCEBEFF)   // light lavender label
+val ColorOnPrimary               = Color(0xFF330095)
+val ColorPrimaryContainer        = Color(0xFF7860E8)   // vivid violet — buttons / FAB
+val ColorOnPrimaryContainer      = Color(0xFFEDE8FF)
+val ColorInversePrimary          = Color(0xFF5B3ECB)
+
+// --- Secondary ---
+val ColorSecondary               = Color(0xFFBDB2D6)
+val ColorOnSecondary             = Color(0xFF2B2342)
+val ColorSecondaryContainer      = Color(0xFF423B5A)
+val ColorOnSecondaryContainer    = Color(0xFFD8D0EE)
+
+// --- Tertiary (blue accent) ---
+val ColorTertiary                = Color(0xFF9DCFFF)
+val ColorOnTertiary              = Color(0xFF003256)
+val ColorTertiaryContainer       = Color(0xFF2B5CA0)
+val ColorOnTertiaryContainer     = Color(0xFFD4EAFF)
+
+// --- Error ---
+val ColorError                   = Color(0xFFFFB4AB)
+val ColorOnError                 = Color(0xFF690005)
+val ColorErrorContainer          = Color(0xFF93000A)
+val ColorOnErrorContainer        = Color(0xFFFFDAD6)
+
+// --- Surface tint ---
+val ColorSurfaceTint             = Color(0xFFCEBEFF)
 
 // =============================================================
-// Semantic aliases — used throughout the app by name.
-// These keep backward-compatibility with existing composables.
+// Both themes use the same tokens (single-color design).
 // =============================================================
 
-/** Main brand primary (adapts per theme; use via MaterialTheme.colorScheme.primary instead). */
-val superMainColor          = Dark_Primary
+// Dark scheme tokens (kept as aliases so Theme.kt compiles unchanged)
+val Dark_Background              = ColorBackground
+val Dark_Surface                 = ColorSurface
+val Dark_SurfaceDim              = ColorSurfaceDim
+val Dark_SurfaceBright           = ColorSurfaceBright
+val Dark_SurfaceContainerLowest  = ColorSurfaceContainerLowest
+val Dark_SurfaceContainerLow     = ColorSurfaceContainerLow
+val Dark_SurfaceContainer        = ColorSurfaceContainer
+val Dark_SurfaceContainerHigh    = ColorSurfaceContainerHigh
+val Dark_SurfaceContainerHighest = ColorSurfaceContainerHighest
+val Dark_SurfaceVariant          = ColorSurfaceVariant
+val Dark_OnSurface               = ColorOnSurface
+val Dark_OnSurfaceVariant        = ColorOnSurfaceVariant
+val Dark_InverseSurface          = ColorInverseSurface
+val Dark_InverseOnSurface        = ColorInverseOnSurface
+val Dark_Outline                 = ColorOutline
+val Dark_OutlineVariant          = ColorOutlineVariant
+val Dark_Primary                 = ColorPrimary
+val Dark_OnPrimary               = ColorOnPrimary
+val Dark_PrimaryContainer        = ColorPrimaryContainer
+val Dark_OnPrimaryContainer      = ColorOnPrimaryContainer
+val Dark_InversePrimary          = ColorInversePrimary
+val Dark_Secondary               = ColorSecondary
+val Dark_OnSecondary             = ColorOnSecondary
+val Dark_SecondaryContainer      = ColorSecondaryContainer
+val Dark_OnSecondaryContainer    = ColorOnSecondaryContainer
+val Dark_Tertiary                = ColorTertiary
+val Dark_OnTertiary              = ColorOnTertiary
+val Dark_TertiaryContainer       = ColorTertiaryContainer
+val Dark_OnTertiaryContainer     = ColorOnTertiaryContainer
+val Dark_Error                   = ColorError
+val Dark_OnError                 = ColorOnError
+val Dark_ErrorContainer          = ColorErrorContainer
+val Dark_OnErrorContainer        = ColorOnErrorContainer
+val Dark_SurfaceTint             = ColorSurfaceTint
 
-/** Gradient pair for interactive elements and illustrations. */
-val primaryGradientStart: Color = Dark_Tertiary          // light blue
-val primaryGradientEnd: Color   = Dark_PrimaryContainer  // action blue
+// Light scheme tokens — identical to dark (single-color design)
+val Light_Background              = ColorBackground
+val Light_Surface                 = ColorSurface
+val Light_SurfaceDim              = ColorSurfaceDim
+val Light_SurfaceBright           = ColorSurfaceBright
+val Light_SurfaceContainerLowest  = ColorSurfaceContainerLowest
+val Light_SurfaceContainerLow     = ColorSurfaceContainerLow
+val Light_SurfaceContainer        = ColorSurfaceContainer
+val Light_SurfaceContainerHigh    = ColorSurfaceContainerHigh
+val Light_SurfaceContainerHighest = ColorSurfaceContainerHighest
+val Light_SurfaceVariant          = ColorSurfaceVariant
+val Light_OnSurface               = ColorOnSurface
+val Light_OnSurfaceVariant        = ColorOnSurfaceVariant
+val Light_InverseSurface          = ColorInverseSurface
+val Light_InverseOnSurface        = ColorInverseOnSurface
+val Light_Outline                 = ColorOutline
+val Light_OutlineVariant          = ColorOutlineVariant
+val Light_Primary                 = ColorPrimary
+val Light_OnPrimary               = ColorOnPrimary
+val Light_PrimaryContainer        = ColorPrimaryContainer
+val Light_OnPrimaryContainer      = ColorOnPrimaryContainer
+val Light_InversePrimary          = ColorInversePrimary
+val Light_Secondary               = ColorSecondary
+val Light_OnSecondary             = ColorOnSecondary
+val Light_SecondaryContainer      = ColorSecondaryContainer
+val Light_OnSecondaryContainer    = ColorOnSecondaryContainer
+val Light_Tertiary                = ColorTertiary
+val Light_OnTertiary              = ColorOnTertiary
+val Light_TertiaryContainer       = ColorTertiaryContainer
+val Light_OnTertiaryContainer     = ColorOnTertiaryContainer
+val Light_Error                   = ColorError
+val Light_OnError                 = ColorOnError
+val Light_ErrorContainer          = ColorErrorContainer
+val Light_OnErrorContainer        = ColorOnErrorContainer
+val Light_SurfaceTint             = ColorSurfaceTint
 
-/** Progress bar empty track. */
-val progressBackground: Color = Dark_SurfaceContainerHigh
+// =============================================================
+// Semantic aliases — backward-compatible names used across the app
+// =============================================================
 
-/** Badge brushes */
+val superMainColor          = ColorPrimaryContainer    // vivid violet #7860E8
+val primaryGradientStart: Color = Color(0xFF9C6FFF)    // bright violet
+val primaryGradientEnd: Color   = Color(0xFF6A40E8)    // deep violet
+val progressBackground: Color   = ColorSurfaceContainerHigh
+
 val badgeNew: Brush = Brush.horizontalGradient(
-    colors = listOf(Dark_Primary, Dark_Primary.copy(alpha = 0.5f))
+    colors = listOf(ColorPrimaryContainer, ColorPrimary.copy(alpha = 0.6f))
 )
 val badgeComplete: Brush = Brush.horizontalGradient(
     colors = listOf(Color(0xFF10B981), Color(0xFF059669))
 )
 
-// Legacy aliases (kept so existing imports compile without changes)
-val BluePrimary             = Dark_Primary
-val BluePrimaryContainer    = Dark_PrimaryContainer
-val BlueOnPrimary           = Dark_OnPrimary
-val BlueOnPrimaryContainer  = Dark_OnPrimaryContainer
-val Secondary               = Dark_Secondary
-val Error                   = Dark_Error
-val OnError                 = Dark_OnError
+// Legacy aliases
+val BluePrimary             = ColorPrimary
+val BluePrimaryContainer    = ColorPrimaryContainer
+val BlueOnPrimary           = ColorOnPrimary
+val BlueOnPrimaryContainer  = ColorOnPrimaryContainer
+val Secondary               = ColorSecondary
+val Error                   = ColorError
+val OnError                 = ColorOnError

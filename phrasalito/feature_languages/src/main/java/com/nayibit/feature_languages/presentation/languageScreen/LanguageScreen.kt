@@ -151,7 +151,7 @@ private fun AvailableLanguageCard(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(24.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .clickable(onClick = onClick)
             .padding(vertical = 24.dp),
         contentAlignment = Alignment.Center
@@ -184,7 +184,7 @@ private fun ExplorableLanguageItem(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+            .background(MaterialTheme.colorScheme.surfaceContainer)
             .clickable(
                 enabled = language.status == LanguageStatus.DOWNLOADABLE,
                 onClick = onClick
@@ -196,7 +196,7 @@ private fun ExplorableLanguageItem(
             modifier = Modifier
                 .size(36.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surfaceContainer),
+                .background(MaterialTheme.colorScheme.surfaceContainerHigh),
             contentAlignment = Alignment.Center
         ) {
             Icon(

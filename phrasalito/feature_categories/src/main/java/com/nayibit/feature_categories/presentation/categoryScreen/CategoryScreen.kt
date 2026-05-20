@@ -70,7 +70,7 @@ fun CategoryScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onEvent(CategoryUiEvent.ShowDialog(true)) },
-                containerColor = Color(0xFF0047AB)
+                containerColor = MaterialTheme.colorScheme.primaryContainer
             ) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(R.string.cd_add), tint = Color.White)
             }
