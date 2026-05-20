@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.ie.feature_startscreen.presentation.startScreen.FeatureStartScreen
 import com.nayibit.feature_categories.presentation.categoryScreen.FeatureCategoryScreen
 import com.nayibit.feature_deckscreen.presentation.deckScreen.FeatureDeckScreen
+import com.nayibit.feature_languages.presentation.languageScreen.FeatureLanguageScreen
 import com.nayibit.feature_phrases.presentation.phraseScreen.FeaturePhraseScreen
 
 
@@ -22,7 +23,7 @@ fun Navigation() {
 
         composable <Routes.StartScreen>{
             FeatureStartScreen {
-                navController.navigate(Routes.CategoryScreen)
+                navController.navigate(Routes.LanguageScreen)
             }
         }
 
@@ -40,6 +41,13 @@ fun Navigation() {
 
         composable<Routes.PhraseScreen> {
              FeaturePhraseScreen {
+                 navController.navigate(Routes.LanguageScreen)
+            }
+        }
+
+        composable<Routes.LanguageScreen> {
+            FeatureLanguageScreen { _ ->
+                navController.navigate(Routes.CategoryScreen)
             }
         }
 

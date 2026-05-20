@@ -93,6 +93,7 @@ dependencies {
     implementation(project(":phrasalito:feature_categories"))
     implementation(project(":phrasalito:feature_deckScreen"))
     implementation(project(":phrasalito:feature_phrases"))
+    implementation(project(":phrasalito:feature_languages"))
 
 
 

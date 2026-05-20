@@ -16,4 +16,7 @@ object Routes {
 
     @Serializable
     data class PhraseScreen(val idDeck:Int)
+
+    @Serializable
+    object LanguageScreen
 }
