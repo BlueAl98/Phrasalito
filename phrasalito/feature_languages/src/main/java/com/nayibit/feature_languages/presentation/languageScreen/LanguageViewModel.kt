@@ -50,8 +50,8 @@ class LanguageViewModel @Inject constructor() : ViewModel() {
             it.copy(
                 availableLanguages = listOf(
                     LanguageUi("en", "Inglés", "🇺🇸", LanguageStatus.AVAILABLE),
-                    LanguageUi("it", "Italiano", "🇮🇹", LanguageStatus.AVAILABLE)
-                ),
+                    LanguageUi("it", "Italiano", "🇮🇹", LanguageStatus.AVAILABLE),
+                    ),
                 explorableLanguages = listOf(
                     LanguageUi("de", "Alemán", "🇩🇪", LanguageStatus.DOWNLOADABLE),
                     LanguageUi("ja", "Japonés", "🇯🇵", LanguageStatus.COMING_SOON)

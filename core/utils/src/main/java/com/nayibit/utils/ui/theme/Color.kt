@@ -15,11 +15,11 @@ val ColorBackground              = Color(0xFF120B32)   // deep navy-purple page 
 val ColorSurface                 = Color(0xFF120B32)
 val ColorSurfaceDim              = Color(0xFF0A0720)
 val ColorSurfaceBright           = Color(0xFF3D2E82)
-val ColorSurfaceContainerLowest  = Color(0xFF080518)
-val ColorSurfaceContainerLow     = Color(0xFF1C1248)   // card layer 1
-val ColorSurfaceContainer        = Color(0xFF251A5C)   // card layer 2
-val ColorSurfaceContainerHigh    = Color(0xFF2E2270)   // card layer 3 — language cards
-val ColorSurfaceContainerHighest = Color(0xFF362A7E)   // card layer 4
+val ColorSurfaceContainerLowest  = Color(0xFF0D0930)
+val ColorSurfaceContainerLow     = Color(0xFF201860)   // card layer 1
+val ColorSurfaceContainer        = Color(0xFF2A1E72)   // card layer 2
+val ColorSurfaceContainerHigh    = Color(0xFF342880)   // card layer 3 — language cards
+val ColorSurfaceContainerHighest = Color(0xFF3D308C)   // card layer 4
 val ColorSurfaceVariant          = Color(0xFF362A7E)
 val ColorOnSurface               = Color(0xFFEDE8FF)   // off-white lavender text
 val ColorOnSurfaceVariant        = Color(0xFFC8BDEE)   // muted lavender text
@@ -36,7 +36,7 @@ val ColorOnPrimaryContainer      = Color(0xFFEDE8FF)
 val ColorInversePrimary          = Color(0xFF5B3ECB)
 
 // --- Secondary ---
-val ColorSecondary               = Color(0xFFBDB2D6)
+val ColorSecondary               = Color(0xFF7860E8).copy(alpha = 0.22f)  // vivid violet 22% — card bg
 val ColorOnSecondary             = Color(0xFF2B2342)
 val ColorSecondaryContainer      = Color(0xFF423B5A)
 val ColorOnSecondaryContainer    = Color(0xFFD8D0EE)

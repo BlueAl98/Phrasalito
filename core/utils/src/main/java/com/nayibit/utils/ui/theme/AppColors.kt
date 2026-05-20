@@ -11,7 +11,7 @@ fun learningColors(
     textPrimary: Color = MaterialTheme.colorScheme.onSurface
 ): LearningColors = LearningColors(
     background    = primary.copy(alpha = 0.08f),
-    card          = MaterialTheme.colorScheme.surfaceContainerLow,
+    card          = MaterialTheme.colorScheme.secondary,
     cardBorder    = primary.copy(alpha = 0.25f),
     primary       = primary,
     textPrimary   = textPrimary,
