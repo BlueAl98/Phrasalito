@@ -17,7 +17,7 @@
     <string name="label_dont_have_phrases">No tienes frases agregadas</string>
     <string name="title_delete_phrase">Estas seguro de eliminar esta frase?</string>
     <string name="label_phrase_inserted_success">Frase insertada con éxito</string>
-    <string name="label_phrase_updated_success">Frase insertada con éxito</string>
+    <string name="label_phrase_updated_success">Frase actualizada con éxito</string>
     <string name="label_example_phrase">Ejemplo</string>
     <string name="label_target_language">Ingrese una frase</string>
     <string name="add_card_phrase">Agregar</string>
@@ -29,6 +29,13 @@
     <string name="label_modal_start_exercise">¿Estas listo para ponerte a prueba?</string>
     <string name="label_dont_cards_enough">Necesitas minimo 3 frases completas para comenzar</string>
 
+
+    <!-- AdaptiveLanguageCard -->
+    <string name="label_example">Example:</string>
+    <string name="cd_hide_translation">Ocultar traducción</string>
+    <string name="cd_show_translation">Mostrar traducción</string>
+    <string name="cd_play_pronunciation">Reproducir pronunciación</string>
+    <string name="cd_play">Reproducir</string>
 
     <!-- GLOBAL Strings -->
     <string name="btn_save">Guardar</string>

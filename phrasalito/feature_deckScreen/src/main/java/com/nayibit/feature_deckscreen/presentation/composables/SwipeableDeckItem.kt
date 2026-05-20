@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -56,6 +57,7 @@ import androidx.wear.compose.material.FractionalThreshold
 import androidx.wear.compose.material.rememberSwipeableState
 import androidx.wear.compose.material.swipeable
 import com.nayibit.feature_deckscreen.presentation.deckScreen.DeckUI
+import com.nayibit.feature_deckscreen.R
 import com.nayibit.utils.ui.composables.LinearWaveExpImpl
 import com.nayibit.utils.ui.theme.badgeComplete
 import com.nayibit.utils.ui.theme.badgeNew
@@ -126,11 +128,11 @@ fun SwipeableDeckItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { onDelete(deck) }) {
-                Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red)
+                Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.cd_delete), tint = Color.Red)
             }
             Spacer(Modifier.width(12.dp))
             IconButton(onClick = { onEdit(deck) }) {
-                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = primaryGradientStart)
+                Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.cd_edit), tint = primaryGradientStart)
             }
         }
 
@@ -216,7 +218,7 @@ fun CardDeck(
 
                 Icon(
                     imageVector = if (isNotified) Icons.Outlined.Notifications else Icons.Outlined.NotificationsOff,
-                    contentDescription = if (isNotified) "Notifications On" else "Notifications Off",
+                    contentDescription = if (isNotified) stringResource(R.string.cd_notifications_on) else stringResource(R.string.cd_notifications_off),
                     tint = if (isNotified) Color.White else Color.Gray.copy(alpha = 0.7f),
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -316,7 +318,7 @@ private fun DeckProgress(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = "$currentCards / $totalCards",
+            text = stringResource(R.string.deck_progress_count, currentCards, totalCards),
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.inversePrimary
@@ -340,8 +342,8 @@ private fun DeckBadge(
     modifier: Modifier = Modifier
 ) {
     val (text, brush) = when (type) {
-        DeckBadgeType.NEW -> "NEW" to badgeNew
-        DeckBadgeType.COMPLETE -> "COMPLETE" to badgeComplete
+        DeckBadgeType.NEW -> stringResource(R.string.badge_new) to badgeNew
+        DeckBadgeType.COMPLETE -> stringResource(R.string.badge_complete) to badgeComplete
         DeckBadgeType.NONE -> return
     }
 

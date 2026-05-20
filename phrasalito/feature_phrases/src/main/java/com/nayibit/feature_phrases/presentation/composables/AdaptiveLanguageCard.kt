@@ -33,9 +33,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nayibit.feature_phrases.R
 import com.nayibit.feature_phrases.presentation.phraseScreen.PhraseUi
 import com.nayibit.utils.Constants.OP_EXAMPLE_LANGUAGE
 import com.nayibit.utils.Constants.OP_TARGET_LANGUAGE
@@ -94,7 +96,7 @@ fun LanguagePhraseCard(
                     ) {
                         Icon(
                             imageVector = if (isSpeaking) Icons.Default.Update else Icons.AutoMirrored.Filled.VolumeUp,
-                            contentDescription = "Play pronunciation",
+                            contentDescription = stringResource(R.string.cd_play_pronunciation),
                             tint = Color.White,
                             modifier = Modifier.size(30.dp)
                         )
@@ -156,8 +158,8 @@ fun LanguagePhraseCard(
                                     Icon(
                                         imageVector = if (isTranslationVisible) Icons.Default.Visibility
                                         else Icons.Default.VisibilityOff,
-                                        contentDescription = if (isTranslationVisible) "Hide translation"
-                                        else "Show translation",
+                                        contentDescription = if (isTranslationVisible) stringResource(R.string.cd_hide_translation)
+                                        else stringResource(R.string.cd_show_translation),
                                         tint = phrase.color
                                     )
                                 }
@@ -182,7 +184,7 @@ fun LanguagePhraseCard(
                             ) {
                                 Row {
                                     Text(
-                                        text = "Example:",
+                                        text = stringResource(R.string.label_example),
                                         style = MaterialTheme.typography.titleSmall.copy(
                                             fontWeight = FontWeight.Bold
                                         ),
@@ -194,7 +196,7 @@ fun LanguagePhraseCard(
                                             Icon(
                                                 modifier = Modifier.clickable {if (!isSpeaking) onEvent(OP_EXAMPLE_LANGUAGE) },
                                                 imageVector = if (isSpeaking) Icons.Default.Update else Icons.Default.PlayArrow,
-                                                contentDescription = "Play",
+                                                contentDescription = stringResource(R.string.cd_play),
                                                 tint = phrase.color
                                             )
                                         }
@@ -252,7 +254,7 @@ fun LanguagePhraseCardLandscape(
                     ) {
                         Icon(
                             imageVector = if (isSpeaking) Icons.Default.Update else Icons.AutoMirrored.Filled.VolumeUp,
-                            contentDescription = "Play pronunciation",
+                            contentDescription = stringResource(R.string.cd_play_pronunciation),
                             tint = Color.White,
                             modifier = Modifier.size(30.dp)
                         )
@@ -343,7 +345,7 @@ fun LanguagePhraseCardLandscape(
                                 ) {
                                     Row {
                                         Text(
-                                            text = "Example:",
+                                            text = stringResource(R.string.label_example),
                                             style = MaterialTheme.typography.titleSmall.copy(
                                                 fontWeight = FontWeight.Bold
                                             ),
@@ -355,7 +357,7 @@ fun LanguagePhraseCardLandscape(
                                                 Icon(
                                                     modifier = Modifier.clickable {if (!isSpeaking) onEvent(OP_EXAMPLE_LANGUAGE) },
                                                     imageVector = if (isSpeaking) Icons.Default.Update else Icons.Default.PlayArrow,
-                                                    contentDescription = "Play",
+                                                    contentDescription = stringResource(R.string.cd_play),
                                                     tint = phrase.color
                                                 )
 

@@ -273,7 +273,7 @@ class PhraseViewModel
                         firstPhrase = "", translation = ""
                     )
                 }
-                _eventFlow.emit(ShowSnackbar(DynamicString("Frase insertada con éxito")))
+                _eventFlow.emit(ShowSnackbar(StringResource(R.string.label_phrase_inserted_success)))
             }.onError { error ->
                 _eventFlow.emit(ShowSnackbar(DynamicString("$error")))
             }
@@ -316,7 +316,7 @@ class PhraseViewModel
                         phraseToUpdate = null
                     )
                 }
-                _eventFlow.emit(ShowSnackbar(DynamicString("Frase actualizada con éxito")))
+                _eventFlow.emit(ShowSnackbar(StringResource(R.string.label_phrase_updated_success)))
             }.onError { error ->
                 _state.update {
                     it.copy(

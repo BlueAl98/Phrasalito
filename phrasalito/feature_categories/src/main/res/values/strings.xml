@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- CategoryScreen -->
+    <string name="title_ready_to_learn">¿Listo para aprender?</string>
+    <string name="subtitle_select_category">Selecciona una categoria para empezar</string>
+    <string name="label_no_categories">No hay categorias</string>
+
+    <!-- DialogCategory -->
+    <string name="label_delete_category_confirm">¿Desea eliminar la categoria %s?</string>
+    <string name="label_category_title">Titulo categoria</string>
+    <string name="label_category_subtitle">Subtitulo (opcional)</string>
+
+    <!-- Buttons -->
+    <string name="btn_accept">Aceptar</string>
+    <string name="btn_cancel">Cancelar</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_add">Agregar</string>
+
+</resources>

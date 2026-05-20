@@ -16,6 +16,23 @@
     <string name="label_short_deck_name">El nombre del deck debe tener minimo 5 caracteres</string>
 
 
+    <!-- DeckScreen toast messages -->
+    <string name="label_prompt_copied">¡Prompt copiado! Pégalo en ChatGPT</string>
+    <string name="label_no_browser_found">No se encontró navegador</string>
+
+    <!-- SwipeableDeckItem content descriptions -->
+    <string name="cd_delete">Eliminar</string>
+    <string name="cd_edit">Editar</string>
+    <string name="cd_notifications_on">Notificaciones activadas</string>
+    <string name="cd_notifications_off">Notificaciones desactivadas</string>
+
+    <!-- DeckBadge labels -->
+    <string name="badge_new">NUEVO</string>
+    <string name="badge_complete">COMPLETO</string>
+
+    <!-- Progress -->
+    <string name="deck_progress_count">%1$s / %2$s</string>
+
     <!-- GLOBAL Strings -->
     <string name="btn_save">Guardar</string>
     <string name="btn_accept">Aceptar</string>

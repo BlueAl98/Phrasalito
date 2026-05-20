@@ -33,7 +33,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.nayibit.feature_languages.R
 import com.nayibit.feature_languages.domain.model.LanguageStatus
 import com.nayibit.feature_languages.domain.model.LanguageUi
 import kotlinx.coroutines.flow.Flow
@@ -69,14 +71,14 @@ fun LanguageScreen(
                 .padding(horizontal = 20.dp, vertical = 24.dp)
         ) {
             Text(
-                text = "Elige el idioma a aprender",
+                text = stringResource(R.string.title_choose_language),
                 color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.headlineLarge
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            SectionLabel("Idiomas disponibles")
+            SectionLabel(stringResource(R.string.label_available_languages))
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -87,7 +89,7 @@ fun LanguageScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            SectionLabel("Explorar nuevos")
+            SectionLabel(stringResource(R.string.label_explore_new))
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -215,8 +217,8 @@ private fun ExplorableLanguageItem(
             )
             Text(
                 text = when (language.status) {
-                    LanguageStatus.DOWNLOADABLE -> "Disponible para descargar"
-                    LanguageStatus.COMING_SOON -> "Próximamente"
+                    LanguageStatus.DOWNLOADABLE -> stringResource(R.string.label_available_to_download)
+                    LanguageStatus.COMING_SOON -> stringResource(R.string.label_coming_soon)
                     else -> ""
                 },
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

@@ -25,12 +25,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nayibit.feature_categories.presentation.composables.AnimatedCategoryCard
 import com.nayibit.feature_categories.presentation.composables.DialogCategory
 import com.nayibit.feature_categories.presentation.model.TypeModal
+import com.nayibit.feature_categories.R
 import com.nayibit.utils.ui.composables.LoadingScreen
 import com.nayibit.utils.ui.theme.learningColors
 import kotlinx.coroutines.flow.Flow
@@ -70,14 +72,14 @@ fun CategoryScreen(
                 onClick = { onEvent(CategoryUiEvent.ShowDialog(true)) },
                 containerColor = Color(0xFF0047AB)
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.White)
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.cd_add), tint = Color.White)
             }
         }
     ) { padding ->
 
        if (state.categories.isEmpty()){
            Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-               Text(text = "No hay categorias")
+               Text(text = stringResource(R.string.label_no_categories))
            }
        }else
          Column(
@@ -89,18 +91,18 @@ fun CategoryScreen(
         ) {
 
             Text(
-                text = "¿Listo para aprender?",
+                text = stringResource(R.string.title_ready_to_learn),
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.inversePrimary
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             Spacer(Modifier.height(6.dp))
 
             Text(
-                text = "Selecciona una categoria para empezar",
+                text = stringResource(R.string.subtitle_select_category),
                 fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.inversePrimary.copy(alpha = 0.8f)
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(Modifier.height(24.dp))

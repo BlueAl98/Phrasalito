@@ -118,7 +118,7 @@ fun DeckScreen(
 
                     Toast.makeText(
                         context,
-                        "Prompt copied! Paste it in ChatGPT",
+                        context.getString(R.string.label_prompt_copied),
                         Toast.LENGTH_SHORT
                     ).show()
 
@@ -126,7 +126,7 @@ fun DeckScreen(
                     try {
                         context.startActivity(intent)
                     } catch (_: ActivityNotFoundException) {
-                        Toast.makeText(context, "No browser found", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.label_no_browser_found), Toast.LENGTH_SHORT).show()
                     }
                 }
 
