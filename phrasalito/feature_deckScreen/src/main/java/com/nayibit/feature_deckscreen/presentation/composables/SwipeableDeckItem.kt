@@ -235,7 +235,7 @@ fun CardDeck(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     // Icon
-                    DeckIcon(icon = icon, colors.primary)
+                    DeckIcon(icon = icon)
 
                     // Content
                     Column(
@@ -247,7 +247,7 @@ fun CardDeck(
                             fontSize = 18.sp,
                             fontWeight = FontWeight.SemiBold,
                             lineHeight = 24.sp,
-                            color = MaterialTheme.colorScheme.inversePrimary
+                            color = MaterialTheme.colorScheme.onBackground
                         )
 
                         DeckProgress(
@@ -283,15 +283,15 @@ fun CardDeck(
 @Composable
 private fun DeckIcon(
     icon: ImageVector,
-    color: Color = Color.White
+    color: Color = MaterialTheme.colorScheme.secondary
 ) {
     Box(
         modifier = Modifier
             .size(60.dp)
-            .shadow(
+           .shadow(
                 elevation = 4.dp,
                 shape = RoundedCornerShape(16.dp),
-                spotColor = primaryGradientStart.copy(alpha = 0.3f)
+              //  spotColor = primaryGradientStart.copy(alpha = 0.3f)
             )
             .background(color),
 
@@ -321,7 +321,7 @@ private fun DeckProgress(
             text = stringResource(R.string.deck_progress_count, currentCards, totalCards),
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.inversePrimary
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Box(
