@@ -1,5 +1,6 @@
 package com.nayibit.feature_categories.presentation.composables
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -18,7 +19,7 @@ import com.nayibit.utils.ui.theme.primaryGradientEnd
 @Composable
 fun DialogCategory(
     showDialog: Boolean,
-    colorButtons : Color = primaryGradientEnd,
+    colorButtons : Color = MaterialTheme.colorScheme.secondary,
     state: CategoryStateUi,
     onEvent: (CategoryUiEvent) -> Unit,
     typeModal: TypeModal = TypeModal.CREATE,

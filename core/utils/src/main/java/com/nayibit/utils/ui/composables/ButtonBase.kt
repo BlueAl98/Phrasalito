@@ -22,7 +22,7 @@ fun ButtonBase(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     loading: Boolean = false,
-    backgroundColor: Color = primaryGradientEnd,
+    backgroundColor: Color = MaterialTheme.colorScheme.secondary,
     contentColor: Color = Color.White,
     disabledBackgroundColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.30f),
     disabledContentColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),

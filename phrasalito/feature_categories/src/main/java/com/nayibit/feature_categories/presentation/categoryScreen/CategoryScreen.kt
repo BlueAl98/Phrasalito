@@ -47,7 +47,7 @@ fun CategoryScreen(
 ) {
 
     val context = LocalContext.current
-    val colors = learningColors(textPrimary = MaterialTheme.colorScheme.inversePrimary)
+    val colors = learningColors()
 
     LaunchedEffect(Unit) {
         eventFlow.collect { event ->
@@ -70,9 +70,11 @@ fun CategoryScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onEvent(CategoryUiEvent.ShowDialog(true)) },
-                containerColor = MaterialTheme.colorScheme.primaryContainer
+                containerColor = MaterialTheme.colorScheme.secondary
             ) {
-                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.cd_add), tint = Color.White)
+                Icon(Icons.Default.Add,
+                    contentDescription = stringResource(R.string.cd_add),
+                    tint = Color.White)
             }
         }
     ) { padding ->
@@ -133,7 +135,6 @@ fun CategoryScreen(
             }
         }
         DialogCategory(
-            colorButtons = colors.primary,
             showDialog = state.showDialog,
             state = state,
             onEvent = onEvent,

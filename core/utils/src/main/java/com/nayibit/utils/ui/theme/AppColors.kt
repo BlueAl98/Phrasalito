@@ -8,7 +8,7 @@ import com.nayibit.utils.ui.model.LearningColors
 @Composable
 fun learningColors(
     primary: Color = MaterialTheme.colorScheme.primary,
-    textPrimary: Color = MaterialTheme.colorScheme.onSurface
+    textPrimary: Color = MaterialTheme.colorScheme.onPrimaryContainer
 ): LearningColors = LearningColors(
     background    = primary.copy(alpha = 0.08f),
     card          = MaterialTheme.colorScheme.secondary,
