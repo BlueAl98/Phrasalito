@@ -394,7 +394,8 @@ fun AreaStudyCards(
             stringResource(R.string.add_card_phrase), primaryGradientStart, onClick = {
             onEvent(PhraseUiEvent.ShowModal(BodyModalEnum.BODY_INSERT_PHRASE))
         }),
-        IconItem(Icons.Default.Edit, stringResource(R.string.update_card_phrase), primaryGradientStart, onClick = {
+        IconItem(Icons.Default.Edit, stringResource(R.string.update_card_phrase),
+            primaryGradientStart, onClick = {
             onEvent(
                 PhraseUiEvent.ShowModal(
                     BodyModalEnum.BODY_UPDATE_PHRASE,
@@ -416,8 +417,8 @@ fun AreaStudyCards(
                 )
             },
             enabled = state.phrases.isNotEmpty()
-        ),
-        IconItem(Icons.Default.Description, stringResource(R.string.test_card_phrase), primaryGradientStart, onClick = {
+        ))
+        /*IconItem(Icons.Default.Description, stringResource(R.string.test_card_phrase), primaryGradientStart, onClick = {
             if (state.isReadyForTest)
             onEvent(
                 PhraseUiEvent.ShowModal(
@@ -427,7 +428,7 @@ fun AreaStudyCards(
             else
                 onEvent(PhraseUiEvent.ShowSnackbar(UiText.StringResource(R.string.label_dont_cards_enough)))
         })
-    )
+    )*/
 
     val stateCard = rememberSwipeableCardsState(
         initialCardIndex = state.curentCardPhrase,
