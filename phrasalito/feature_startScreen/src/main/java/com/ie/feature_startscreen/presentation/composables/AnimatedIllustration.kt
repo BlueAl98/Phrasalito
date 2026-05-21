@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.ie.feature_startscreen.presentation.model.OnboardingColors
@@ -39,6 +40,7 @@ fun AnimatedIllustration(
     modifier: Modifier = Modifier,
     colors: OnboardingColors,
     mainImageVector: ImageVector = Icons.Default.Check,
+    mainPainter: Painter? = null,
     topIconVector: ImageVector = Icons.Default.ChatBubble,
     bottomIconVector: ImageVector = Icons.Default.QuestionMark
     ) {
@@ -152,12 +154,21 @@ fun AnimatedIllustration(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = mainImageVector,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(60.dp)
-                )
+                if (mainPainter != null) {
+                    Icon(
+                        painter = mainPainter,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(60.dp)
+                    )
+                } else {
+                    Icon(
+                        imageVector = mainImageVector,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(60.dp)
+                    )
+                }
             }
 
             // Floating element 2 (bottom right)
