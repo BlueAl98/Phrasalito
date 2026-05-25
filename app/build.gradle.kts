@@ -86,8 +86,6 @@ android {
 
 dependencies {
 
-   // implementation(project(":phrasalito:phrasalito_presentation"))
-   // implementation(project(":phrasalito:phrasalito_data"))
     implementation(project(":core:utils"))
     implementation(project(":phrasalito:feature_startScreen"))
     implementation(project(":phrasalito:feature_categories"))
