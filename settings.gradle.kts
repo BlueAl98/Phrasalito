@@ -25,6 +25,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "Phrasalito"
 include(":app")
+include(":core:network")
 include(":core:utils")
 include(":core:datastore")
 include(":phrasalito:feature_startScreen")

@@ -2,11 +2,11 @@ package com.nayibit.feature_phrases.data.repositories
 
 
 import com.nayibit.database.room.dao.PhraseDao
+import com.nayibit.database.utils.DatabaseError
 import com.nayibit.feature_phrases.data.mapper.toEntity
 import com.nayibit.feature_phrases.data.mapper.toPhrase
 import com.nayibit.feature_phrases.domain.model.Phrase
 import com.nayibit.feature_phrases.domain.repositories.PhraseRepository
-import com.nayibit.utils.helpers.DatabaseError
 import com.nayibit.utils.helpers.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch

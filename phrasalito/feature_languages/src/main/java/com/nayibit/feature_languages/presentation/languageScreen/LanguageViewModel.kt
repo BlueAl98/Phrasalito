@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.feature_languages.domain.model.LanguageStatus
 import com.nayibit.feature_languages.domain.model.LanguageUi
+import com.nayibit.feature_languages.domain.repository.LanguageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +16,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LanguageViewModel @Inject constructor() : ViewModel() {
+class LanguageViewModel @Inject constructor(
+    private val repository: LanguageRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(LanguageStateUi())
     val state: StateFlow<LanguageStateUi> = _state.asStateFlow()
@@ -25,6 +28,13 @@ class LanguageViewModel @Inject constructor() : ViewModel() {
 
     init {
         loadLanguages()
+        viewModelScope.launch {
+            try {
+                repository.getLanguage(1)
+            }catch (e: Exception){
+                println(e)
+            }
+    }
     }
 
     fun onEvent(event: LanguageUiEvent) {

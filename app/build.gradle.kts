@@ -27,10 +27,6 @@ android {
             useSupportLibrary = true
         }
 
-        //URL_API
-        buildConfigField("String", "BASE_URL", "\"http://Base_URL/v1/api/\"")
-
-
     }
 
     signingConfigs {

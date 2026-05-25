@@ -1,7 +1,7 @@
 package com.nayibit.feature_phrases.domain.repositories
 
+import com.nayibit.database.utils.DatabaseError
 import com.nayibit.feature_phrases.domain.model.Phrase
-import com.nayibit.utils.helpers.DatabaseError
 import com.nayibit.utils.helpers.Result
 import kotlinx.coroutines.flow.Flow
 

@@ -1,11 +1,11 @@
 package com.nayibit.feature_deckscreen.data.repositories
 
 import com.nayibit.database.room.dao.DeckDao
+import com.nayibit.database.utils.DatabaseError
 import com.nayibit.feature_deckscreen.data.mappers.toDeck
 import com.nayibit.feature_deckscreen.data.mappers.toEntity
 import com.nayibit.feature_deckscreen.domain.model.Deck
 import com.nayibit.feature_deckscreen.domain.repositories.DeckRepository
-import com.nayibit.utils.helpers.DatabaseError
 import com.nayibit.utils.helpers.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch

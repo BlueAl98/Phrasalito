@@ -6,13 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.nayibit.database"
+    namespace = "com.nayibit.network"
     compileSdk = 35
 
     defaultConfig {
         minSdk = 29
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -35,22 +33,12 @@ android {
 }
 
 dependencies {
-
-    implementation(project(":core:utils"))
-
-    //dagger
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
 
-    //ROOM DataBase
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
-
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(platform(libs.okhttp.bom))
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
 }

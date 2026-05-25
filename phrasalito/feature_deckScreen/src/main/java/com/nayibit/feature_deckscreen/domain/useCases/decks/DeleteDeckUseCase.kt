@@ -1,7 +1,7 @@
 package com.nayibit.feature_deckscreen.domain.useCases.decks
 
+import com.nayibit.database.utils.DatabaseError
 import com.nayibit.feature_deckscreen.domain.repositories.DeckRepository
-import com.nayibit.utils.helpers.DatabaseError
 import com.nayibit.utils.helpers.Resource
 import com.nayibit.utils.helpers.Result
 import javax.inject.Inject
