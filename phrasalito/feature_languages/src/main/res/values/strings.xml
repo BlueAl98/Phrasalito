@@ -8,6 +8,12 @@
     <string name="label_available_to_download">Disponible para descargar</string>
     <string name="label_coming_soon">Próximamente</string>
 
+    <!-- Error dialog -->
+    <string name="error_network_title">Error de conexión</string>
+    <string name="error_network_default">No se pudo cargar los idiomas.</string>
+    <string name="action_dismiss">Cerrar</string>
+    <string name="action_retry">Reintentar</string>
+
     <!-- Content descriptions -->
     <string name="cd_select_language">Seleccionar %s</string>
     <string name="cd_download_language">Descargar %s</string>

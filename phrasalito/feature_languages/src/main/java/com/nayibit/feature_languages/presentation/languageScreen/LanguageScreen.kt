@@ -73,11 +73,11 @@ fun LanguageScreen(
         onDismissRequest = { onEvent(LanguageUiEvent.DismissErrorDialog) }
     ) {
         Text(
-            text = "Error de conexión",
+            text = stringResource(R.string.error_network_title),
             style = MaterialTheme.typography.titleMedium
         )
         Text(
-            text = state.errorMessage ?: "No se pudo cargar los idiomas.",
+            text = state.errorMessage ?: stringResource(R.string.error_network_default),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -86,10 +86,10 @@ fun LanguageScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             TextButton(onClick = { onEvent(LanguageUiEvent.DismissErrorDialog) }) {
-                Text("Cerrar")
+                Text(stringResource(R.string.action_dismiss))
             }
             Button(onClick = { onEvent(LanguageUiEvent.RetryLoad) }) {
-                Text("Reintentar")
+                Text(stringResource(R.string.action_retry))
             }
         }
     }
