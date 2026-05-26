@@ -5,6 +5,9 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface LanguagesApiService {
+    @GET("languages")
+    suspend fun getLanguages(): List<LanguageDto>
+
     @GET("languages/{id}")
     suspend fun getLanguage(@Path("id") id: Int): LanguageDto
 }

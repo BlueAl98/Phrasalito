@@ -24,12 +24,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -42,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import com.nayibit.feature_languages.R
 import com.nayibit.feature_languages.domain.model.LanguageStatus
 import com.nayibit.feature_languages.domain.model.LanguageUi
+import com.nayibit.utils.ui.composables.BaseDialog
+import com.nayibit.utils.ui.composables.LoadingScreen
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -63,11 +67,42 @@ fun LanguageScreen(
         }
     }
 
+    BaseDialog(
+        showDialog = state.showErrorDialog,
+        offsideDismiss = false,
+        onDismissRequest = { onEvent(LanguageUiEvent.DismissErrorDialog) }
+    ) {
+        Text(
+            text = "Error de conexión",
+            style = MaterialTheme.typography.titleMedium
+        )
+        Text(
+            text = state.errorMessage ?: "No se pudo cargar los idiomas.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            TextButton(onClick = { onEvent(LanguageUiEvent.DismissErrorDialog) }) {
+                Text("Cerrar")
+            }
+            Button(onClick = { onEvent(LanguageUiEvent.RetryLoad) }) {
+                Text("Reintentar")
+            }
+        }
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
-        LazyVerticalGrid(
+
+        if (state.isLoading)
+            LoadingScreen()
+        else
+          LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier
                 .fillMaxSize()

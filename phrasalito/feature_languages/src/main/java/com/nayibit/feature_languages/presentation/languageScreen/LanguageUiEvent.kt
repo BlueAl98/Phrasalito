@@ -7,4 +7,6 @@ sealed class LanguageUiEvent {
     data class DownloadLanguage(val language: LanguageUi) : LanguageUiEvent()
     data class ShowSnackbar(val message: String) : LanguageUiEvent()
     data class NavigateWithLanguage(val languageCode: String) : LanguageUiEvent()
+    object DismissErrorDialog : LanguageUiEvent()
+    object RetryLoad : LanguageUiEvent()
 }

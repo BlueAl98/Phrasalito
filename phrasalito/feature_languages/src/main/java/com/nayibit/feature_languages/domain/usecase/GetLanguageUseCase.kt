@@ -6,9 +6,9 @@ import com.nayibit.network.error.NetworkError
 import com.nayibit.utils.helpers.Result
 import javax.inject.Inject
 
-class GetLanguageUseCase @Inject constructor(
+class GetLanguagesUseCase @Inject constructor(
     private val repository: LanguageRepository
 ) {
-    suspend operator fun invoke(id: Int): Result<Language, NetworkError> =
-        repository.getLanguage(id)
+    suspend operator fun invoke(): Result<List<Language>, NetworkError> =
+        repository.getLanguages()
 }

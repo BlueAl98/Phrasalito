@@ -2,9 +2,9 @@ package com.nayibit.feature_languages.presentation.languageScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nayibit.feature_languages.domain.model.LanguageStatus
-import com.nayibit.feature_languages.domain.model.LanguageUi
-import com.nayibit.feature_languages.domain.repository.LanguageRepository
+import com.nayibit.feature_languages.data.remote.mapper.toUi
+import com.nayibit.feature_languages.domain.usecase.GetLanguagesUseCase
+import com.nayibit.network.error.NetworkError
 import com.nayibit.utils.helpers.onError
 import com.nayibit.utils.helpers.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LanguageViewModel @Inject constructor(
-    private val repository: LanguageRepository
+    private val getLanguagesUseCase: GetLanguagesUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LanguageStateUi())
@@ -34,34 +34,50 @@ class LanguageViewModel @Inject constructor(
 
     fun onEvent(event: LanguageUiEvent) {
         when (event) {
-            is LanguageUiEvent.SelectLanguage -> {
-                viewModelScope.launch {
-                    _eventFlow.emit(LanguageUiEvent.NavigateWithLanguage(event.language.code))
-                }
+            is LanguageUiEvent.SelectLanguage -> viewModelScope.launch {
+                _eventFlow.emit(LanguageUiEvent.NavigateWithLanguage(event.language.code))
             }
-            is LanguageUiEvent.DownloadLanguage -> {
-                viewModelScope.launch {
-                    _eventFlow.emit(
-                        LanguageUiEvent.ShowSnackbar("Descargando ${event.language.displayName}...")
-                    )
-                }
+            is LanguageUiEvent.DownloadLanguage -> viewModelScope.launch {
+                _eventFlow.emit(LanguageUiEvent.ShowSnackbar("Descargando ${event.language.displayName}..."))
+            }
+            LanguageUiEvent.DismissErrorDialog -> _state.update { it.copy(showErrorDialog = false) }
+            LanguageUiEvent.RetryLoad -> {
+                _state.update { it.copy(showErrorDialog = false) }
+                loadLanguages()
             }
             else -> {}
         }
     }
 
     private fun loadLanguages() {
-        _state.update {
-            it.copy(
-                availableLanguages = listOf(
-                    LanguageUi("en", "Inglés", "🇺🇸", LanguageStatus.AVAILABLE),
-                    LanguageUi("it", "Italiano", "🇮🇹", LanguageStatus.AVAILABLE),
-                    ),
-                explorableLanguages = listOf(
-                    LanguageUi("de", "Alemán", "🇩🇪", LanguageStatus.DOWNLOADABLE),
-                    LanguageUi("ja", "Japonés", "🇯🇵", LanguageStatus.COMING_SOON)
-                )
-            )
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            getLanguagesUseCase()
+                .onSuccess { languages ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            availableLanguages = languages.filter { l -> l.isDownload }.map { l -> l.toUi() },
+                            explorableLanguages = languages.filterNot { l -> l.isDownload }.map { l -> l.toUi() }
+                        )
+                    }
+                }
+                .onError { error ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            showErrorDialog = true,
+                            errorMessage = error.toMessage()
+                        )
+                    }
+                }
         }
+    }
+
+    private fun NetworkError.toMessage(): String = when (this) {
+        is NetworkError.NoInternet -> "Sin conexión a internet. Verifica tu conexión e intenta de nuevo."
+        is NetworkError.Timeout -> "Tiempo de espera agotado. Intenta de nuevo."
+        is NetworkError.Http -> message
+        NetworkError.Unknown -> "Ocurrió un error inesperado."
     }
 }

@@ -5,5 +5,5 @@ import com.nayibit.network.error.NetworkError
 import com.nayibit.utils.helpers.Result
 
 interface LanguageRepository {
-    suspend fun getLanguage(id: Int): Result<Language, NetworkError>
+    suspend fun getLanguages(): Result<List<Language>, NetworkError>
 }

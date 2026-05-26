@@ -5,5 +5,6 @@ data class Language(
     val code: String,
     val name: String,
     val flag: String,
-    val status: Boolean
+    val status: Boolean,
+    val isDownload: Boolean = false
 )

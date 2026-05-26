@@ -38,6 +38,7 @@ android {
 dependencies {
     implementation(project(":core:utils"))
     implementation(project(":core:network"))
+    implementation(project(":core:database"))
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 

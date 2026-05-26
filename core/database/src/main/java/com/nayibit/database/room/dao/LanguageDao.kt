@@ -29,4 +29,7 @@ interface LanguageDao {
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateLanguage(language: LanguageEntity)
+
+    @Query("SELECT * FROM languages")
+    suspend fun getAll(): List<LanguageEntity>
 }
