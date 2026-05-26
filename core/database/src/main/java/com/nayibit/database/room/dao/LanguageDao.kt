@@ -32,4 +32,7 @@ interface LanguageDao {
 
     @Query("SELECT * FROM languages")
     suspend fun getAll(): List<LanguageEntity>
+
+    @Query("UPDATE languages SET isDownload = 1 WHERE code = :code")
+    suspend fun updateIsDownloaded(code: String)
 }

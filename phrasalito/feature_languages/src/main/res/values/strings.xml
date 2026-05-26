@@ -4,7 +4,7 @@
     <!-- LanguageScreen -->
     <string name="title_choose_language">Elige el idioma a aprender</string>
     <string name="label_available_languages">Idiomas disponibles</string>
-    <string name="label_explore_new">Explorar nuevos</string>
+    <string name="label_explore_new">Descargar idiomas</string>
     <string name="label_available_to_download">Disponible para descargar</string>
     <string name="label_coming_soon">Próximamente</string>
 

@@ -3,8 +3,11 @@ package com.nayibit.feature_languages.presentation.languageScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nayibit.feature_languages.data.remote.mapper.toUi
+import com.nayibit.feature_languages.domain.usecase.DownloadLanguageUseCase
 import com.nayibit.feature_languages.domain.usecase.GetLanguagesUseCase
 import com.nayibit.network.error.NetworkError
+import com.nayibit.translation.domain.model.ModelDownloadState
+import com.nayibit.utils.helpers.Resource
 import com.nayibit.utils.helpers.onError
 import com.nayibit.utils.helpers.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LanguageViewModel @Inject constructor(
-    private val getLanguagesUseCase: GetLanguagesUseCase
+    private val getLanguagesUseCase: GetLanguagesUseCase,
+    private val downloadLanguageUseCase: DownloadLanguageUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LanguageStateUi())
@@ -37,15 +41,36 @@ class LanguageViewModel @Inject constructor(
             is LanguageUiEvent.SelectLanguage -> viewModelScope.launch {
                 _eventFlow.emit(LanguageUiEvent.NavigateWithLanguage(event.language.code))
             }
-            is LanguageUiEvent.DownloadLanguage -> viewModelScope.launch {
-                _eventFlow.emit(LanguageUiEvent.ShowSnackbar("Descargando ${event.language.displayName}..."))
-            }
+            is LanguageUiEvent.DownloadLanguage -> downloadLanguage(event.language.code)
             LanguageUiEvent.DismissErrorDialog -> _state.update { it.copy(showErrorDialog = false) }
             LanguageUiEvent.RetryLoad -> {
                 _state.update { it.copy(showErrorDialog = false) }
                 loadLanguages()
             }
             else -> {}
+        }
+    }
+
+    private fun downloadLanguage(code: String) {
+        viewModelScope.launch {
+            _state.update { it.copy(downloadingCode = code) }
+            downloadLanguageUseCase(code).collect { resource ->
+                when {
+                    resource is Resource.Success && resource.data == ModelDownloadState.Downloaded -> {
+                        _state.update { it.copy(downloadingCode = null) }
+                        loadLanguages()
+                    }
+                    resource is Resource.Success && resource.data is ModelDownloadState.Error -> {
+                        val msg = (resource.data as ModelDownloadState.Error).message
+                        _state.update { it.copy(downloadingCode = null) }
+                        _eventFlow.emit(LanguageUiEvent.ShowSnackbar(msg))
+                    }
+                    resource is Resource.Error -> {
+                        _state.update { it.copy(downloadingCode = null) }
+                        _eventFlow.emit(LanguageUiEvent.ShowSnackbar(resource.message))
+                    }
+                }
+            }
         }
     }
 

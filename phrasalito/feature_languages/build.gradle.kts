@@ -39,6 +39,8 @@ dependencies {
     implementation(project(":core:utils"))
     implementation(project(":core:network"))
     implementation(project(":core:database"))
+    implementation(project(":core:translation"))
+    implementation(libs.coil.compose)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 

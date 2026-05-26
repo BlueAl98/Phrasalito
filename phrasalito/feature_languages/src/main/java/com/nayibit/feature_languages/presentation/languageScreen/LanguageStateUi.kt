@@ -7,5 +7,6 @@ data class LanguageStateUi(
     val explorableLanguages: List<LanguageUi> = emptyList(),
     val isLoading: Boolean = false,
     val showErrorDialog: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val downloadingCode: String? = null
 )

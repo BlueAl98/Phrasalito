@@ -21,10 +21,10 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -38,9 +38,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.nayibit.feature_languages.R
 import com.nayibit.feature_languages.domain.model.LanguageStatus
 import com.nayibit.feature_languages.domain.model.LanguageUi
@@ -119,7 +121,10 @@ fun LanguageScreen(
                         style = MaterialTheme.typography.headlineLarge
                     )
                     Spacer(modifier = Modifier.height(24.dp))
-                    SectionLabel(stringResource(R.string.label_available_languages))
+
+                    if (state.availableLanguages.isNotEmpty())
+                      SectionLabel(stringResource(R.string.label_available_languages))
+
                     Spacer(modifier = Modifier.height(4.dp))
                 }
             }
@@ -146,6 +151,7 @@ fun LanguageScreen(
             ) { language ->
                 ExplorableLanguageItem(
                     language = language,
+                    isDownloading = state.downloadingCode == language.code,
                     onClick = {
                         if (language.status == LanguageStatus.DOWNLOADABLE) {
                             onEvent(LanguageUiEvent.DownloadLanguage(language))
@@ -184,9 +190,11 @@ private fun AvailableLanguageCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = language.flagEmoji,
-                style = MaterialTheme.typography.displaySmall
+            AsyncImage(
+                model = language.flagEmoji,
+                contentDescription = language.displayName,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.size(48.dp)
             )
             Text(
                 text = language.displayName,
@@ -200,6 +208,7 @@ private fun AvailableLanguageCard(
 @Composable
 private fun ExplorableLanguageItem(
     language: LanguageUi,
+    isDownloading: Boolean,
     onClick: () -> Unit
 ) {
     Row(
@@ -208,26 +217,20 @@ private fun ExplorableLanguageItem(
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.secondary)
             .clickable(
-                enabled = language.status == LanguageStatus.DOWNLOADABLE,
+                enabled = language.status == LanguageStatus.DOWNLOADABLE && !isDownloading,
                 onClick = onClick
             )
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
+        AsyncImage(
+            model = language.flagEmoji,
+            contentDescription = language.displayName,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(36.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.onPrimary),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.size(20.dp)
-            )
-        }
+        )
 
         Spacer(modifier = Modifier.width(12.dp))
 
@@ -248,17 +251,25 @@ private fun ExplorableLanguageItem(
             )
         }
 
-        Icon(
-            imageVector = when (language.status) {
-                LanguageStatus.DOWNLOADABLE -> Icons.Default.FileDownload
-                else -> Icons.Default.Schedule
-            },
-            contentDescription = null,
-            tint = when (language.status) {
-                LanguageStatus.DOWNLOADABLE -> MaterialTheme.colorScheme.primary
-                else -> MaterialTheme.colorScheme.onSurfaceVariant
-            },
-            modifier = Modifier.size(20.dp)
-        )
+        if (isDownloading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(20.dp),
+                strokeWidth = 2.dp,
+                color = MaterialTheme.colorScheme.primary
+            )
+        } else {
+            Icon(
+                imageVector = when (language.status) {
+                    LanguageStatus.DOWNLOADABLE -> Icons.Default.FileDownload
+                    else -> Icons.Default.Schedule
+                },
+                contentDescription = null,
+                tint = when (language.status) {
+                    LanguageStatus.DOWNLOADABLE -> MaterialTheme.colorScheme.primary
+                    else -> MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                modifier = Modifier.size(20.dp)
+            )
+        }
     }
 }
