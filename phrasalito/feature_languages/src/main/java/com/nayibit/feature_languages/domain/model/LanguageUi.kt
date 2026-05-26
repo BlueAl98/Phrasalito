@@ -1,6 +1,7 @@
 package com.nayibit.feature_languages.domain.model
 
 data class LanguageUi(
+    val id: Int,
     val code: String,
     val displayName: String,
     val flagEmoji: String,

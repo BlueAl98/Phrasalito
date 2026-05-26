@@ -33,6 +33,7 @@ fun LanguageEntity.toDomain() = Language(
 )
 
 fun Language.toUi() = LanguageUi(
+    id = id,
     code = code,
     displayName = name,
     flagEmoji = flag,

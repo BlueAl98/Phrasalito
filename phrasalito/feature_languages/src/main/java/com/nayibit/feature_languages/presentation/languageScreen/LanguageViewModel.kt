@@ -2,9 +2,11 @@ package com.nayibit.feature_languages.presentation.languageScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nayibit.datastore.data.GenericDataStore
 import com.nayibit.feature_languages.data.remote.mapper.toUi
 import com.nayibit.feature_languages.domain.usecase.DownloadLanguageUseCase
 import com.nayibit.feature_languages.domain.usecase.GetLanguagesUseCase
+import com.nayibit.feature_languages.util.DataStoreKeys
 import com.nayibit.network.error.NetworkError
 import com.nayibit.translation.domain.model.ModelDownloadState
 import com.nayibit.utils.helpers.Resource
@@ -23,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LanguageViewModel @Inject constructor(
     private val getLanguagesUseCase: GetLanguagesUseCase,
-    private val downloadLanguageUseCase: DownloadLanguageUseCase
+    private val downloadLanguageUseCase: DownloadLanguageUseCase,
+    private val dataStore: GenericDataStore
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LanguageStateUi())
@@ -39,6 +42,12 @@ class LanguageViewModel @Inject constructor(
     fun onEvent(event: LanguageUiEvent) {
         when (event) {
             is LanguageUiEvent.SelectLanguage -> viewModelScope.launch {
+                dataStore.saveMultipleData(
+                    mapOf(
+                        DataStoreKeys.SELECTED_LANGUAGE_ID to event.language.id,
+                        DataStoreKeys.SELECTED_LANGUAGE_CODE to event.language.code
+                    )
+                )
                 _eventFlow.emit(LanguageUiEvent.NavigateWithLanguage(event.language.code))
             }
             is LanguageUiEvent.DownloadLanguage -> downloadLanguage(event.language.code)
