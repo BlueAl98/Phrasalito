@@ -8,4 +8,6 @@ data class Category(
     val currentDecks: Int = 0,
     val progress: Float = 0f,
     val languageId: Int,
+    val icon: String = "",
+    val isDefault: Boolean = false
 )

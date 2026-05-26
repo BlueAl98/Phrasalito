@@ -39,6 +39,10 @@ dependencies {
 
     implementation(project(":core:database"))
     implementation(project(":core:utils"))
+    implementation(project(":core:network"))
+    implementation(project(":core:datastore"))
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.android)

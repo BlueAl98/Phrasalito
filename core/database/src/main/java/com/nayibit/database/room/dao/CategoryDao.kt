@@ -30,6 +30,13 @@ interface CategoryDao {
      @Query("SELECT * FROM categories WHERE id = :id")
      suspend fun getCategoryById(id: Int): CategoryWithDeckEntity
 
+     @Transaction
+     @Query("SELECT * FROM categories WHERE languageId = :languageId")
+     fun getCategoriesByLanguage(languageId: Int): Flow<List<CategoryWithDeckEntity>>
 
+     @Insert(onConflict = OnConflictStrategy.IGNORE)
+     suspend fun insertCategories(categories: List<CategoryEntity>)
 
+     @Query("SELECT EXISTS(SELECT 1 FROM categories WHERE languageId = :languageId AND isDefault = 1)")
+     suspend fun hasDefaultCategories(languageId: Int): Boolean
 }

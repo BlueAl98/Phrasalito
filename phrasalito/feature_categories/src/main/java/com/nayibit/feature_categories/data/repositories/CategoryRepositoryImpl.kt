@@ -5,9 +5,10 @@ import com.nayibit.database.room.entities.CategoryWithDeckEntity
 import com.nayibit.database.utils.DatabaseError
 import com.nayibit.feature_categories.data.mappers.toCategory
 import com.nayibit.feature_categories.data.mappers.toEntity
+import com.nayibit.feature_categories.data.remote.CategoriesApiService
+import com.nayibit.feature_categories.data.remote.mapper.toEntity
 import com.nayibit.feature_categories.domain.repositories.CategoryRepository
 import com.nayibit.feature_categories.model.Category
-import com.nayibit.utils.helpers.Resource
 import com.nayibit.utils.helpers.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -15,57 +16,66 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class CategoryRepositoryImpl @Inject constructor(
-    private val categoryDao: CategoryDao
+    private val categoryDao: CategoryDao,
+    private val apiService: CategoriesApiService
 ) : CategoryRepository {
 
-    override suspend fun getCategories(): Flow<Result<List<Category>, DatabaseError>> =
-        categoryDao.getCategories()
-          .map { entities ->
-           val categories = entities.map(CategoryWithDeckEntity::toCategory)
-           Result.Success(categories) as Result<List<Category>, DatabaseError>
+    override fun getCategories(languageId: Int): Flow<Result<List<Category>, DatabaseError>> =
+        categoryDao.getCategoriesByLanguage(languageId)
+            .map { entities ->
+                val categories = entities.map(CategoryWithDeckEntity::toCategory)
+                Result.Success(categories) as Result<List<Category>, DatabaseError>
+            }
+            .catch { e ->
+                emit(Result.Error(DatabaseError.Sql(e)))
+            }
+
+    override suspend fun fetchAndSeedIfNeeded(languageId: Int): Result<Unit, DatabaseError> {
+        if (categoryDao.hasDefaultCategories(languageId)) return Result.Success(Unit)
+        return try {
+            val entities = apiService.getCategoriesByLanguage(languageId).map { it.toEntity() }
+            categoryDao.insertCategories(entities)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(DatabaseError.Unknown)
         }
-       .catch { e ->
-           emit(Result.Error(DatabaseError.Sql(e)))
-       }
+    }
 
     override suspend fun insertCategory(category: Category): Result<Unit, DatabaseError> {
-       try {
-           categoryDao.insertCategory(category.toEntity())
-           return Result.Success(Unit)
-       }catch (e: Exception){
-           return Result.Error(DatabaseError.Sql(e))
-       }
+        return try {
+            categoryDao.insertCategory(category.toEntity())
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(DatabaseError.Sql(e))
+        }
     }
 
     override suspend fun updateCategory(category: Category): Result<Unit, DatabaseError> {
-        try {
-            val findCategory = categoryDao.getCategoryById(category.id).category
-            val catUpdate = findCategory.copy(name = category.name, subtitle = category.subtitle)
-            categoryDao.updateCategory(catUpdate)
-            return Result.Success(Unit)
-        }catch (e: Exception){
-            return Result.Error(DatabaseError.Sql(e))
+        return try {
+            val existing = categoryDao.getCategoryById(category.id).category
+            categoryDao.updateCategory(existing.copy(name = category.name, subtitle = category.subtitle))
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(DatabaseError.Sql(e))
         }
     }
 
     override suspend fun deleteCategory(category: Category): Result<Unit, DatabaseError> {
-        try {
-            val category = categoryDao.getCategoryById(category.id).category
-            categoryDao.deleteCategory(category)
-            return Result.Success(Unit)
-        }catch (e: Exception){
-            return Result.Error(DatabaseError.Sql(e))
+        return try {
+            val entity = categoryDao.getCategoryById(category.id).category
+            if (entity.isDefault) return Result.Error(DatabaseError.ProtectedCategory)
+            categoryDao.deleteCategory(entity)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(DatabaseError.Sql(e))
         }
     }
 
     override suspend fun getCategoryById(id: Int): Result<Category, DatabaseError> {
-        try {
-            val category = categoryDao.getCategoryById(id)
-            return Result.Success(category.toCategory())
-        }catch (e: Exception){
-            return Result.Error(DatabaseError.Sql(e))
+        return try {
+            Result.Success(categoryDao.getCategoryById(id).toCategory())
+        } catch (e: Exception) {
+            Result.Error(DatabaseError.Sql(e))
         }
     }
-
-
 }

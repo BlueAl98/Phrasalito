@@ -24,5 +24,7 @@ data class CategoryEntity(
     val subtitle: String = "",
     val maxDecks: Int = 20,
     val uuid: Long = 0,
-    val languageId: Int
+    val languageId: Int,
+    val icon: String = "",
+    val isDefault: Boolean = false
 )

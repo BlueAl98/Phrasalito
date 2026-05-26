@@ -127,11 +127,9 @@ fun CategoryCard(
                         .background(colors.cardBorder),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = topic.icon,
-                        contentDescription = null,
-                        tint = colors.primary,
-                        modifier = Modifier.size(32.dp)
+                    Text(
+                        text = topic.iconEmoji,
+                        fontSize = 28.sp
                     )
                 }
 
@@ -211,6 +209,7 @@ fun FlippableCategoryCard(
                 CategoryBack(
                     onEdit = onEdit,
                     onDelete = onDelete,
+                    isDefault = topic.isDefault,
                     colors = colors
                 )
             }
@@ -233,6 +232,7 @@ fun CategoryBack(
     modifier : Modifier = Modifier,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
+    isDefault: Boolean = false,
     colors: LearningColors
 ) {
     Card(
@@ -266,14 +266,15 @@ fun CategoryBack(
                 )
             }
 
-             IconButton(onClick = {onDelete()}) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = null,
-                    tint = Color.Red,
-                    modifier = Modifier.size(30.dp)
-
-                )
+            if (!isDefault) {
+                IconButton(onClick = { onDelete() }) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = null,
+                        tint = Color.Red,
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
             }
         }
     }

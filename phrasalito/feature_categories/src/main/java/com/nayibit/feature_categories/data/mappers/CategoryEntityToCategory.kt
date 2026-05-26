@@ -11,7 +11,9 @@ fun CategoryWithDeckEntity.toCategory() = Category(
     maxDecks = category.maxDecks,
     currentDecks = decks.size,
     progress = if (category.maxDecks > 0) decks.size.toFloat() / category.maxDecks.toFloat() else 0f,
-    languageId = category.languageId
+    languageId = category.languageId,
+    icon = category.icon,
+    isDefault = category.isDefault
 )
 
 

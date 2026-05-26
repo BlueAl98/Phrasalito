@@ -13,7 +13,7 @@ import com.nayibit.database.room.entities.PhraseEntity
 
 @Database(
     entities = [DeckEntity::class, CategoryEntity::class, PhraseEntity::class, LanguageEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
