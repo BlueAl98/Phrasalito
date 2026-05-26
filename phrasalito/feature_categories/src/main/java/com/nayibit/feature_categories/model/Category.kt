@@ -7,4 +7,5 @@ data class Category(
     val maxDecks: Int = 20,
     val currentDecks: Int = 0,
     val progress: Float = 0f,
+    val languageId: Int,
 )

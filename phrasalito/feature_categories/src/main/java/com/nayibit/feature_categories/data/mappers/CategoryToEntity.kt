@@ -7,4 +7,5 @@ fun Category.toEntity() =
     CategoryEntity(
         name = name,
         subtitle = subtitle,
+        languageId = languageId,
     )

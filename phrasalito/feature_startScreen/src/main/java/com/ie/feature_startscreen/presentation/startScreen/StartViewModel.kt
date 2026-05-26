@@ -17,8 +17,6 @@ import javax.inject.Inject
 class StartViewModel @Inject constructor(
     private val insertFirstTimeUseCase: InsertFirstTimeUseCase,
     private val getFirstTimeUseCase: GetFirstTimeUseCase,
-  //  private val ttsManager: TtsManager
-    // private val insertFirstDeckUseCase: InsertFirstDeckUseCase
 ): ViewModel() {
 
     private val _state = MutableStateFlow(StartStateUi())
@@ -29,36 +27,13 @@ class StartViewModel @Inject constructor(
 
    init {
        getFirstTime()
-      // getAvaliablesLanguages()    //  insertFirstTime()
    }
 
- /*   fun getAvaliablesLanguages() {
-        viewModelScope.launch {
-            ttsManager.isTtsReady().collect { isReady->
-                when (isReady) {
-                    is Resource.Error -> {}
-                    is Resource.Success -> {
-                        ttsManager.getLanguagesSuported().collect { languages ->
-                            when (languages) {
-                                is Resource.Error -> {
-                                    println("Error: ${languages.message}")
-                                }
-                                is Resource.Success -> {
-                                    println("Success: ${languages.data}")
-                                }
-                            }
-
-                        }
-                    }
-                }
-            }
-        }
-    }*/
 
     fun onEvent(event: StartUiEvent) {
         when (event) {
             is StartUiEvent.InsertSkipTutorial -> {
-             //  insertInitialConfiguration()
+              insertFirstTime()
             }
 
            is StartUiEvent.Navigate -> {
@@ -74,19 +49,12 @@ class StartViewModel @Inject constructor(
             }
 
             StartUiEvent.NextPage -> {
-              /*  _state.value = _state.value.copy(
+                _state.value = _state.value.copy(
                     currentPage = _state.value.currentPage + 1
-                )*/
-                viewModelScope.launch {
-                    _eventFlow.emit(StartUiEvent.Navigate)
-                }
+                )
             }
         }
      }
-
-
-
-
 
     fun getFirstTime() {
         viewModelScope.launch {
@@ -113,18 +81,7 @@ class StartViewModel @Inject constructor(
         _state.value = block(_state.value)
     }
 
-  /*  fun insertInitialConfiguration(){
-        viewModelScope.launch {
-            when (val result = insertFirstDeckUseCase()) {
-                is Resource.Error -> {
-                    _eventFlow.emit(ShowToast("Error: ${result.message}"))
-                }
-                is Resource.Success -> {
-                    insertFirstTime()
-                }
-            }
-        }
-    }*/
+
 
         fun insertFirstTime() {
             viewModelScope.launch {
@@ -133,14 +90,12 @@ class StartViewModel @Inject constructor(
                 )
                 insertFirstTimeUseCase().collect { result ->
                     when (result) {
-
                         is Resource.Error -> {
                             _state.value = _state.value.copy(
                                 isLoading = false,
                                 errorMessage = result.message
                             )
                             _eventFlow.emit(StartUiEvent.ShowToast("Error: ${result.message}"))
-
                         }
 
                         is Resource.Success<*> -> {

@@ -3,6 +3,7 @@ package com.nayibit.database.room.di
 import com.nayibit.database.AppDatabase
 import com.nayibit.database.room.dao.CategoryDao
 import com.nayibit.database.room.dao.DeckDao
+import com.nayibit.database.room.dao.LanguageDao
 import com.nayibit.database.room.dao.PhraseDao
 import dagger.Module
 import dagger.Provides
@@ -28,6 +29,8 @@ object DaosDi {
         return database.phraseDao()
     }
 
-
-
+    @Provides
+    fun provideLanguageDao(database: AppDatabase): LanguageDao {
+        return database.languageDao()
+    }
 }

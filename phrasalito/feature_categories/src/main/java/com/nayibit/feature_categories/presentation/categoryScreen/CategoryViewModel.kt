@@ -79,7 +79,8 @@ class CategoryViewModel @Inject constructor(
             }
 
             is InsertCategory -> {
-                insertCategory(Category(name = event.title, subtitle = event.subtitle))
+                insertCategory(Category(name = event.title,
+                    subtitle = event.subtitle, languageId = 0))
             }
 
             is DeleteCategory -> {

@@ -16,4 +16,6 @@ fun Category.toUI() = CategoryUi(
 fun CategoryUi.toDomain() = Category(
      id = id,
      name = title,
-     subtitle = subtitle)
+     subtitle = subtitle,
+     languageId = 0
+)
