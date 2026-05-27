@@ -53,7 +53,7 @@ class CategoryRepositoryImpl @Inject constructor(
     override suspend fun updateCategory(category: Category): Result<Unit, DatabaseError> {
         return try {
             val existing = categoryDao.getCategoryById(category.id).category
-            categoryDao.updateCategory(existing.copy(name = category.name, subtitle = category.subtitle))
+            categoryDao.updateCategory(existing.copy(name = category.name, subtitle = category.subtitle, icon = category.icon))
             Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(DatabaseError.Sql(e))

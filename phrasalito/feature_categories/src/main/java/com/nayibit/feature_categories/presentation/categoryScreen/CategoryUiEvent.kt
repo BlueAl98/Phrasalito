@@ -11,6 +11,7 @@ sealed interface CategoryUiEvent {
     data class ShowDialog(val show: Boolean, val type: TypeModal = TypeModal.CREATE, val category: CategoryUi? = null): CategoryUiEvent
     data class OnTextChangeTitle(val title: String): CategoryUiEvent
     data class OnTextChangeSubtitle(val subtitle: String): CategoryUiEvent
+    data class OnIconChange(val icon: String): CategoryUiEvent
     data class InsertCategory(val title: String, val subtitle: String): CategoryUiEvent
     data class UpdateCategory(val category: CategoryUi): CategoryUiEvent
     data class DeleteCategory(val category: CategoryUi): CategoryUiEvent

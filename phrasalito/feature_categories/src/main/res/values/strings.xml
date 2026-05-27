@@ -10,6 +10,7 @@
     <string name="label_delete_category_confirm">¿Desea eliminar la categoria %s?</string>
     <string name="label_category_title">Titulo categoria</string>
     <string name="label_category_subtitle">Subtitulo (opcional)</string>
+    <string name="label_category_icon">Elige un icono</string>
 
     <!-- Buttons -->
     <string name="btn_accept">Aceptar</string>

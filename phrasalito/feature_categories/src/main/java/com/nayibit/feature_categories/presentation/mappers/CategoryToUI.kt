@@ -16,5 +16,7 @@ fun CategoryUi.toDomain() = Category(
     id = id,
     name = title,
     subtitle = subtitle,
+    icon = iconEmoji,
+    isDefault = isDefault,
     languageId = 0
 )

@@ -75,14 +75,15 @@ class CategoryViewModel @Inject constructor(
 
             is ShowDialog -> {
                 when (event.type) {
-                    TypeModal.CREATE -> updateState { it.copy(showDialog = event.show, typeModal = event.type) }
+                    TypeModal.CREATE -> updateState { it.copy(showDialog = event.show, typeModal = event.type, selectedIcon = "") }
                     else -> updateState {
                         it.copy(
                             showDialog = event.show,
                             typeModal = event.type,
                             currentCategory = event.category,
                             title = event.category?.title ?: "",
-                            subtitle = event.category?.subtitle ?: ""
+                            subtitle = event.category?.subtitle ?: "",
+                            selectedIcon = event.category?.iconEmoji ?: ""
                         )
                     }
                 }
@@ -90,15 +91,16 @@ class CategoryViewModel @Inject constructor(
 
             is OnTextChangeSubtitle -> updateState { it.copy(subtitle = event.subtitle) }
             is OnTextChangeTitle -> updateState { it.copy(title = event.title) }
+            is OnIconChange -> updateState { it.copy(selectedIcon = event.icon) }
 
             is InsertCategory -> insertCategory(
-                Category(name = event.title, subtitle = event.subtitle, languageId = languageId)
+                Category(name = event.title, subtitle = event.subtitle, icon = _state.value.selectedIcon, languageId = languageId)
             )
 
             is DeleteCategory -> deleteCategory(event.category.toDomain())
 
             is UpdateCategory -> {
-                val category = event.category.copy(title = _state.value.title, subtitle = _state.value.subtitle)
+                val category = event.category.copy(title = _state.value.title, subtitle = _state.value.subtitle, iconEmoji = _state.value.selectedIcon)
                 updateCategory(category.toDomain())
             }
 
@@ -108,6 +110,7 @@ class CategoryViewModel @Inject constructor(
                     currentCategory = null,
                     title = "",
                     subtitle = "",
+                    selectedIcon = "",
                     categories = state.categories.transformAll { it.copy(isFlipped = false) }
                 )
             }
@@ -130,7 +133,7 @@ class CategoryViewModel @Inject constructor(
     fun insertCategory(category: Category) {
         viewModelScope.launch {
             categoryRepository.insertCategory(category).onSuccess {
-                updateState { it.copy(showDialog = false) }
+                updateState { it.copy(showDialog = false, title = "", subtitle = "", selectedIcon = "" ) }
             }.onError { error ->
                 println(error)
             }

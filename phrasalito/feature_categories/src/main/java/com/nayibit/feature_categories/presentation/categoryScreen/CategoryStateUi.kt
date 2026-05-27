@@ -10,5 +10,6 @@ data class CategoryStateUi(
     val showDialog: Boolean = false,
     val title: String = "",
     val subtitle: String = "",
+    val selectedIcon: String = "",
     val currentCategory: CategoryUi? = null,
     val typeModal: TypeModal = TypeModal.CREATE)

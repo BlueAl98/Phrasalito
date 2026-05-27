@@ -254,9 +254,8 @@ fun CategoryBack(
                 verticalAlignment = Alignment.CenterVertically
                 ) {
 
-            IconButton(onClick = {
-                onEdit()
-            }) {
+           if (!isDefault) {
+            IconButton(onClick = { onEdit() }) {
                 Icon(
                     imageVector = Icons.Default.Edit,
                     contentDescription = null,
@@ -266,8 +265,7 @@ fun CategoryBack(
                 )
             }
 
-            if (!isDefault) {
-                IconButton(onClick = { onDelete() }) {
+            IconButton(onClick = { onDelete() }) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = null,
