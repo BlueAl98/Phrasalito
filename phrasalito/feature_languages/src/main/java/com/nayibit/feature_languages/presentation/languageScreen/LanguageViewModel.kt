@@ -6,7 +6,7 @@ import com.nayibit.datastore.data.GenericDataStore
 import com.nayibit.feature_languages.data.remote.mapper.toUi
 import com.nayibit.feature_languages.domain.usecase.DownloadLanguageUseCase
 import com.nayibit.feature_languages.domain.usecase.GetLanguagesUseCase
-import com.nayibit.feature_languages.util.DataStoreKeys
+import com.nayibit.utils.DataStoreKeys
 import com.nayibit.network.error.NetworkError
 import com.nayibit.translation.domain.model.ModelDownloadState
 import com.nayibit.utils.helpers.Resource

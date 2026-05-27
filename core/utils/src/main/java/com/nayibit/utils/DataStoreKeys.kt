@@ -1,4 +1,4 @@
-package com.nayibit.feature_languages.util
+package com.nayibit.utils
 
 object DataStoreKeys {
     const val SELECTED_LANGUAGE_ID = "selected_language_id"

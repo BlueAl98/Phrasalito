@@ -9,7 +9,7 @@ import com.nayibit.feature_categories.presentation.categoryScreen.CategoryUiEven
 import com.nayibit.feature_categories.presentation.mappers.toDomain
 import com.nayibit.feature_categories.presentation.mappers.toUI
 import com.nayibit.feature_categories.presentation.model.TypeModal
-import com.nayibit.feature_categories.util.DataStoreKeys
+import com.nayibit.utils.DataStoreKeys
 import com.nayibit.utils.helpers.onError
 import com.nayibit.utils.helpers.onSuccess
 import com.nayibit.utils.helpers.transformAll
