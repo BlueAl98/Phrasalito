@@ -20,7 +20,7 @@ data class DeckEntity(
     val idCategory: Int,
     val name: String,
     val maxCards: Int = 20,
-    val lngCode: String,
+    val lngCode: String = "",
     val languageName: String,
     val isNotified: Boolean = false
 )

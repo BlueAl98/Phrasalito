@@ -1,4 +1,4 @@
-package com.nayibit.feature_categories.data.remote.dto
+package com.nayibit.feature_languages.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
 
@@ -8,5 +8,5 @@ data class CategoryDto(
     @SerializedName("subtitle") val subtitle: String,
     @SerializedName("icon") val icon: String,
     @SerializedName("numDecks") val numDecks: Int,
-    @SerializedName("decks") val decks: List<DeckWithPhrasesDto> = emptyList()
+    @SerializedName("decks") val decks: List<DeckDto> = emptyList()
 )

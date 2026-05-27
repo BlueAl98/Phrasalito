@@ -1,12 +1,10 @@
-package com.nayibit.feature_languages.data.remote.dto
+package com.nayibit.feature_categories.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class LanguageDto(
+data class LanguageWithCategoriesDto(
     @SerializedName("id") val id: Int,
     @SerializedName("code") val code: String,
     @SerializedName("name") val name: String,
-    @SerializedName("flagUrl") val flag: String,
-    @SerializedName("available") val status: Boolean,
     @SerializedName("categories") val categories: List<CategoryDto> = emptyList()
 )

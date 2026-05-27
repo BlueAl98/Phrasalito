@@ -1,7 +1,13 @@
 package com.nayibit.feature_languages.data.remote.mapper
 
+import com.nayibit.database.room.entities.CategoryEntity
+import com.nayibit.database.room.entities.DeckEntity
 import com.nayibit.database.room.entities.LanguageEntity
+import com.nayibit.database.room.entities.PhraseEntity
+import com.nayibit.feature_languages.data.remote.dto.CategoryDto
+import com.nayibit.feature_languages.data.remote.dto.DeckDto
 import com.nayibit.feature_languages.data.remote.dto.LanguageDto
+import com.nayibit.feature_languages.data.remote.dto.PhraseDto
 import com.nayibit.feature_languages.domain.model.Language
 import com.nayibit.feature_languages.domain.model.LanguageStatus
 import com.nayibit.feature_languages.domain.model.LanguageUi
@@ -30,6 +36,33 @@ fun LanguageEntity.toDomain() = Language(
     flag = flag,
     status = status,
     isDownload = isDownload
+)
+
+fun CategoryDto.toEntity(languageId: Int) = CategoryEntity(
+    id = id,
+    name = name,
+    subtitle = subtitle,
+    maxDecks = numDecks,
+    languageId = languageId,
+    icon = icon,
+    isDefault = true
+)
+
+fun DeckDto.toEntity(lngCode: String, languageName: String) = DeckEntity(
+    id = id,
+    idCategory = categoryId,
+    name = name,
+    maxCards = maxCards,
+    lngCode = lngCode,
+    languageName = languageName
+)
+
+fun PhraseDto.toEntity(deckId: Int) = PhraseEntity(
+    id = id,
+    targetLanguage = targetLanguage,
+    translation = translation,
+    deckId = deckId,
+    example = example
 )
 
 fun Language.toUi() = LanguageUi(

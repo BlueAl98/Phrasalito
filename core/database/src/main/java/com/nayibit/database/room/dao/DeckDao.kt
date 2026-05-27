@@ -21,6 +21,9 @@ interface DeckDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: DeckEntity): Long
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAll(items: List<DeckEntity>)
+
     @Delete
     suspend fun deleteDeck(deck: DeckEntity)
 
