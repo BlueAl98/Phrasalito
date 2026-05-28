@@ -19,7 +19,8 @@ data class PhraseStateUi(
     val isTTsReady: Boolean = false,
     val lngCode : String = "",
     val isTtsSpeaking : Boolean = false,
-    val currentSpeakingPhraseId: Int = 0
+    val currentSpeakingPhraseId: Int = 0,
+    val isTranslating: Boolean = false
 
 ){
     val isReadyForTest: Boolean

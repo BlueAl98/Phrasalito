@@ -23,7 +23,9 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -193,6 +195,9 @@ fun BodyModalInsertPhrase(
         value = state.translation,
         onValueChange = { onEvent(PhraseUiEvent.UpdateTextTraslation(it)) },
         label = stringResource(R.string.label_traduction_phrase),
+        trailingIcon = if (state.isTranslating) {
+            { CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp) }
+        } else null,
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
         keyboardActions = KeyboardActions(
             onNext = { focusRequesterExample.requestFocus() }),

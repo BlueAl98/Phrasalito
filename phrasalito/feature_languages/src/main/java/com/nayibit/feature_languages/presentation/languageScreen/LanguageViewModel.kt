@@ -8,6 +8,7 @@ import com.nayibit.feature_languages.domain.usecase.DownloadLanguageUseCase
 import com.nayibit.feature_languages.domain.usecase.GetLanguagesUseCase
 import com.nayibit.utils.DataStoreKeys
 import com.nayibit.network.error.NetworkError
+import com.nayibit.translation.domain.TranslationManager
 import com.nayibit.translation.domain.model.ModelDownloadState
 import com.nayibit.utils.helpers.Resource
 import com.nayibit.utils.helpers.onError
@@ -20,12 +21,14 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class LanguageViewModel @Inject constructor(
     private val getLanguagesUseCase: GetLanguagesUseCase,
     private val downloadLanguageUseCase: DownloadLanguageUseCase,
+    private val translationManager: TranslationManager,
     private val dataStore: GenericDataStore
 ) : ViewModel() {
 
@@ -67,6 +70,7 @@ class LanguageViewModel @Inject constructor(
                 when {
                     resource is Resource.Success && resource.data == ModelDownloadState.Downloaded -> {
                         _state.update { it.copy(downloadingCode = null) }
+                        preDownloadTargetModel(code)
                         loadLanguages()
                     }
                     resource is Resource.Success && resource.data is ModelDownloadState.Error -> {
@@ -80,6 +84,14 @@ class LanguageViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun preDownloadTargetModel(sourceCode: String) {
+        val targetCode = Locale.getDefault().language
+        if (targetCode == sourceCode) return
+        viewModelScope.launch {
+            translationManager.downloadModel(targetCode).collect {}
         }
     }
 

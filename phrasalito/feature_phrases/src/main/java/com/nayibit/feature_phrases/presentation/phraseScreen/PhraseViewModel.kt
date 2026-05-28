@@ -3,12 +3,18 @@ package com.nayibit.feature_phrases.presentation.phraseScreen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nayibit.datastore.data.GenericDataStore
 import com.nayibit.feature_phrases.R
 import com.nayibit.feature_phrases.domain.model.Phrase
 import com.nayibit.feature_phrases.domain.repositories.PhraseRepository
 import com.nayibit.feature_phrases.presentation.mappers.toPhrase
 import com.nayibit.feature_phrases.presentation.mappers.toPhraseUi
+import com.nayibit.translation.domain.TranslationManager
+import com.nayibit.utils.DataStoreKeys
+import com.nayibit.utils.helpers.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,6 +22,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 import com.nayibit.feature_phrases.presentation.phraseScreen.PhraseUiEvent.*
 import com.nayibit.utils.helpers.UiText
@@ -30,11 +37,9 @@ import com.nayibit.utils.helpers.onSuccess
 @HiltViewModel
 class PhraseViewModel
 @Inject constructor(
-    /*
-       private val speakTextUseCase: SpeakTextUseCase,
-       private val isTTsAvailableUseCase: IsTextSpeechReadyUseCase,
-       private val isSpeakingUseCase: IsSpeakingUseCase,*/
     private val repo: PhraseRepository,
+    private val translationManager: TranslationManager,
+    private val dataStore: GenericDataStore,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -50,21 +55,32 @@ class PhraseViewModel
     private val _eventFlow = MutableSharedFlow<PhraseUiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
+    private var translationJob: Job? = null
 
     init {
         getAllPhrases(idDeck)
+        loadLanguageCode()
+    }
+
+    private fun loadLanguageCode() {
+        viewModelScope.launch {
+            dataStore.getData(DataStoreKeys.SELECTED_LANGUAGE_CODE, "", String::class)
+                .collect { code -> _state.update { it.copy(lngCode = code) } }
+        }
     }
 
     fun onEvent(event: PhraseUiEvent) {
         when (event) {
             DismissModal -> {
+                translationJob?.cancel()
                 _state.value = _state.value.copy(
                     showModal = false,
                     isLoadingButton = false,
                     firstPhrase = "",
                     translation = "",
                     phraseToUpdate = null,
-                    example = ""
+                    example = "",
+                    isTranslating = false
                 )
             }
 
@@ -118,8 +134,18 @@ class PhraseViewModel
             }
 
             is UpdateTextFirstPhrase -> {
-
                 _state.update { it.copy(firstPhrase = event.text) }
+                if (_state.value.bodyModal == BodyModalEnum.BODY_INSERT_PHRASE) {
+                    translationJob?.cancel()
+                    if (event.text.isNotBlank()) {
+                        translationJob = viewModelScope.launch {
+                            delay(800L)
+                            translatePhrase(event.text)
+                        }
+                    } else {
+                        _state.update { it.copy(translation = "", isTranslating = false) }
+                    }
+                }
             }
 
             is UpdateTextTraslation -> {
@@ -242,6 +268,23 @@ class PhraseViewModel
         }
     }
 
+    private suspend fun translatePhrase(text: String) {
+        val sourceCode = _state.value.lngCode
+        if (sourceCode.isBlank()) return
+
+        val deviceLang = Locale.getDefault().language
+        val targetCode = if (deviceLang != sourceCode) deviceLang else "en"
+
+        _state.update { it.copy(isTranslating = true) }
+        translationManager.translate(text, sourceCode, targetCode).collect { result ->
+            when (result) {
+                is Resource.Success -> _state.update {
+                    it.copy(translation = result.data, isTranslating = false)
+                }
+                is Resource.Error -> _state.update { it.copy(isTranslating = false) }
+            }
+        }
+    }
 
     fun getAllPhrases(idDeck: Int) {
         viewModelScope.launch {
