@@ -28,7 +28,7 @@ interface CategoryDao {
      suspend fun updateCategory(category: CategoryEntity)
 
      @Query("SELECT * FROM categories WHERE id = :id")
-     suspend fun getCategoryById(id: Int): CategoryWithDeckEntity
+      fun getCategoryById(id: Int): CategoryWithDeckEntity
 
      @Transaction
      @Query("SELECT * FROM categories WHERE languageId = :languageId")

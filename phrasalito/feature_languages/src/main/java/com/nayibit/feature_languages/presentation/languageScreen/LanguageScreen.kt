@@ -69,33 +69,6 @@ fun LanguageScreen(
         }
     }
 
-    BaseDialog(
-        showDialog = state.showErrorDialog,
-        offsideDismiss = false,
-        onDismissRequest = { onEvent(LanguageUiEvent.DismissErrorDialog) }
-    ) {
-        Text(
-            text = stringResource(R.string.error_network_title),
-            style = MaterialTheme.typography.titleMedium
-        )
-        Text(
-            text = state.errorMessage ?: stringResource(R.string.error_network_default),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            TextButton(onClick = { onEvent(LanguageUiEvent.DismissErrorDialog) }) {
-                Text(stringResource(R.string.action_dismiss))
-            }
-            Button(onClick = { onEvent(LanguageUiEvent.RetryLoad) }) {
-                Text(stringResource(R.string.action_retry))
-            }
-        }
-    }
-
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -158,6 +131,33 @@ fun LanguageScreen(
                         }
                     }
                 )
+            }
+        }
+    }
+
+    BaseDialog(
+        showDialog = state.showErrorDialog,
+        offsideDismiss = false,
+        onDismissRequest = { onEvent(LanguageUiEvent.DismissErrorDialog) }
+    ) {
+        Text(
+            text = stringResource(R.string.error_network_title),
+            style = MaterialTheme.typography.titleMedium
+        )
+        Text(
+            text = state.errorMessage ?: stringResource(R.string.error_network_default),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            TextButton(onClick = { onEvent(LanguageUiEvent.DismissErrorDialog) }) {
+                Text(stringResource(R.string.action_dismiss))
+            }
+            Button(onClick = { onEvent(LanguageUiEvent.RetryLoad) }) {
+                Text(stringResource(R.string.action_retry))
             }
         }
     }

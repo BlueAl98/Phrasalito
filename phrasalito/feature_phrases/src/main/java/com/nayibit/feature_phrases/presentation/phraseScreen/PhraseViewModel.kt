@@ -11,7 +11,7 @@ import com.nayibit.feature_phrases.presentation.mappers.toPhrase
 import com.nayibit.feature_phrases.presentation.mappers.toPhraseUi
 import com.nayibit.translation.domain.TranslationManager
 import com.nayibit.utils.DataStoreKeys
-import com.nayibit.utils.helpers.Resource
+import com.nayibit.utils.helpers.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -278,10 +278,10 @@ class PhraseViewModel
         _state.update { it.copy(isTranslating = true) }
         translationManager.translate(text, sourceCode, targetCode).collect { result ->
             when (result) {
-                is Resource.Success -> _state.update {
+                is Result.Success -> _state.update {
                     it.copy(translation = result.data, isTranslating = false)
                 }
-                is Resource.Error -> _state.update { it.copy(isTranslating = false) }
+                is Result.Error -> _state.update { it.copy(isTranslating = false) }
             }
         }
     }

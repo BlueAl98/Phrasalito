@@ -11,6 +11,7 @@ import com.nayibit.network.error.NetworkError
 import com.nayibit.translation.domain.TranslationManager
 import com.nayibit.translation.domain.model.ModelDownloadState
 import com.nayibit.utils.helpers.Resource
+import com.nayibit.utils.helpers.Result
 import com.nayibit.utils.helpers.onError
 import com.nayibit.utils.helpers.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -53,7 +54,7 @@ class LanguageViewModel @Inject constructor(
                 )
                 _eventFlow.emit(LanguageUiEvent.NavigateWithLanguage(event.language.code))
             }
-            is LanguageUiEvent.DownloadLanguage -> downloadLanguage(event.language.code)
+            is LanguageUiEvent.DownloadLanguage -> {}/*downloadLanguage(event.language.code)*/
             LanguageUiEvent.DismissErrorDialog -> _state.update { it.copy(showErrorDialog = false) }
             LanguageUiEvent.RetryLoad -> {
                 _state.update { it.copy(showErrorDialog = false) }
@@ -63,7 +64,7 @@ class LanguageViewModel @Inject constructor(
         }
     }
 
-    private fun downloadLanguage(code: String) {
+   /* private fun downloadLanguage(code: String) {
         viewModelScope.launch {
             _state.update { it.copy(downloadingCode = code) }
             downloadLanguageUseCase(code).collect { resource ->
@@ -85,7 +86,7 @@ class LanguageViewModel @Inject constructor(
                 }
             }
         }
-    }
+    }*/
 
     private fun preDownloadTargetModel(sourceCode: String) {
         val targetCode = Locale.getDefault().language
@@ -99,23 +100,24 @@ class LanguageViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             getLanguagesUseCase()
-                .onSuccess { languages ->
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            availableLanguages = languages.filter { l -> l.isDownload }.map { l -> l.toUi() },
-                            explorableLanguages = languages.filterNot { l -> l.isDownload }.map { l -> l.toUi() }
-                        )
-                    }
-                }
-                .onError { error ->
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            showErrorDialog = true,
-                            errorMessage = error.toMessage()
-                        )
-                    }
+                .collect { result ->
+                   result.onSuccess { languages ->
+                       _state.update {
+                           it.copy(
+                               isLoading = false,
+                               availableLanguages = languages.filter { l -> l.isDownload }.map { l -> l.toUi() },
+                               explorableLanguages = languages.filterNot { l -> l.isDownload }.map { l -> l.toUi() }
+                           )
+                       }
+                   }.onError { error ->
+                       _state.update {
+                           it.copy(
+                               isLoading = false,
+                               showErrorDialog = true,
+                               errorMessage = error.toMessage()
+                           )
+                       }
+                   }
                 }
         }
     }

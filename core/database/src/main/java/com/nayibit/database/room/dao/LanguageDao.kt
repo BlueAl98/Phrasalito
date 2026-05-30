@@ -31,7 +31,7 @@ interface LanguageDao {
     suspend fun updateLanguage(language: LanguageEntity)
 
     @Query("SELECT * FROM languages")
-    suspend fun getAll(): List<LanguageEntity>
+     fun getAll(): Flow<List<LanguageEntity>>
 
     @Query("UPDATE languages SET isDownload = 1 WHERE code = :code")
     suspend fun updateIsDownloaded(code: String)

@@ -12,11 +12,14 @@ import com.nayibit.feature_languages.domain.repository.LanguageRepository
 import com.nayibit.network.error.HttpErrorParser
 import com.nayibit.network.error.NetworkError
 import com.nayibit.translation.domain.TranslationManager
+import com.nayibit.translation.domain.error.TranslationError
 import com.nayibit.translation.domain.model.ModelDownloadState
-import com.nayibit.utils.helpers.Resource
 import com.nayibit.utils.helpers.Result
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class LanguageRepositoryImpl @Inject constructor(
@@ -28,9 +31,9 @@ class LanguageRepositoryImpl @Inject constructor(
     private val translationManager: TranslationManager
 ) : LanguageRepository {
 
-    override suspend fun getLanguages(): Result<List<Language>, NetworkError> {
-        return try {
-            val downloadedCodes = languageDao.getAll()
+    override fun getLanguages(): Flow<Result<List<Language>, NetworkError>> = flow {
+        try {
+            val downloadedCodes = languageDao.getAll().first()
                 .filter { it.isDownload }
                 .map { it.code }
                 .toSet()
@@ -45,18 +48,14 @@ class LanguageRepositoryImpl @Inject constructor(
             val categoryEntities = dtos.flatMap { dto ->
                 dto.categories.map { it.toEntity(languageId = dto.id) }
             }
-            if (categoryEntities.isNotEmpty()) {
-                categoryDao.insertCategories(categoryEntities)
-            }
+            if (categoryEntities.isNotEmpty()) categoryDao.insertCategories(categoryEntities)
 
             val deckEntities = dtos.flatMap { dto ->
                 dto.categories.flatMap { category ->
                     category.decks.map { it.toEntity(lngCode = dto.code, languageName = dto.name) }
                 }
             }
-            if (deckEntities.isNotEmpty()) {
-                deckDao.insertAll(deckEntities)
-            }
+            if (deckEntities.isNotEmpty()) deckDao.insertAll(deckEntities)
 
             val phraseEntities = dtos.flatMap { dto ->
                 dto.categories.flatMap { category ->
@@ -65,26 +64,29 @@ class LanguageRepositoryImpl @Inject constructor(
                     }
                 }
             }
-            if (phraseEntities.isNotEmpty()) {
-                phraseDao.insertAll(phraseEntities)
-            }
+            if (phraseEntities.isNotEmpty()) phraseDao.insertAll(phraseEntities)
 
-            Result.Success(languageEntities.map { it.toDomain() })
         } catch (e: Exception) {
-            val cached = languageDao.getAll()
-            if (cached.isNotEmpty()) {
-                Result.Success(cached.map { it.toDomain() })
-            } else {
-                Result.Error(HttpErrorParser.parse(e))
+            val cached = languageDao.getAll().first()
+            if (cached.isEmpty()) {
+                emit(Result.Error(HttpErrorParser.parse(e)))
+                return@flow
             }
         }
+
+        emitAll(
+            languageDao.getLanguages().map { list ->
+                Result.Success(list.map { it.language.toDomain() })
+            }
+        )
     }
 
-    override fun downloadLanguage(code: String): Flow<Resource<ModelDownloadState>> =
-        translationManager.downloadModel(code)
-            .onEach { resource ->
-                if (resource is Resource.Success && resource.data == ModelDownloadState.Downloaded) {
-                    languageDao.updateIsDownloaded(code)
-                }
+    override fun downloadLanguage(code: String): Flow<Result<ModelDownloadState, TranslationError>> = flow {
+        translationManager.downloadModel(code).collect { result ->
+            if (result is Result.Success && result.data == ModelDownloadState.Downloaded) {
+                languageDao.updateIsDownloaded(code)
             }
+            emit(result)
+        }
+    }
 }
