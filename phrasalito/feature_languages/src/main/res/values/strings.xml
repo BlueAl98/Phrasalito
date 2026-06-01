@@ -8,6 +8,10 @@
     <string name="label_available_to_download">Disponible para descargar</string>
     <string name="label_coming_soon">Próximamente</string>
 
+    <!-- Download dialog -->
+    <string name="dialog_download_title">Descargando idioma</string>
+    <string name="dialog_download_body">Cargando información necesaria para la traducción…</string>
+
     <!-- Error dialog -->
     <string name="error_network_title">Error de conexión</string>
     <string name="error_network_default">No se pudo cargar los idiomas.</string>

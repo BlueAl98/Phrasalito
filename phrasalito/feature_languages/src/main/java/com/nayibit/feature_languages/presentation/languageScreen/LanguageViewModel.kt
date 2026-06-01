@@ -41,6 +41,7 @@ class LanguageViewModel @Inject constructor(
 
     init {
         loadLanguages()
+        preDownloadTargetModel()
     }
 
     fun onEvent(event: LanguageUiEvent) {
@@ -54,7 +55,7 @@ class LanguageViewModel @Inject constructor(
                 )
                 _eventFlow.emit(LanguageUiEvent.NavigateWithLanguage(event.language.code))
             }
-            is LanguageUiEvent.DownloadLanguage -> {}/*downloadLanguage(event.language.code)*/
+            is LanguageUiEvent.DownloadLanguage -> {preDownloadTargetModel(event.language.code)}
             LanguageUiEvent.DismissErrorDialog -> _state.update { it.copy(showErrorDialog = false) }
             LanguageUiEvent.RetryLoad -> {
                 _state.update { it.copy(showErrorDialog = false) }
@@ -64,36 +65,26 @@ class LanguageViewModel @Inject constructor(
         }
     }
 
-   /* private fun downloadLanguage(code: String) {
-        viewModelScope.launch {
-            _state.update { it.copy(downloadingCode = code) }
-            downloadLanguageUseCase(code).collect { resource ->
-                when {
-                    resource is Resource.Success && resource.data == ModelDownloadState.Downloaded -> {
-                        _state.update { it.copy(downloadingCode = null) }
-                        preDownloadTargetModel(code)
-                        loadLanguages()
-                    }
-                    resource is Resource.Success && resource.data is ModelDownloadState.Error -> {
-                        val msg = (resource.data as ModelDownloadState.Error).message
-                        _state.update { it.copy(downloadingCode = null) }
-                        _eventFlow.emit(LanguageUiEvent.ShowSnackbar(msg))
-                    }
-                    resource is Resource.Error -> {
-                        _state.update { it.copy(downloadingCode = null) }
-                        _eventFlow.emit(LanguageUiEvent.ShowSnackbar(resource.message))
-                    }
-                }
-            }
-        }
-    }*/
+    private fun preDownloadTargetModel(sourceCode: String = "es") {
+       viewModelScope.launch {
+           downloadLanguageUseCase(sourceCode).collect { result ->
+               result.onSuccess { modelState ->
+                   when (modelState) {
+                       ModelDownloadState.Downloaded -> {
+                           _state.update { it.copy(isModelDownloading = false) }
+                       }
+                       ModelDownloadState.Downloading -> {
+                           _state.update { it.copy(isModelDownloading = true) }
+                       }
+                       ModelDownloadState.NotDownloaded -> {
+                           _state.update { it.copy(isModelDownloading = false) }
+                       }
+                   }
+               }.onError {
 
-    private fun preDownloadTargetModel(sourceCode: String) {
-        val targetCode = Locale.getDefault().language
-        if (targetCode == sourceCode) return
-        viewModelScope.launch {
-            translationManager.downloadModel(targetCode).collect {}
-        }
+               }
+           }
+       }
     }
 
     private fun loadLanguages() {

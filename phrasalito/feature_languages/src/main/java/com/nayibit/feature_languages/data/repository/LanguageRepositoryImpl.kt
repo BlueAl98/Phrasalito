@@ -15,6 +15,7 @@ import com.nayibit.translation.domain.TranslationManager
 import com.nayibit.translation.domain.error.TranslationError
 import com.nayibit.translation.domain.model.ModelDownloadState
 import com.nayibit.utils.helpers.Result
+import com.nayibit.utils.helpers.onSuccess
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
