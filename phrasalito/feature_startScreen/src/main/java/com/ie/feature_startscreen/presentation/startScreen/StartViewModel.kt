@@ -27,7 +27,7 @@ class StartViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
    init {
-       getFirstTime()
+       chooseScreen()
    }
 
 
@@ -57,7 +57,7 @@ class StartViewModel @Inject constructor(
         }
      }
 
-    fun getFirstTime() {
+    fun chooseScreen() {
         viewModelScope.launch {
             updateState { it.copy(isLoading = true) }
             selectedScreenUseCase()
