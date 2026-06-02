@@ -4,10 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.nayibit.utils.SelectScreen
 
 @Composable
 fun FeatureStartScreen(
-    navigation: () -> Unit
+    navigation: (SelectScreen) -> Unit
 ){
 
     val viewModel: StartViewModel = hiltViewModel()
@@ -17,7 +18,7 @@ fun FeatureStartScreen(
         state = state,
         eventFlow = viewModel.eventFlow,
         onEvent = viewModel::onEvent
-    ) {
-       navigation()
+    ) { screen->
+       navigation(screen)
     }
 }

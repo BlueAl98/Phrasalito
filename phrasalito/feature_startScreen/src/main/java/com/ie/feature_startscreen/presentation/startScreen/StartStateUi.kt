@@ -8,6 +8,7 @@ data class StartStateUi(
     val totalpages: Int = 2,
     val currentPage: Int = 0,
     val isFirstTime : Boolean = false,
+    val selectedLanguageId : Int = 0
 )
 
 

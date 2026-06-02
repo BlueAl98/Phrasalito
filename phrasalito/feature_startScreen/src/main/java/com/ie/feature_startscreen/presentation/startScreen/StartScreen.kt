@@ -41,6 +41,7 @@ import com.ie.feature_startscreen.presentation.composables.AnimatedIllustration
 import com.ie.feature_startscreen.presentation.composables.DotsIndicator
 import com.ie.feature_startscreen.presentation.composables.rememberNotificationPermissionHandler
 import com.ie.feature_startscreen.presentation.model.OnboardingColors
+import com.nayibit.utils.SelectScreen
 import com.nayibit.utils.ui.composables.LoadingScreen
 import com.nayibit.utils.ui.composables.isLandscape
 import com.nayibit.utils.ui.theme.primaryGradientEnd
@@ -54,7 +55,7 @@ fun StartScreen(
     state: StartStateUi,
     eventFlow: Flow<StartUiEvent>,
     onEvent: (StartUiEvent) -> Unit,
-    navigation: () -> Unit
+    navigation: (SelectScreen) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -64,7 +65,7 @@ fun StartScreen(
         eventFlow.collect { event ->
             when (event) {
                 is StartUiEvent.Navigate -> {
-                    navigation()
+                    navigation(event.screen)
                 }
 
                 is StartUiEvent.ShowToast -> {

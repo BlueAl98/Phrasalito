@@ -9,6 +9,7 @@ import com.nayibit.feature_categories.presentation.categoryScreen.FeatureCategor
 import com.nayibit.feature_deckscreen.presentation.deckScreen.FeatureDeckScreen
 import com.nayibit.feature_languages.presentation.languageScreen.FeatureLanguageScreen
 import com.nayibit.feature_phrases.presentation.phraseScreen.FeaturePhraseScreen
+import com.nayibit.utils.SelectScreen
 
 
 @Composable
@@ -22,10 +23,22 @@ fun Navigation() {
     ) {
 
         composable <Routes.StartScreen>{
-            FeatureStartScreen {
-                navController.navigate(Routes.LanguageScreen) {
-                    popUpTo<Routes.StartScreen> { inclusive = true }
+            FeatureStartScreen { screen ->
+                when(screen){
+                    SelectScreen.START_SCREEN -> {}
+                    SelectScreen.LANGUAGE_SCREEN -> {
+                        navController.navigate(Routes.LanguageScreen) {
+                            popUpTo<Routes.StartScreen> { inclusive = true }
+                        }
+                    }
+                    SelectScreen.CATEGORIE_SCREEN -> {
+                        navController.navigate(Routes.CategoryScreen) {
+                            popUpTo<Routes.StartScreen> { inclusive = true }
+                        }
+                    }
                 }
+
+
             }
         }
 

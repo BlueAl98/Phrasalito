@@ -2,8 +2,9 @@ package com.ie.feature_startscreen.presentation.startScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ie.feature_startscreen.domain.usecases.GetFirstTimeUseCase
 import com.ie.feature_startscreen.domain.usecases.InsertFirstTimeUseCase
+import com.ie.feature_startscreen.domain.usecases.SelectedScreenUseCase
+import com.nayibit.utils.SelectScreen
 import com.nayibit.utils.helpers.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StartViewModel @Inject constructor(
     private val insertFirstTimeUseCase: InsertFirstTimeUseCase,
-    private val getFirstTimeUseCase: GetFirstTimeUseCase,
+    private val selectedScreenUseCase: SelectedScreenUseCase,
 ): ViewModel() {
 
     private val _state = MutableStateFlow(StartStateUi())
@@ -38,7 +39,7 @@ class StartViewModel @Inject constructor(
 
            is StartUiEvent.Navigate -> {
                 viewModelScope.launch {
-                    _eventFlow.emit(StartUiEvent.Navigate)
+                    _eventFlow.emit(StartUiEvent.Navigate(event.screen))
                 }
             }
             is StartUiEvent.ShowToast -> {
@@ -59,22 +60,29 @@ class StartViewModel @Inject constructor(
     fun getFirstTime() {
         viewModelScope.launch {
             updateState { it.copy(isLoading = true) }
-            getFirstTimeUseCase()
+            selectedScreenUseCase()
                 .collect { result ->
                     when (result) {
                         is Resource.Error -> {
-                            updateState { it.copy(isLoading = false, errorMessage = result.message) }
-                        }
-                        is Resource.Success -> {
-                            updateState { it.copy(isFirstTime = result.data, isLoading = false) }
-                            if (result.data) {
-                                _eventFlow.emit(StartUiEvent.Navigate)
+                            updateState {
+                                it.copy(
+                                    isLoading = false,
+                                    errorMessage = result.message
+                                )
                             }
                         }
+
+                        is Resource.Success -> {
+                            if (result.data == SelectScreen.START_SCREEN){
+                                updateState { it.copy(isLoading = false) }
+                            }
+                            _eventFlow.emit(StartUiEvent.Navigate(result.data))
+                        }
+                    }
                     }
                 }
-        }
     }
+
 
     // Helper function to reduce boilerplate
     private fun updateState(block: (StartStateUi) -> StartStateUi) {
@@ -103,7 +111,7 @@ class StartViewModel @Inject constructor(
                                 isLoading = false,
                                 checkPermissions = true
                             )
-                            _eventFlow.emit(StartUiEvent.Navigate)
+                            _eventFlow.emit(StartUiEvent.Navigate(SelectScreen.LANGUAGE_SCREEN))
                         }
                     }
                 }
