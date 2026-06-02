@@ -40,7 +40,7 @@ class CategoryViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            languageId = dataStore
+          languageId = dataStore
                 .getData(DataStoreKeys.SELECTED_LANGUAGE_ID, 0, Int::class)
                 .first()
 
@@ -123,6 +123,10 @@ class CategoryViewModel @Inject constructor(
                     )
                 )
             }
+
+            ChangeLanguage -> viewModelScope.launch {
+                _eventFlow.emit(ChangeLanguage)
+            }
         }
     }
 
@@ -163,6 +167,7 @@ class CategoryViewModel @Inject constructor(
     fun getCategories() {
         viewModelScope.launch {
             updateState { it.copy(isLoading = true) }
+
             categoryRepository.getCategories(languageId).collect { result ->
                 result.onSuccess { categories ->
                     updateState { it.copy(categories = categories.map { ct -> ct.toUI() }, isLoading = false) }

@@ -43,9 +43,16 @@ fun Navigation() {
         }
 
          composable <Routes.CategoryScreen>{
-             FeatureCategoryScreen { id ->
-              navController.navigate(Routes.DeckScreen(id))
-            }
+             FeatureCategoryScreen(
+                 navigation = { id ->
+                     navController.navigate(Routes.DeckScreen(id))
+                 },
+                 onChangeLanguage = {
+                     navController.navigate(Routes.LanguageScreen){
+                       popUpTo<Routes.CategoryScreen> { inclusive = true }
+                     }
+                 }
+             )
         }
 
         composable<Routes.DeckScreen>{

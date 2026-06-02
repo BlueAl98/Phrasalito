@@ -19,4 +19,7 @@
     <!-- Content descriptions -->
     <string name="cd_add">Agregar</string>
 
+    <!-- Menu options -->
+    <string name="action_change_language">Cambiar de idioma</string>
+
 </resources>

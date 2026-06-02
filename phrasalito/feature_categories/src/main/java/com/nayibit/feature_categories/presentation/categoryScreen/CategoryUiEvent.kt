@@ -17,4 +17,5 @@ sealed interface CategoryUiEvent {
     data class DeleteCategory(val category: CategoryUi): CategoryUiEvent
     data class FlipCard(val category: CategoryUi ,val flipped: Boolean): CategoryUiEvent
     object DissmissDialog: CategoryUiEvent
+    object ChangeLanguage: CategoryUiEvent
 }

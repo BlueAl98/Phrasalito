@@ -14,13 +14,24 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,17 +48,20 @@ import com.nayibit.utils.ui.composables.LoadingScreen
 import com.nayibit.utils.ui.theme.learningColors
 import kotlinx.coroutines.flow.Flow
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryScreen(
     modifier: Modifier = Modifier,
     state: CategoryStateUi,
     eventFlow: Flow<CategoryUiEvent>,
     onEvent: (CategoryUiEvent) -> Unit,
+    onChangeLanguage: () -> Unit,
     navigation: (Int) -> Unit
 ) {
 
     val context = LocalContext.current
     val colors = learningColors()
+    var menuExpanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         eventFlow.collect { event ->
@@ -60,6 +74,8 @@ fun CategoryScreen(
                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
                 }
 
+                CategoryUiEvent.ChangeLanguage -> onChangeLanguage()
+
                 else -> {}
             }
         }
@@ -67,6 +83,38 @@ fun CategoryScreen(
 
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {},
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                ),
+                actions = {
+                    Box {
+                        IconButton(onClick = { menuExpanded = true }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = null
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = menuExpanded,
+                            onDismissRequest = { menuExpanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(color =MaterialTheme.colorScheme.background,
+                                        text = stringResource(R.string.action_change_language)) },
+                                onClick = {
+                                    menuExpanded = false
+                                    onEvent(CategoryUiEvent.ChangeLanguage)
+                                }
+                            )
+                        }
+                    }
+                }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onEvent(CategoryUiEvent.ShowDialog(true)) },
