@@ -7,11 +7,39 @@ import com.nayibit.datastore.data.GenericDataStore
 import com.nayibit.feature_phrases.R
 import com.nayibit.feature_phrases.domain.model.Phrase
 import com.nayibit.feature_phrases.domain.repositories.PhraseRepository
+import com.nayibit.feature_phrases.domain.useCases.IsSpeakingUseCase
+import com.nayibit.feature_phrases.domain.useCases.IsTtsAvailableUseCase
+import com.nayibit.feature_phrases.domain.useCases.SpeakTextUseCase
 import com.nayibit.feature_phrases.presentation.mappers.toPhrase
 import com.nayibit.feature_phrases.presentation.mappers.toPhraseUi
+import com.nayibit.feature_phrases.presentation.phraseScreen.PhraseUiEvent.CollapsedItem
+import com.nayibit.feature_phrases.presentation.phraseScreen.PhraseUiEvent.DeletePhrase
+import com.nayibit.feature_phrases.presentation.phraseScreen.PhraseUiEvent.DismissModal
+import com.nayibit.feature_phrases.presentation.phraseScreen.PhraseUiEvent.ExpandItem
+import com.nayibit.feature_phrases.presentation.phraseScreen.PhraseUiEvent.InsertPhrase
+import com.nayibit.feature_phrases.presentation.phraseScreen.PhraseUiEvent.Navigation
+import com.nayibit.feature_phrases.presentation.phraseScreen.PhraseUiEvent.ShowModal
+import com.nayibit.feature_phrases.presentation.phraseScreen.PhraseUiEvent.ShowSnackbar
+import com.nayibit.feature_phrases.presentation.phraseScreen.PhraseUiEvent.ShowToast
+import com.nayibit.feature_phrases.presentation.phraseScreen.PhraseUiEvent.SpeakText
+import com.nayibit.feature_phrases.presentation.phraseScreen.PhraseUiEvent.UpdatePhrase
+import com.nayibit.feature_phrases.presentation.phraseScreen.PhraseUiEvent.UpdateTextExample
+import com.nayibit.feature_phrases.presentation.phraseScreen.PhraseUiEvent.UpdateTextFirstPhrase
+import com.nayibit.feature_phrases.presentation.phraseScreen.PhraseUiEvent.UpdateTextTraslation
+import com.nayibit.feature_phrases.presentation.phraseScreen.PhraseUiEvent.UploadCurrentIndexCard
 import com.nayibit.translation.domain.TranslationManager
+import com.nayibit.tts.domain.TtsManager
 import com.nayibit.utils.DataStoreKeys
 import com.nayibit.utils.helpers.Result
+import com.nayibit.utils.helpers.UiText
+import com.nayibit.utils.helpers.UiText.DynamicString
+import com.nayibit.utils.helpers.UiText.StringResource
+import com.nayibit.utils.helpers.ValidateExampleResult
+import com.nayibit.utils.helpers.normalizeSpaces
+import com.nayibit.utils.helpers.onError
+import com.nayibit.utils.helpers.onSuccess
+import com.nayibit.utils.helpers.removeLonelySigns
+import com.nayibit.utils.helpers.validateExample
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -24,15 +52,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
-import com.nayibit.feature_phrases.presentation.phraseScreen.PhraseUiEvent.*
-import com.nayibit.utils.helpers.UiText
-import com.nayibit.utils.helpers.ValidateExampleResult
-import com.nayibit.utils.helpers.removeLonelySigns
-import com.nayibit.utils.helpers.validateExample
-import  com.nayibit.utils.helpers.UiText.*
-import com.nayibit.utils.helpers.normalizeSpaces
-import com.nayibit.utils.helpers.onError
-import com.nayibit.utils.helpers.onSuccess
 
 @HiltViewModel
 class PhraseViewModel
@@ -40,6 +59,10 @@ class PhraseViewModel
     private val repo: PhraseRepository,
     private val translationManager: TranslationManager,
     private val dataStore: GenericDataStore,
+    private val ttsRepository: TtsManager,
+    private val isTtsAvailableUseCase: IsTtsAvailableUseCase,
+    private val isSpeakingUseCase: IsSpeakingUseCase,
+    private val speakTextUseCase: SpeakTextUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -60,6 +83,7 @@ class PhraseViewModel
     init {
         getAllPhrases(idDeck)
         loadLanguageCode()
+        setupConfiguration()
     }
 
     private fun loadLanguageCode() {
@@ -135,7 +159,6 @@ class PhraseViewModel
 
             is UpdateTextFirstPhrase -> {
                 _state.update { it.copy(firstPhrase = event.text) }
-                if (_state.value.bodyModal == BodyModalEnum.BODY_INSERT_PHRASE) {
                     translationJob?.cancel()
                     if (event.text.isNotBlank()) {
                         translationJob = viewModelScope.launch {
@@ -145,7 +168,6 @@ class PhraseViewModel
                     } else {
                         _state.update { it.copy(translation = "", isTranslating = false) }
                     }
-                }
             }
 
             is UpdateTextTraslation -> {
@@ -262,8 +284,7 @@ class PhraseViewModel
             }
 
             is SpeakText -> {
-                _state.update { it.copy(isTtsSpeaking = true) }
-                // speakTextUseCase(event.text, "")
+                speakTextUseCase(event.text, _state.value.lngCode)
             }
         }
     }
@@ -375,35 +396,33 @@ class PhraseViewModel
     }
 
 
-    /*
-
-        private fun setupConfiguration(){
-            viewModelScope.launch {
-                isTTsAvailableUseCase().collect { ttsResult ->
-                    when (ttsResult) {
-                        is Resource.Error -> {
-                            _state.update { it.copy(isTTsReady = false, isTtsSpeaking = false) }
-                        }
-                        is Resource.Success -> {
-                            if (ttsResult.data){
-                             _state.update { it.copy(isTTsReady = true) }
-                             isProgressSpeaking()
-                            }else{
-                                _state.update { it.copy(isTtsSpeaking = false) }
-                            }
+    private fun setupConfiguration() {
+        viewModelScope.launch {
+            isTtsAvailableUseCase().collect { ttsResult ->
+                when (ttsResult) {
+                    is Result.Error -> {
+                        _state.update { it.copy(isTTsReady = false, isTtsSpeaking = false) }
+                    }
+                    is Result.Success -> {
+                        if (ttsResult.data) {
+                            _state.update { it.copy(isTTsReady = true) }
+                            isProgressSpeaking()
+                        } else {
+                            _state.update { it.copy(isTtsSpeaking = false) }
                         }
                     }
                 }
             }
         }
+    }
 
-        private suspend fun isProgressSpeaking(){
-                isSpeakingUseCase().collect { progressSpeak->
-                    if (progressSpeak)
-                        _state.update { it.copy(isTtsSpeaking = true) }
-                    else
-                        _state.update { it.copy(isTtsSpeaking = false) }
-                }
+    private suspend fun isProgressSpeaking() {
+        isSpeakingUseCase().collect { progressSpeak ->
+            if (progressSpeak)
+                _state.update { it.copy(isTtsSpeaking = true) }
+            else
+                _state.update { it.copy(isTtsSpeaking = false) }
         }
-    */
+    }
+
 }

@@ -2,7 +2,8 @@ package com.nayibit.tts.data
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
-import com.nayibit.utils.helpers.Resource
+import com.nayibit.tts.utils.TtsError
+import com.nayibit.utils.helpers.Result
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,8 +14,8 @@ import javax.inject.Inject
 class TextToSpeechManager @Inject constructor(
      private val context: Context
 ) {
-    private val _isReady = MutableStateFlow<Resource<Boolean>>(Resource.Success(false))
-    val isReady: StateFlow<Resource<Boolean>> = _isReady.asStateFlow()
+    private val _isReady = MutableStateFlow<Result<Boolean, TtsError>>(Result.Success(false))
+    val isReady: StateFlow<Result<Boolean, TtsError>> = _isReady.asStateFlow()
 
 
     private val _isSpeaking = MutableStateFlow(false)
@@ -30,9 +31,9 @@ class TextToSpeechManager @Inject constructor(
     private fun initTts() {
         tts = TextToSpeech(context) { status ->
             if (status == TextToSpeech.SUCCESS) {
-                _isReady.value = Resource.Success(true)
+                _isReady.value = Result.Success(true)
             } else {
-                _isReady.value = Resource.Error("Initialization failed")
+                _isReady.value = Result.Error(TtsError.InitializationFailed)
             }
         }
 
@@ -55,14 +56,14 @@ class TextToSpeechManager @Inject constructor(
 
     fun speak(text: String, langCode: Locale = Locale.US) {
         if (!::tts.isInitialized) {
-            _isReady.value = Resource.Error("TTS not initialized")
+            _isReady.value = Result.Error(TtsError.NotInitialized)
             return
         }
 
         val result = tts.setLanguage(langCode)
 
         if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-            _isReady.value = Resource.Error("Language not supported: $langCode")
+            _isReady.value = Result.Error(TtsError.LanguageNotSupported(langCode.language))
             return
         }
 

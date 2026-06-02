@@ -1,5 +1,13 @@
 package com.nayibit.utils.helpers
 
+import java.util.Locale
+
+fun String.toLocale(): Locale = when (this.lowercase()) {
+    "en" -> Locale.ENGLISH
+    "it" -> Locale.ITALIAN
+    else -> Locale(this)
+}
+
 fun String.normalizeSpaces(): String {
     return this.trim()               // remove leading/trailing spaces
         .replace("\\s+".toRegex(), " ") // replace multiple spaces/tabs/newlines with a single space

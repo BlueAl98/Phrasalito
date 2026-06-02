@@ -1,7 +1,9 @@
 package com.nayibit.tts.data
 
 import com.nayibit.tts.domain.TtsManager
-import com.nayibit.utils.helpers.Resource
+import com.nayibit.tts.utils.TtsError
+import com.nayibit.utils.helpers.Result
+import com.nayibit.utils.helpers.toLocale
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.util.Locale
@@ -12,23 +14,27 @@ class TtsManagerImpl @Inject constructor(
 ) : TtsManager {
 
     override fun speakText(text: String, langCode: String) {
-        TODO("Not yet implemented")
+        ttsManager.speak(text, langCode.toLocale())
     }
 
     override fun shutdownTts() {
         TODO("Not yet implemented")
     }
 
-    override suspend fun isTtsReady(): Flow<Resource<Boolean>> {
+    override suspend fun isTtsReady(): Flow<Result<Boolean, TtsError>> {
         return ttsManager.isReady
     }
 
-    override suspend fun getLanguagesSuported(): Flow<Resource<List<Locale>>> {
+    override suspend fun isSpeaking(): Flow<Boolean> {
+        return ttsManager.isSpeaking
+    }
+
+    override suspend fun getLanguagesSuported(): Flow<Result<List<Locale>, TtsError>> {
         return flow {
             try {
-               emit(Resource.Success(ttsManager.getAvailableLanguages()))
-            }catch (e: Exception){
-                emit(Resource.Error(e.message ?: "Unknown error"))
+                emit(Result.Success(ttsManager.getAvailableLanguages()))
+            } catch (e: Exception) {
+                emit(Result.Error(TtsError.InitializationFailed))
             }
         }
     }

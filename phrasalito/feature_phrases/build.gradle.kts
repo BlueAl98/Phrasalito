@@ -41,6 +41,8 @@ dependencies {
     implementation(project(":core:utils"))
     implementation(project(":core:translation"))
     implementation(project(":core:datastore"))
+    implementation(project(":core:tts"))
+
 
 
     ksp(libs.hilt.android.compiler)

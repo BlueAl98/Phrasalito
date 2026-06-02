@@ -1,6 +1,7 @@
 package com.nayibit.tts.domain
 
-import com.nayibit.utils.helpers.Resource
+import com.nayibit.tts.utils.TtsError
+import com.nayibit.utils.helpers.Result
 import kotlinx.coroutines.flow.Flow
 import java.util.Locale
 
@@ -10,9 +11,11 @@ interface TtsManager {
 
     fun shutdownTts()
 
-    suspend fun isTtsReady(): Flow<Resource<Boolean>>
+    suspend fun isTtsReady(): Flow<Result<Boolean, TtsError>>
 
-    suspend fun getLanguagesSuported(): Flow<Resource<List<Locale>>>
+    suspend fun isSpeaking(): Flow<Boolean>
+
+    suspend fun getLanguagesSuported(): Flow<Result<List<Locale>, TtsError>>
 
 
 }
