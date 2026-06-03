@@ -45,14 +45,14 @@ class CategoryViewModel @Inject constructor(
                 .first()
 
             // Fetch and seed from network (once per language, non-blocking)
-            launch {
+            /*launch {
                 categoryRepository.fetchAndSeedIfNeeded(languageId).onError {
                     // Only emit error if the category list is still empty after seeding attempt
                     if (_state.value.categories.isEmpty()) {
                         _eventFlow.emit(ShowToast("No se pudieron cargar las categorías"))
                     }
                 }
-            }
+            }*/
 
             // Observe DB immediately — list updates when seed completes
             getCategories()

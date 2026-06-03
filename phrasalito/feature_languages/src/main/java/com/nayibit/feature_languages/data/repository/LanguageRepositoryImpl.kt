@@ -1,5 +1,6 @@
 package com.nayibit.feature_languages.data.repository
 
+import android.util.Log
 import com.nayibit.database.room.dao.CategoryDao
 import com.nayibit.database.room.dao.DeckDao
 import com.nayibit.database.room.dao.LanguageDao
@@ -38,12 +39,16 @@ class LanguageRepositoryImpl @Inject constructor(
                 .filter { it.isDownload }
                 .map { it.code }
                 .toSet()
+             Log.d("NAJIB", ""+downloadedCodes)
 
             val dtos = apiService.getLanguages()
 
             val languageEntities = dtos.map { dto ->
                 dto.toEntity().copy(isDownload = dto.code in downloadedCodes)
             }
+
+            Log.d("NAJIB", ""+languageEntities)
+
             languageDao.insertAll(languageEntities)
 
             val categoryEntities = dtos.flatMap { dto ->
@@ -65,7 +70,7 @@ class LanguageRepositoryImpl @Inject constructor(
                     }
                 }
             }
-            if (phraseEntities.isNotEmpty()) phraseDao.insertAll(phraseEntities)
+            if (phraseEntities.isNotEmpty()) phraseDao.insertAllIgnore(phraseEntities)
 
         } catch (e: Exception) {
             val cached = languageDao.getAll().first()

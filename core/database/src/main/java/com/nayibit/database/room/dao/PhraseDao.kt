@@ -18,6 +18,9 @@ interface PhraseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(items: List<PhraseEntity>)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAllIgnore(items: List<PhraseEntity>)
+
     @Query("DELETE FROM phrases WHERE id = :id")
     suspend fun delete(id: Int)
 
