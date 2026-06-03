@@ -24,6 +24,12 @@ interface LanguageDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(languages: List<LanguageEntity>)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAllIgnore(languages: List<LanguageEntity>)
+
+    @Query("UPDATE languages SET name = :name, flag = :flag, status = :status WHERE id = :id")
+    suspend fun updateMetadata(id: Int, name: String, flag: String, status: Boolean)
+
     @Delete
     suspend fun deleteLanguage(language: LanguageEntity)
 

@@ -69,7 +69,9 @@ fun Navigation() {
 
         composable<Routes.LanguageScreen> {
             FeatureLanguageScreen { _ ->
-                navController.navigate(Routes.CategoryScreen)
+                navController.navigate(Routes.CategoryScreen){
+                    popUpTo<Routes.LanguageScreen> { inclusive = true }
+                }
             }
         }
 

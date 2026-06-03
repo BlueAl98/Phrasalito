@@ -39,7 +39,6 @@ class LanguageRepositoryImpl @Inject constructor(
                 .filter { it.isDownload }
                 .map { it.code }
                 .toSet()
-             Log.d("NAJIB", ""+downloadedCodes)
 
             val dtos = apiService.getLanguages()
 
@@ -47,9 +46,10 @@ class LanguageRepositoryImpl @Inject constructor(
                 dto.toEntity().copy(isDownload = dto.code in downloadedCodes)
             }
 
-            Log.d("NAJIB", ""+languageEntities)
-
-            languageDao.insertAll(languageEntities)
+            // IGNORE avoids the DELETE+INSERT that CASCADE-wipes user categories/decks/phrases
+            languageDao.insertAllIgnore(languageEntities)
+            // Update metadata (name, flag, status) via UPDATE — never triggers CASCADE
+            languageEntities.forEach { languageDao.updateMetadata(it.id, it.name, it.flag, it.status) }
 
             val categoryEntities = dtos.flatMap { dto ->
                 dto.categories.map { it.toEntity(languageId = dto.id) }
