@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface CategoryRepository {
     fun getCategories(languageId: Int): Flow<Result<List<Category>, DatabaseError>>
-    suspend fun fetchAndSeedIfNeeded(languageId: Int): Result<Unit, DatabaseError>
     suspend fun insertCategory(category: Category): Result<Unit, DatabaseError>
     suspend fun updateCategory(category: Category): Result<Unit, DatabaseError>
     suspend fun deleteCategory(category: Category): Result<Unit, DatabaseError>
