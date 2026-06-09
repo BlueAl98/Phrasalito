@@ -1,5 +1,6 @@
 package com.nayibit.phrasalito
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -27,6 +28,9 @@ class MainActivity : ComponentActivity() {
             statusBarStyle = SystemBarStyle.dark(bgColor),
             navigationBarStyle = SystemBarStyle.dark(bgColor)
         )
+        // Android 15 ignores the scrim color in SystemBarStyle and forces transparent bars.
+        // Setting the window background makes that same color show through the transparent bars.
+        window.decorView.setBackgroundColor(bgColor)
 
         setContent {
            PhrasalitoTheme {

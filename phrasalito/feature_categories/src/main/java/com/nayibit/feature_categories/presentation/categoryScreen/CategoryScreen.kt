@@ -98,6 +98,7 @@ fun CategoryScreen(
                             )
                         }
                         DropdownMenu(
+                            containerColor = Color.White,
                             expanded = menuExpanded,
                             onDismissRequest = { menuExpanded = false }
                         ) {
