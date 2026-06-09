@@ -290,14 +290,10 @@ class PhraseViewModel
     }
 
     private suspend fun translatePhrase(text: String) {
-        val sourceCode = _state.value.lngCode
-        if (sourceCode.isBlank()) return
-
-        val deviceLang = Locale.getDefault().language
-        val targetCode = if (deviceLang != sourceCode) deviceLang else "en"
-
+        val sourceLanguage = _state.value.lngCode
+        if (sourceLanguage.isBlank()) return
         _state.update { it.copy(isTranslating = true) }
-        translationManager.translate(text, sourceCode, targetCode).collect { result ->
+        translationManager.translate(text, sourceLanguage, "es").collect { result ->
             when (result) {
                 is Result.Success -> _state.update {
                     it.copy(translation = result.data, isTranslating = false)
