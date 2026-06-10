@@ -44,7 +44,6 @@ dependencies {
 
     implementation(project(":core:utils"))
     implementation(project(":core:datastore"))
-  //  implementation(project(":core:tts"))
     implementation(project(":core:database"))
 
 
@@ -57,6 +56,16 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+
+    //Work manager
+    //WorkManager
+    implementation (libs.androidx.work.runtime.ktx)
+
+    // Hilt with WorkManager
+    implementation (libs.androidx.hilt.work)
+    ksp (libs.androidx.hilt.compiler)
+
+
 
     implementation(libs.androidx.foundation)
 

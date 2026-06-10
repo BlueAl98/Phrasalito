@@ -24,5 +24,5 @@ data class PhraseEntity (
     val translation: String? = null,
     val deckId: Int,
     val isNotified : Int = 0,
-    val example : String? = null,
+    val example : String? = null
 )
